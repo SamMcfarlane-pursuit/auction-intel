@@ -1,5 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { TIERS, COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START } from './data';
+import React, { useState, useMemo, useEffect } from 'react';
+import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip } from './data';
+import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
+import USMap from './USMap';
+import 'leaflet/dist/leaflet.css';
+
+const API_BASE = 'http://localhost:8080/api';
 
 // Mock parcel data generator
 const generateParcels = (countyName) => {
@@ -15,14 +20,6 @@ const generateParcels = (countyName) => {
     }));
 };
 
-const getStateSummary = (abbr) => {
-    const counties = COUNTIES[abbr] || [];
-    if (!counties.length) return { best: 5, count: 0, t123: 0 };
-    const best = Math.min(...counties.map(c => c[6]));
-    const t123 = counties.filter(c => c[6] <= 3).length;
-    return { best, count: counties.length, t123 };
-};
-
 export default function AuctionPlatform() {
     const [view, setView] = useState('map');
     const [selectedState, setSelectedState] = useState(null);
@@ -32,21 +29,151 @@ export default function AuctionPlatform() {
     const [sortAsc, setSortAsc] = useState(true);
     const [filterTier, setFilterTier] = useState(5);
     const [hoveredState, setHoveredState] = useState(null);
+    const [selectedStateInfo, setSelectedStateInfo] = useState(null); // For State Info verification modal
+    const [stateInfoFilter, setStateInfoFilter] = useState('all'); // 'all', 'lien', 'deed'
+    const [stateInfoSort, setStateInfoSort] = useState({ col: 'state', asc: true });
+    const [stateRateFilter, setStateRateFilter] = useState('all'); // 'all', 'high', 'medium', 'low'
+    const [stateRedemptionFilter, setStateRedemptionFilter] = useState('all'); // 'all', 'short', 'medium', 'long'
+    const [mapZoom, setMapZoom] = useState(1); // Map zoom level (0.5 to 3)
+    const [mapPan, setMapPan] = useState({ x: 0, y: 0 }); // Map pan offset
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+    // API-driven data with fallbacks to static data
+    const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
+    const [STATE_AUCTION_INFO, setSTATE_AUCTION_INFO] = useState(STATIC_STATE_AUCTION_INFO);
+    const [apiStatus, setApiStatus] = useState('connecting'); // 'connecting', 'live', 'offline'
+
+    // Fetch data from backend API on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch state auction info
+                const stateRes = await fetch(`${API_BASE}/state-info`);
+                if (stateRes.ok) {
+                    const stateData = await stateRes.json();
+                    // Transform array to object keyed by abbr
+                    const stateMap = {};
+                    stateData.forEach(s => {
+                        stateMap[s.abbr] = {
+                            type: s.type,
+                            interestRate: s.interest_rate,
+                            redemptionPeriod: s.redemption_period,
+                            notes: s.notes
+                        };
+                    });
+                    setSTATE_AUCTION_INFO(stateMap);
+                }
+
+                // Fetch all counties
+                const countyRes = await fetch(`${API_BASE}/counties`);
+                if (countyRes.ok) {
+                    const countyData = await countyRes.json();
+                    // Transform array to object keyed by state
+                    const countyMap = {};
+                    countyData.forEach(c => {
+                        if (!countyMap[c.state]) countyMap[c.state] = [];
+                        // Format: [name, pop, income, zhvi, growth, dom, tier, notes]
+                        countyMap[c.state].push([
+                            c.name, c.pop, c.income, c.zhvi, c.growth, c.dom, c.tier, c.notes
+                        ]);
+                    });
+                    setCOUNTIES(countyMap);
+                }
+
+                setApiStatus('live');
+            } catch (err) {
+                console.warn('Backend API unavailable, using static data:', err.message);
+                setApiStatus('offline');
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const getStateSummary = (abbr) => {
+        const counties = COUNTIES[abbr] || [];
+        if (!counties.length) return { best: 5, count: 0, t123: 0 };
+        const best = Math.min(...counties.map(c => c[6]));
+        const t123 = counties.filter(c => c[6] <= 3).length;
+        return { best, count: counties.length, t123 };
+    };
+
+    // Helper to parse interest rate string to number
+    const parseRate = (rateStr) => {
+        if (!rateStr) return 0;
+        const match = rateStr.match(/(\d+)/);
+        return match ? parseInt(match[1], 10) : 0;
+    };
+
+    // Helper to parse redemption period to months
+    const parseRedemption = (redemptionStr) => {
+        if (!redemptionStr) return 0;
+        const str = redemptionStr.toLowerCase();
+        const match = str.match(/(\d+)/);
+        const num = match ? parseInt(match[1], 10) : 0;
+        if (str.includes('year')) return num * 12;
+        if (str.includes('month')) return num;
+        if (str.includes('day')) return Math.ceil(num / 30);
+        return num;
+    };
+
+    // Filter functions for rate and redemption
+    const matchesRateFilter = (info) => {
+        if (stateRateFilter === 'all') return true;
+        const rate = parseRate(info.interestRate);
+        if (stateRateFilter === 'high') return rate >= 16;
+        if (stateRateFilter === 'medium') return rate >= 8 && rate < 16;
+        if (stateRateFilter === 'low') return rate < 8 && rate > 0;
+        return true;
+    };
+
+    const matchesRedemptionFilter = (info) => {
+        if (stateRedemptionFilter === 'all') return true;
+        const months = parseRedemption(info.redemptionPeriod);
+        if (stateRedemptionFilter === 'short') return months <= 6;
+        if (stateRedemptionFilter === 'medium') return months > 6 && months <= 24;
+        if (stateRedemptionFilter === 'long') return months > 24;
+        return true;
+    };
 
     const searchResults = useMemo(() => {
         if (!search || search.length < 2) return [];
-        const term = search.toLowerCase();
+        const term = search.toLowerCase().trim();
         const results = [];
+        // Check if search term is a ZIP code (3-5 digits)
+        if (/^\d{3,5}$/.test(term)) {
+            const stateAbbr = getStateByZip(term);
+            if (stateAbbr) {
+                const stateName = STATE_NAMES[stateAbbr];
+                results.push({ abbr: stateAbbr, state: stateName, county: null, matchType: 'zip', zipCode: term });
+                (COUNTIES[stateAbbr] || []).forEach(c => results.push({ abbr: stateAbbr, state: stateName, county: c, matchType: 'zip-county' }));
+                return results.slice(0, 15);
+            }
+        }
+        // Check for exact state abbreviation match
+        const upperTerm = term.toUpperCase();
+        if (STATE_NAMES[upperTerm]) {
+            const stateName = STATE_NAMES[upperTerm];
+            results.push({ abbr: upperTerm, state: stateName, county: null, matchType: 'abbreviation' });
+            (COUNTIES[upperTerm] || []).forEach(c => results.push({ abbr: upperTerm, state: stateName, county: c }));
+            return results.slice(0, 15);
+        }
+        // Search by state name and counties
         Object.entries(COUNTIES).forEach(([abbr, counties]) => {
+            const stateName = STATE_NAMES[abbr] || abbr;
+            const stateMatch = stateName.toLowerCase().includes(term) || abbr.toLowerCase() === term;
+            if (stateMatch && !results.find(r => r.abbr === abbr && !r.county)) {
+                results.push({ abbr, state: stateName, county: null, matchType: 'state' });
+            }
             counties.forEach(c => {
-                const stateName = STATE_NAMES[abbr] || abbr;
-                if (c[0].toLowerCase().includes(term) || stateName.toLowerCase().includes(term)) {
+                if (c[0].toLowerCase().includes(term) || stateMatch) {
                     results.push({ abbr, state: stateName, county: c });
                 }
             });
         });
-        return results.slice(0, 12);
-    }, [search]);
+        return results.slice(0, 15);
+    }, [search, COUNTIES]);
 
     const displayCounties = useMemo(() => {
         if (!selectedState) return [];
@@ -78,6 +205,119 @@ export default function AuctionPlatform() {
         return NY_COUNTY_DETAILS[countyName] || null;
     };
 
+    // Export handlers
+    const handleExportCountyCSV = () => {
+        if (!selectedCounty) return;
+        const [name, pop, income, zhvi, growth, dom, tier, notes] = selectedCounty;
+        const data = [{
+            county: name,
+            tier: `T${tier}`,
+            population: pop,
+            median_income: income,
+            zhvi: zhvi,
+            growth_pct: growth,
+            days_on_market: dom,
+            notes: notes || ''
+        }];
+        const columns = [
+            { key: 'county', label: 'County' },
+            { key: 'tier', label: 'Tier' },
+            { key: 'population', label: 'Population' },
+            { key: 'median_income', label: 'Median Income' },
+            { key: 'zhvi', label: 'ZHVI' },
+            { key: 'growth_pct', label: 'Growth %' },
+            { key: 'days_on_market', label: 'DOM' },
+            { key: 'notes', label: 'Notes' }
+        ];
+        exportToCSV(data, columns, `${name}_county_data`);
+    };
+
+    const handleExportParcelsCSV = () => {
+        if (!selectedCounty || !parcels.length) return;
+        const columns = [
+            { key: 'id', label: 'ID' },
+            { key: 'parcelId', label: 'Parcel ID' },
+            { key: 'owner', label: 'Owner' },
+            { key: 'type', label: 'Type' },
+            { key: 'amount', label: 'Amount' },
+            { key: 'status', label: 'Status' }
+        ];
+        exportToCSV(parcels, columns, `${selectedCounty[0]}_parcels`);
+    };
+
+    const handleExportStateCSV = () => {
+        if (!selectedState || !displayCounties.length) return;
+        const data = displayCounties.map(c => ({
+            county: c[0],
+            tier: `T${c[6]}`,
+            population: c[1],
+            median_income: c[2],
+            zhvi: c[3],
+            growth_pct: c[4],
+            days_on_market: c[5],
+            notes: c[7] || ''
+        }));
+        const columns = [
+            { key: 'county', label: 'County' },
+            { key: 'tier', label: 'Tier' },
+            { key: 'population', label: 'Population' },
+            { key: 'median_income', label: 'Median Income' },
+            { key: 'zhvi', label: 'ZHVI' },
+            { key: 'growth_pct', label: 'Growth %' },
+            { key: 'days_on_market', label: 'DOM' },
+            { key: 'notes', label: 'Notes' }
+        ];
+        exportToCSV(data, columns, `${STATE_NAMES[selectedState]}_counties`);
+    };
+
+    const handleCopyStateData = async () => {
+        if (!displayCounties.length) return;
+        const data = displayCounties.map(c => ({
+            county: c[0],
+            tier: `T${c[6]}`,
+            population: c[1],
+            income: `$${c[2]}`,
+            zhvi: `$${c[3]}`,
+            growth: `${c[4]}%`,
+            dom: c[5]
+        }));
+        const columns = [
+            { key: 'county', label: 'County' },
+            { key: 'tier', label: 'Tier' },
+            { key: 'population', label: 'Population' },
+            { key: 'income', label: 'Income' },
+            { key: 'zhvi', label: 'ZHVI' },
+            { key: 'growth', label: 'Growth' },
+            { key: 'dom', label: 'DOM' }
+        ];
+        const text = tableToText(data, columns);
+        const success = await copyToClipboard(text);
+        if (success) {
+            alert('Copied to clipboard!');
+        }
+    };
+
+    const handlePrintCountyReport = () => {
+        if (!selectedCounty) return;
+        const html = generateCountyReportHTML(
+            selectedCounty,
+            parcels,
+            STATE_NAMES[selectedState],
+            TIERS[selectedCounty[6]]
+        );
+        printReport(`${selectedCounty[0]} County Report`, html);
+    };
+
+    const handlePrintStateReport = () => {
+        if (!displayCounties.length) return;
+        const html = generateStateReportHTML(
+            displayCounties,
+            STATE_NAMES[selectedState],
+            TIERS
+        );
+        printReport(`${STATE_NAMES[selectedState]} County Analysis`, html);
+    };
+
     return (
         <div className="flex h-screen bg-slate-100 overflow-hidden text-sm font-sans selection:bg-blue-100 selection:text-blue-900">
             {/* Sidebar - Premium Dark Theme */}
@@ -96,9 +336,10 @@ export default function AuctionPlatform() {
                             {[
                                 { id: 'map', label: 'Map Explorer', icon: '📍' },
                                 { id: 'list', label: 'State Database', icon: '📊' },
+                                { id: 'stateinfo', label: 'State Info', icon: '🏛️' },
                                 { id: 'detection', label: 'Tier Detection', icon: '🎯' },
                                 { id: 'sources', label: 'Data Sources', icon: '📡' },
-                                { id: 'favorites', label: 'Watchlist', icon: '⭐' }
+                                { id: 'guide', label: 'User Guide', icon: '📚' },
                             ].map(item => (
                                 <button
                                     key={item.id}
@@ -138,15 +379,50 @@ export default function AuctionPlatform() {
 
                 <div className="p-4 bg-slate-800/20 border-t border-slate-800/50">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Real-Time Status</span>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Backend Status</span>
                         <div className="flex items-center gap-1.5">
-                            <span className="text-[9px] font-bold text-green-500 tracking-tighter uppercase">LIVE</span>
-                            <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)] animate-pulse"></span>
+                            <span className={`text-[9px] font-bold tracking-tighter uppercase ${apiStatus === 'live' ? 'text-green-500' : apiStatus === 'connecting' ? 'text-yellow-500' : 'text-slate-500'}`}>
+                                {apiStatus === 'live' ? 'LIVE' : apiStatus === 'connecting' ? 'CONNECTING' : 'OFFLINE'}
+                            </span>
+                            <span className={`w-2 h-2 rounded-full ${apiStatus === 'live' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] animate-pulse' : apiStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' : 'bg-slate-500'}`}></span>
                         </div>
                     </div>
                     <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-[9px] font-bold text-slate-400 tracking-tight">
-                        REGRID DATA FEED BROADCASTING VIA WS_8081
+                        {apiStatus === 'live' ? 'BACKEND API: localhost:8080' : apiStatus === 'connecting' ? 'CONNECTING TO BACKEND...' : 'USING STATIC DATA (BACKEND OFFLINE)'}
                     </div>
+                    {apiStatus === 'live' && (
+                        <div className="mt-2 p-2.5 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-800/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-base">🏠</span>
+                                    <span className="text-[9px] font-bold text-blue-300">Zillow ZHVI</span>
+                                </div>
+                                <span className="text-[8px] font-bold text-blue-400 bg-blue-900/50 px-1.5 py-0.5 rounded">3,073 Counties</span>
+                            </div>
+                        </div>
+                    )}
+                    {apiStatus === 'live' && (
+                        <div className="mt-2 p-2.5 bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg border border-red-800/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-base">📈</span>
+                                    <span className="text-[9px] font-bold text-red-300">Redfin Market</span>
+                                </div>
+                                <span className="text-[8px] font-bold text-red-400 bg-red-900/50 px-1.5 py-0.5 rounded">DOM • S/L</span>
+                            </div>
+                        </div>
+                    )}
+                    {apiStatus === 'live' && (
+                        <div className="mt-2 p-2.5 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg border border-green-800/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-base">💰</span>
+                                    <span className="text-[9px] font-bold text-green-300">Mortgage Rates</span>
+                                </div>
+                                <span className="text-[8px] font-bold text-green-400 bg-green-900/50 px-1.5 py-0.5 rounded">6.72% 30yr</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </aside>
 
@@ -168,24 +444,44 @@ export default function AuctionPlatform() {
                         <div className="relative group">
                             <input
                                 type="text"
-                                placeholder="Lookup by FIPS, Parcel ID, or County..."
+                                placeholder="Search ZIP, state (TX), or county..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-80 bg-slate-100/50 border-slate-200 border rounded-xl px-5 py-2.5 pl-10 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all duration-300"
                             />
                             <span className="absolute left-4 top-2.5 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔍</span>
                             {searchResults.length > 0 && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] overflow-hidden py-2">
+                                <div className="absolute top-[calc(100%+8px)] right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] overflow-hidden py-2 max-h-96 overflow-y-auto">
                                     <div className="px-4 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Search Results</div>
                                     {searchResults.map((r, i) => {
+                                        // State-level result (no county)
+                                        if (!r.county) {
+                                            const auctionInfo = STATE_AUCTION_INFO[r.abbr];
+                                            return (
+                                                <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(null); setSearch(''); setView('list'); }}
+                                                    className="flex items-center justify-between px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-slate-100 bg-gradient-to-r from-slate-50/50 to-transparent">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-xs font-black">{r.abbr}</div>
+                                                        <div>
+                                                            <div className="font-display font-black text-slate-900 text-sm">{r.state}</div>
+                                                            <div className="text-[9px] text-slate-500">
+                                                                {r.matchType === 'zip' && <span className="text-blue-600">📍 ZIP {r.zipCode}</span>}
+                                                                {r.matchType === 'abbreviation' && <span className="text-purple-600">🏷️ Abbreviation</span>}
+                                                                {r.matchType === 'state' && <span className="text-green-600">🗺️ State</span>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black text-white ${auctionInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>{auctionInfo.type}</span>}
+                                                </div>
+                                            );
+                                        }
+                                        // County-level result
                                         const [name, , , , , , tier] = r.county;
                                         const t = TIERS[tier];
                                         return (
                                             <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); }}
                                                 className="flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 cursor-pointer transition-colors">
-                                                <div>
-                                                    <div className="font-display font-black text-slate-800 text-sm">{name}, {r.abbr}</div>
-                                                </div>
+                                                <div><div className="font-display font-black text-slate-800 text-sm">{name}, {r.abbr}</div></div>
                                                 <span className="px-2 py-0.5 rounded-lg text-[9px] font-black text-white" style={{ background: t.color }}>{t.label}</span>
                                             </div>
                                         );
@@ -219,18 +515,34 @@ export default function AuctionPlatform() {
                                             <span className="group-hover:-translate-x-1 transition-transform">←</span>
                                             <span className="uppercase tracking-[0.15em] text-[9px] font-black">Return to {STATE_NAMES[selectedState]}</span>
                                         </button>
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-4 flex-wrap">
                                             <h1 className="text-5xl font-display font-black text-slate-900 tracking-tighter">{selectedCounty[0]}</h1>
                                             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
                                                 <span className="w-2.5 h-2.5 rounded-full" style={{ background: TIERS[selectedCounty[6]].color }}></span>
                                                 <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{TIERS[selectedCounty[6]].name}</span>
                                                 <span className="text-xs font-bold text-slate-400">/ Tier {selectedCounty[6]}</span>
                                             </div>
+                                            {/* Auction Type Badge */}
+                                            {STATE_AUCTION_INFO[selectedState] && (
+                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-50 border-purple-200' : 'bg-indigo-50 border-indigo-200'}`}>
+                                                    <span className={`w-2.5 h-2.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}></span>
+                                                    <span className={`text-sm font-black uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-900' : 'text-indigo-900'}`}>
+                                                        {STATE_AUCTION_INFO[selectedState].type}
+                                                    </span>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-500' : 'text-indigo-500'}`}>
+                                                        {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : ''}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex gap-3">
-                                        <button className="bg-slate-900 text-white px-6 py-3 rounded-xl font-display font-black text-sm shadow-xl hover:bg-black transition-all">DOWNLOAD</button>
-                                        <button className="bg-white text-slate-900 border-2 border-slate-200 px-6 py-3 rounded-xl font-display font-black text-sm hover:bg-slate-50 transition-all">REPORT</button>
+                                        <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-display font-black text-sm shadow-xl hover:bg-black transition-all flex items-center gap-2">
+                                            <span>📥</span> DOWNLOAD CSV
+                                        </button>
+                                        <button onClick={handlePrintCountyReport} className="bg-white text-slate-900 border-2 border-slate-200 px-6 py-3 rounded-xl font-display font-black text-sm hover:bg-slate-50 transition-all flex items-center gap-2">
+                                            <span>📄</span> REPORT
+                                        </button>
                                     </div>
                                 </div>
 
@@ -306,119 +618,67 @@ export default function AuctionPlatform() {
                                 </div>
                             </div>
                         ) : view === 'map' ? (
-                            /* Map View */
-                            <div className="h-full flex flex-col gap-8">
-                                <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 flex-1 relative overflow-hidden">
-                                    {/* Background Grid */}
-                                    <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px)', backgroundSize: '50px 50px' }}></div>
-
-                                    <div className="w-full flex items-start justify-between mb-6 z-10 relative">
+                            /* Map View - Clean Minimal Design */
+                            <div className="h-full flex flex-col gap-4">
+                                {/* Map Container */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0">
+                                    {/* Simple Header */}
+                                    <div className="flex items-center justify-between mb-3">
                                         <div>
-                                            <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter mb-1">Market Intelligence</h2>
-                                            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] flex items-center gap-2">
-                                                <span className="w-6 h-[2px] bg-blue-500 rounded-full"></span>
-                                                North America Coverage
-                                            </p>
+                                            <h2 className="text-xl font-semibold text-gray-900">US Market Map</h2>
+                                            <p className="text-xs text-gray-400">Click a state to view counties</p>
                                         </div>
-                                        {hoveredState ? (
-                                            <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-2xl min-w-[260px]">
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <span className="text-[9px] font-black tracking-widest text-blue-400/60 uppercase">FIPS Data</span>
-                                                    <span className="text-[9px] font-black text-green-500 uppercase">Active</span>
-                                                </div>
-                                                <div className="text-3xl font-display font-black tracking-tighter mb-2">{STATE_NAMES[hoveredState]}</div>
-                                                <div className="h-[2px] w-full bg-slate-800 rounded-full mb-3 overflow-hidden">
-                                                    <div className="h-full bg-blue-500" style={{ width: `${(getStateSummary(hoveredState).t123 / Math.max(getStateSummary(hoveredState).count, 1)) * 100}%` }}></div>
-                                                </div>
-                                                <div className="flex justify-between items-center text-xs">
-                                                    <span className="font-bold text-slate-400">Prime Counties</span>
-                                                    <span className="font-black text-blue-400">{getStateSummary(hoveredState).t123} / {getStateSummary(hoveredState).count}</span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="bg-slate-50 rounded-2xl p-6 min-w-[260px] border border-slate-100 flex flex-col items-center gap-2">
-                                                <span className="text-2xl opacity-30">🛰️</span>
-                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">Hover over a state</span>
+                                        {/* Hover Info */}
+                                        {hoveredState && (
+                                            <div className="bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center gap-3">
+                                                <span className="font-semibold">{STATE_NAMES[hoveredState]}</span>
+                                                {STATE_AUCTION_INFO[hoveredState] && (
+                                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATE_AUCTION_INFO[hoveredState].type === 'Lien' ? 'bg-violet-500' : 'bg-blue-500'}`}>
+                                                        {STATE_AUCTION_INFO[hoveredState].type}
+                                                    </span>
+                                                )}
+                                                <span className="text-gray-300 text-sm">{getStateSummary(hoveredState).count} counties</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="relative z-10 w-full flex justify-center py-6 state-intake">
-                                        <svg viewBox="0 0 800 580" className="h-[480px] w-auto filter drop-shadow-lg overflow-visible">
-                                            <defs>
-                                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                                    <feGaussianBlur stdDeviation="6" result="blur" />
-                                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                                </filter>
-                                            </defs>
-                                            {Object.entries(STATE_PATHS).map(([abbr, path]) => {
-                                                const { best } = getStateSummary(abbr);
-                                                const tier = TIERS[best];
-                                                const isHovered = hoveredState === abbr;
-                                                return (
-                                                    <path
-                                                        key={abbr}
-                                                        d={path}
-                                                        fill={tier.color}
-                                                        fillOpacity={isHovered ? 0.85 : 0.15}
-                                                        stroke={isHovered ? '#fff' : tier.color}
-                                                        strokeOpacity={isHovered ? 1 : 0.4}
-                                                        strokeWidth={isHovered ? "2" : "1"}
-                                                        filter={isHovered ? "url(#glow)" : "none"}
-                                                        className="transition-all duration-300 ease-out cursor-pointer"
-                                                        onMouseEnter={() => setHoveredState(abbr)}
-                                                        onMouseLeave={() => setHoveredState(null)}
-                                                        onClick={() => { setSelectedState(abbr); setView('list'); }}
-                                                    />
-                                                );
-                                            })}
-                                            {Object.entries(STATE_LABEL_COORDS).map(([abbr, [x, y]]) => (
-                                                <text
-                                                    key={`label-${abbr}`}
-                                                    x={x}
-                                                    y={y}
-                                                    textAnchor="middle"
-                                                    dominantBaseline="middle"
-                                                    className={`pointer-events-none fill-slate-800 font-display font-black text-[11px] transition-all duration-300 uppercase tracking-wider ${hoveredState === abbr ? 'opacity-100' : 'opacity-40'}`}
-                                                >
-                                                    {abbr}
-                                                </text>
-                                            ))}
-                                        </svg>
+                                    {/* Map */}
+                                    <div className="flex-1 min-h-0 rounded-xl overflow-hidden" style={{ minHeight: '450px' }}>
+                                        <USMap
+                                            onStateClick={(abbr) => { setSelectedState(abbr); setView('list'); }}
+                                            selectedState={selectedState}
+                                            hoveredState={hoveredState}
+                                            onHoverState={setHoveredState}
+                                        />
                                     </div>
 
-                                    <div className="flex justify-center gap-10 mt-6 z-10 relative">
-                                        {Object.entries(TIERS).map(([t, info]) => (
-                                            <div key={t} className="flex items-center gap-3">
-                                                <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: info.color }}></div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-[8px] font-black text-slate-400 tracking-widest uppercase">{info.name}</span>
-                                                    <span className="text-[10px] font-black text-slate-700">Tier {t}</span>
-                                                </div>
-                                            </div>
-                                        ))}
+                                    {/* Simple Legend */}
+                                    <div className="flex justify-center gap-6 mt-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded bg-violet-500"></div>
+                                            <span className="text-xs text-gray-500">Lien States</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3 rounded bg-blue-500"></div>
+                                            <span className="text-xs text-gray-500">Deed States</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Bottom Stats */}
-                                <div className="grid grid-cols-3 gap-6 shrink-0">
-                                    {[
-                                        { label: "Network Capacity", value: `${allStates.length}`, unit: "Jurisdictions", sub: "Full State Coverage Active", icon: "💎" },
-                                        { label: "Asset Index", value: `${totalCounties}`, unit: "Regions", sub: "Real-time County Feeds", icon: "📊" },
-                                        { label: "Premium Opportunity", value: `${totalT123}`, unit: "Targets", sub: "Tier 1-3 Recommendations", icon: "🚀", highlight: true }
-                                    ].map((s, i) => (
-                                        <div key={i} className={`p-6 rounded-2xl border transition-all ${s.highlight ? 'bg-blue-600 border-blue-600 shadow-xl shadow-blue-400/30 text-white' : 'bg-white border-slate-100 shadow-sm text-slate-900'}`}>
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className={`text-[9px] font-black uppercase tracking-widest ${s.highlight ? 'text-white/60' : 'text-slate-400'}`}>{s.label}</span>
-                                                <span className="text-xl">{s.icon}</span>
-                                            </div>
-                                            <div className="flex items-baseline gap-2">
-                                                <span className="text-3xl font-display font-black tracking-tighter">{s.value}</span>
-                                                <span className={`text-sm font-bold uppercase ${s.highlight ? 'text-white/80' : 'text-slate-400'}`}>{s.unit}</span>
-                                            </div>
-                                            <div className={`text-[9px] font-bold uppercase tracking-widest mt-1 ${s.highlight ? 'text-white/70' : 'text-slate-400'}`}>{s.sub}</div>
-                                        </div>
-                                    ))}
+                                {/* Simple Stats Row */}
+                                <div className="grid grid-cols-3 gap-3 shrink-0">
+                                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                                        <div className="text-2xl font-bold text-gray-900">{allStates.length}</div>
+                                        <div className="text-xs text-gray-400">States</div>
+                                    </div>
+                                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                                        <div className="text-2xl font-bold text-gray-900">{totalCounties}</div>
+                                        <div className="text-xs text-gray-400">Counties</div>
+                                    </div>
+                                    <div className="bg-blue-500 rounded-xl p-4 text-white">
+                                        <div className="text-2xl font-bold">{totalT123}</div>
+                                        <div className="text-xs text-blue-100">Prime (T1-T3)</div>
+                                    </div>
                                 </div>
                             </div>
                         ) : view === 'list' ? (
@@ -426,9 +686,34 @@ export default function AuctionPlatform() {
                             <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full">
                                 <div className="p-8 flex items-center justify-between">
                                     <div>
-                                        <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter mb-1">State Database</h2>
+                                        <div className="flex items-center gap-4 mb-1">
+                                            <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter">State Database</h2>
+                                            {selectedState && STATE_AUCTION_INFO[selectedState] && (
+                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-100 border border-purple-200' : 'bg-indigo-100 border border-indigo-200'}`}>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                        {STATE_AUCTION_INFO[selectedState].type}
+                                                    </span>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-700' : 'text-indigo-700'}`}>
+                                                        {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : STATE_AUCTION_INFO[selectedState].redemptionPeriod}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
                                         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Select a territory to view county data</p>
                                     </div>
+                                    {selectedState && displayCounties.length > 0 && (
+                                        <div className="flex gap-2">
+                                            <button onClick={handleExportStateCSV} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2">
+                                                <span>📥</span> Export CSV
+                                            </button>
+                                            <button onClick={handleCopyStateData} className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2">
+                                                <span>📋</span> Copy
+                                            </button>
+                                            <button onClick={handlePrintStateReport} className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2">
+                                                <span>🖨️</span> Print
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="px-8 pb-6 border-b border-slate-50 overflow-x-auto scrollbar-hide shrink-0">
@@ -619,6 +904,608 @@ export default function AuctionPlatform() {
                                     <pre className="bg-slate-800 p-4 rounded-xl text-sm overflow-x-auto">
                                         <code className="text-green-400">{PYTHON_QUICK_START}</code>
                                     </pre>
+                                </div>
+                            </div>
+                        ) : view === 'stateinfo' ? (
+                            /* State Info View - Lien vs Deed Types */
+                            <div className="space-y-6">
+                                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200/50">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <h2 className="text-2xl font-display font-black text-slate-900 mb-1">🏛️ State Tax Sale Information</h2>
+                                            <p className="text-slate-500">Comprehensive guide to lien vs deed sales, interest rates, and redemption periods</p>
+                                        </div>
+                                        {/* Filter Toggle Buttons */}
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                            <button
+                                                onClick={() => setStateInfoFilter('all')}
+                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'all' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+                                            >All ({Object.keys(STATE_AUCTION_INFO).length})</button>
+                                            <button
+                                                onClick={() => setStateInfoFilter('lien')}
+                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'lien' ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : 'bg-white text-purple-600 hover:bg-purple-50 border border-purple-200'}`}
+                                            >Lien ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length})</button>
+                                            <button
+                                                onClick={() => setStateInfoFilter('deed')}
+                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'deed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200'}`}
+                                            >Deed ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length})</button>
+
+                                            <div className="h-6 w-px bg-slate-300 mx-1"></div>
+
+                                            {/* Interest Rate Filter */}
+                                            <select
+                                                value={stateRateFilter}
+                                                onChange={(e) => setStateRateFilter(e.target.value)}
+                                                className="px-3 py-2 rounded-xl text-xs font-bold border border-green-200 bg-white text-green-700 hover:bg-green-50 focus:ring-2 focus:ring-green-500 focus:outline-none cursor-pointer transition-all"
+                                            >
+                                                <option value="all">💰 All Rates</option>
+                                                <option value="high">🔥 High (16%+)</option>
+                                                <option value="medium">📈 Medium (8-15%)</option>
+                                                <option value="low">📉 Low (&lt;8%)</option>
+                                            </select>
+
+                                            {/* Redemption Period Filter */}
+                                            <select
+                                                value={stateRedemptionFilter}
+                                                onChange={(e) => setStateRedemptionFilter(e.target.value)}
+                                                className="px-3 py-2 rounded-xl text-xs font-bold border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer transition-all"
+                                            >
+                                                <option value="all">⏱️ All Redemption</option>
+                                                <option value="short">⚡ Short (≤6 mo)</option>
+                                                <option value="medium">📅 Medium (6-24 mo)</option>
+                                                <option value="long">🗓️ Long (2+ yr)</option>
+                                            </select>
+
+                                            {/* Clear Filters */}
+                                            {(stateRateFilter !== 'all' || stateRedemptionFilter !== 'all') && (
+                                                <button
+                                                    onClick={() => { setStateRateFilter('all'); setStateRedemptionFilter('all'); }}
+                                                    className="px-3 py-2 rounded-xl text-xs font-bold border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-all"
+                                                >✕ Clear</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 flex gap-8">
+                                        <div className="text-center">
+                                            <div className="text-3xl font-display font-black text-purple-600">
+                                                {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}
+                                            </div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Lien States</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-3xl font-display font-black text-indigo-600">
+                                                {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}
+                                            </div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Deed States</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-3xl font-display font-black text-green-600">24%</div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Highest Rate (IA)</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="text-3xl font-display font-black text-amber-600">4 yr</div>
+                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Longest Redemption</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Lien vs Deed Explanation */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-purple-100 rounded-2xl p-5 border border-purple-200">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center text-white font-black">L</div>
+                                            <h3 className="font-display font-black text-purple-900">Tax Lien States</h3>
+                                        </div>
+                                        <p className="text-sm text-purple-800">In lien states, you purchase a <strong>lien certificate</strong> on the property. The owner has a redemption period to pay back the lien plus interest. If they don't redeem, you can foreclose.</p>
+                                        <div className="mt-3 text-xs font-bold text-purple-600">✓ Earn interest on investment • ✓ Lower risk • ✓ Passive income potential</div>
+                                    </div>
+                                    <div className="bg-indigo-100 rounded-2xl p-5 border border-indigo-200">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black">D</div>
+                                            <h3 className="font-display font-black text-indigo-900">Tax Deed States</h3>
+                                        </div>
+                                        <p className="text-sm text-indigo-800">In deed states, you bid on the <strong>property itself</strong> at auction. Winning bidder receives title to the property (subject to redemption period in some states).</p>
+                                        <div className="mt-3 text-xs font-bold text-indigo-600">✓ Direct property ownership • ✓ Faster acquisition • ✓ Property value upside</div>
+                                    </div>
+                                </div>
+
+                                {/* Full State Table */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="p-5 border-b border-slate-50 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-display font-black text-lg text-slate-900">
+                                                {stateInfoFilter === 'all' ? 'All 50 States + DC' : stateInfoFilter === 'lien' ? 'Tax Lien States' : 'Tax Deed States'}
+                                            </h3>
+                                            <p className="text-xs text-slate-400">Click column headers to sort • Click row to view details</p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={async () => {
+                                                    const filteredEntries = Object.entries(STATE_AUCTION_INFO)
+                                                        .filter(([, info]) => (stateInfoFilter === 'all' || info.type.toLowerCase() === stateInfoFilter) && matchesRateFilter(info) && matchesRedemptionFilter(info));
+                                                    const text = filteredEntries.map(([abbr, info]) =>
+                                                        `${STATE_NAMES[abbr] || abbr}\t${info.type}\t${info.interestRate}\t${info.redemptionPeriod}\t${info.notes}`
+                                                    ).join('\n');
+                                                    await copyToClipboard(`State\tType\tInterest Rate\tRedemption\tNotes\n${text}`);
+                                                    alert('Copied to clipboard!');
+                                                }}
+                                                className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2"
+                                            >
+                                                <span>📋</span> Copy
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    const data = Object.entries(STATE_AUCTION_INFO)
+                                                        .filter(([, info]) => (stateInfoFilter === 'all' || info.type.toLowerCase() === stateInfoFilter) && matchesRateFilter(info) && matchesRedemptionFilter(info))
+                                                        .map(([abbr, info]) => ({
+                                                            state: STATE_NAMES[abbr] || abbr,
+                                                            abbr,
+                                                            type: info.type,
+                                                            interestRate: info.interestRate,
+                                                            redemptionPeriod: info.redemptionPeriod,
+                                                            notes: info.notes
+                                                        }));
+                                                    const columns = [
+                                                        { key: 'state', label: 'State' },
+                                                        { key: 'type', label: 'Type' },
+                                                        { key: 'interestRate', label: 'Interest Rate' },
+                                                        { key: 'redemptionPeriod', label: 'Redemption Period' },
+                                                        { key: 'notes', label: 'Notes' }
+                                                    ];
+                                                    const filename = stateInfoFilter === 'all' ? 'state_auction_info' : `${stateInfoFilter}_states_info`;
+                                                    exportToCSV(data, columns, filename);
+                                                }}
+                                                className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2"
+                                            >
+                                                <span>📥</span> Export CSV
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="overflow-auto max-h-[500px]">
+                                        <table className="w-full text-sm">
+                                            <thead className="bg-slate-50 sticky top-0 z-10">
+                                                <tr className="text-slate-400 text-[9px] font-black tracking-widest uppercase">
+                                                    <th
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        onClick={() => setStateInfoSort(prev => ({ col: 'state', asc: prev.col === 'state' ? !prev.asc : true }))}
+                                                    >
+                                                        <div className="flex items-center gap-1">
+                                                            State {stateInfoSort.col === 'state' && <span className="text-blue-600">{stateInfoSort.asc ? '↑' : '↓'}</span>}
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        onClick={() => setStateInfoSort(prev => ({ col: 'type', asc: prev.col === 'type' ? !prev.asc : true }))}
+                                                    >
+                                                        <div className="flex items-center gap-1">
+                                                            Type {stateInfoSort.col === 'type' && <span className="text-blue-600">{stateInfoSort.asc ? '↑' : '↓'}</span>}
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        onClick={() => setStateInfoSort(prev => ({ col: 'rate', asc: prev.col === 'rate' ? !prev.asc : false }))}
+                                                    >
+                                                        <div className="flex items-center gap-1">
+                                                            Interest Rate {stateInfoSort.col === 'rate' && <span className="text-blue-600">{stateInfoSort.asc ? '↑' : '↓'}</span>}
+                                                        </div>
+                                                    </th>
+                                                    <th
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        onClick={() => setStateInfoSort(prev => ({ col: 'redemption', asc: prev.col === 'redemption' ? !prev.asc : true }))}
+                                                    >
+                                                        <div className="flex items-center gap-1">
+                                                            Redemption {stateInfoSort.col === 'redemption' && <span className="text-blue-600">{stateInfoSort.asc ? '↑' : '↓'}</span>}
+                                                        </div>
+                                                    </th>
+                                                    <th className="px-5 py-4 text-left">Notes</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-50">
+                                                {Object.entries(STATE_AUCTION_INFO)
+                                                    .filter(([, info]) => (stateInfoFilter === 'all' || info.type.toLowerCase() === stateInfoFilter) && matchesRateFilter(info) && matchesRedemptionFilter(info))
+                                                    .sort((a, b) => {
+                                                        const [abbrA, infoA] = a;
+                                                        const [abbrB, infoB] = b;
+                                                        let cmp = 0;
+                                                        if (stateInfoSort.col === 'state') {
+                                                            cmp = (STATE_NAMES[abbrA] || abbrA).localeCompare(STATE_NAMES[abbrB] || abbrB);
+                                                        } else if (stateInfoSort.col === 'type') {
+                                                            cmp = infoA.type.localeCompare(infoB.type);
+                                                        } else if (stateInfoSort.col === 'rate') {
+                                                            // Extract numeric rate for comparison
+                                                            const getRateNum = (r) => {
+                                                                const match = r.match(/(\d+)/);
+                                                                return match ? parseInt(match[1]) : 0;
+                                                            };
+                                                            cmp = getRateNum(infoA.interestRate) - getRateNum(infoB.interestRate);
+                                                        } else if (stateInfoSort.col === 'redemption') {
+                                                            cmp = infoA.redemptionPeriod.localeCompare(infoB.redemptionPeriod);
+                                                        }
+                                                        return stateInfoSort.asc ? cmp : -cmp;
+                                                    })
+                                                    .map(([abbr, info]) => (
+                                                        <tr
+                                                            key={abbr}
+                                                            className={`hover:bg-blue-50/50 transition-colors cursor-pointer ${info.type === 'Lien' ? 'hover:bg-purple-50/50' : 'hover:bg-indigo-50/50'}`}
+                                                            onClick={() => setSelectedStateInfo({ abbr, ...info })}
+                                                        >
+                                                            <td className="px-5 py-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-display font-black text-slate-900">{STATE_NAMES[abbr] || abbr}</span>
+                                                                    <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{abbr}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-5 py-4">
+                                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${info.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                    {info.type}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-5 py-4">
+                                                                <span className={`font-mono text-xs font-bold ${info.interestRate !== 'N/A' ? 'text-green-700 bg-green-50 px-2 py-1 rounded' : 'text-slate-400'}`}>
+                                                                    {info.interestRate}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-5 py-4 font-medium text-slate-600">{info.redemptionPeriod}</td>
+                                                            <td className="px-5 py-4 text-xs text-slate-400 max-w-[200px] truncate" title={info.notes}>{info.notes || '—'}</td>
+                                                        </tr>
+                                                    ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* State Verification Modal */}
+                                {selectedStateInfo && (
+                                    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4" onClick={() => setSelectedStateInfo(null)}>
+                                        <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                                            {/* Header with state name and type */}
+                                            <div className={`p-6 ${selectedStateInfo.type === 'Lien' ? 'bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700' : 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-700'}`}>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                                            <span className="text-4xl font-display font-black text-white">{selectedStateInfo.abbr}</span>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">
+                                                                {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien State' : '📜 Tax Deed State'}
+                                                            </div>
+                                                            <h2 className="text-4xl font-display font-black text-white tracking-tight">
+                                                                {STATE_NAMES[selectedStateInfo.abbr] || selectedStateInfo.abbr}
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => setSelectedStateInfo(null)}
+                                                        className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center text-white transition-colors"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Main content area */}
+                                            <div className="flex-1 overflow-auto p-6">
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                                                    {/* Left side - State info cards */}
+                                                    <div className="space-y-4">
+                                                        {/* Key metrics */}
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
+                                                                <div className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">💰 Interest Rate</div>
+                                                                <div className="text-2xl font-display font-black text-green-900">{selectedStateInfo.interestRate}</div>
+                                                            </div>
+                                                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-4">
+                                                                <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">⏱️ Redemption</div>
+                                                                <div className="text-2xl font-display font-black text-blue-900">{selectedStateInfo.redemptionPeriod}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Notes */}
+                                                        {selectedStateInfo.notes && (
+                                                            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4">
+                                                                <div className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">📋 Key Information</div>
+                                                                <div className="text-sm font-medium text-amber-900">{selectedStateInfo.notes}</div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Process explanation */}
+                                                        <div className={`rounded-2xl p-4 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-50 border border-purple-200' : 'bg-indigo-50 border border-indigo-200'}`}>
+                                                            <div className={`text-[10px] font-black uppercase tracking-widest mb-2 ${selectedStateInfo.type === 'Lien' ? 'text-purple-600' : 'text-indigo-600'}`}>
+                                                                {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien Process' : '📜 Tax Deed Process'}
+                                                            </div>
+                                                            <div className={`text-sm ${selectedStateInfo.type === 'Lien' ? 'text-purple-900' : 'text-indigo-900'}`}>
+                                                                {selectedStateInfo.type === 'Lien'
+                                                                    ? 'Investors purchase lien certificates at auction. Property owners can redeem by paying delinquent taxes plus accrued interest. If property remains unredeemed after the redemption period, the investor may initiate foreclosure proceedings to obtain the property.'
+                                                                    : 'The government forecloses on properties with delinquent taxes and auctions them directly to investors. Winning bidders receive a deed to the property. Some states allow a brief redemption period before the sale is finalized.'}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* State map placeholder with SVG */}
+                                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                                                            <div className="relative">
+                                                                {STATE_PATHS[selectedStateInfo.abbr] ? (
+                                                                    <svg viewBox="0 0 960 600" className="w-full h-40 mx-auto">
+                                                                        <path
+                                                                            d={STATE_PATHS[selectedStateInfo.abbr]}
+                                                                            className={`${selectedStateInfo.type === 'Lien' ? 'fill-purple-400' : 'fill-indigo-400'} stroke-white stroke-2`}
+                                                                            style={{ transform: 'scale(1.5)', transformOrigin: 'center' }}
+                                                                        />
+                                                                    </svg>
+                                                                ) : (
+                                                                    <div className="w-full h-40 flex items-center justify-center">
+                                                                        <span className="text-7xl font-display font-black text-slate-200">{selectedStateInfo.abbr}</span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                                                                {STATE_NAMES[selectedStateInfo.abbr]} Territory
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Right side - County list */}
+                                                    <div className="space-y-4">
+                                                        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                                                            <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                                                                <div>
+                                                                    <h3 className="font-display font-black text-slate-900">📍 Counties</h3>
+                                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
+                                                                        {(COUNTIES[selectedStateInfo.abbr] || []).length} counties available
+                                                                    </p>
+                                                                </div>
+                                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black text-white ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                    {selectedStateInfo.type}
+                                                                </span>
+                                                            </div>
+                                                            <div className="max-h-[300px] overflow-auto">
+                                                                {(COUNTIES[selectedStateInfo.abbr] || []).length > 0 ? (
+                                                                    <div className="divide-y divide-slate-50">
+                                                                        {COUNTIES[selectedStateInfo.abbr].slice(0, 15).map((county, idx) => (
+                                                                            <div key={idx} className="px-4 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between">
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div
+                                                                                        className="w-2 h-8 rounded-full"
+                                                                                        style={{ backgroundColor: TIERS[county[6]]?.color || '#94a3b8' }}
+                                                                                    ></div>
+                                                                                    <div>
+                                                                                        <div className="font-bold text-slate-900 text-sm">{county[0]}</div>
+                                                                                        <div className="text-[10px] text-slate-400">
+                                                                                            Pop: {(county[1] || 0).toLocaleString()} • Income: ${(county[2] || 0).toLocaleString()}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span
+                                                                                        className="px-2 py-1 rounded-lg text-[9px] font-black text-white"
+                                                                                        style={{ backgroundColor: TIERS[county[6]]?.color || '#94a3b8' }}
+                                                                                    >
+                                                                                        T{county[6]}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                        {(COUNTIES[selectedStateInfo.abbr] || []).length > 15 && (
+                                                                            <div className="px-4 py-3 text-center text-xs text-slate-400 font-bold">
+                                                                                + {(COUNTIES[selectedStateInfo.abbr] || []).length - 15} more counties
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="p-8 text-center">
+                                                                        <div className="text-4xl mb-2">🗺️</div>
+                                                                        <div className="text-sm font-bold text-slate-400">County data not yet available</div>
+                                                                        <div className="text-xs text-slate-300">Data coming soon</div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Quick stats */}
+                                                        {(COUNTIES[selectedStateInfo.abbr] || []).length > 0 && (
+                                                            <div className="grid grid-cols-3 gap-2">
+                                                                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+                                                                    <div className="text-lg font-display font-black text-emerald-700">
+                                                                        {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] === 1).length}
+                                                                    </div>
+                                                                    <div className="text-[8px] font-bold text-emerald-500 uppercase">Tier 1</div>
+                                                                </div>
+                                                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                                                                    <div className="text-lg font-display font-black text-blue-700">
+                                                                        {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] === 2).length}
+                                                                    </div>
+                                                                    <div className="text-[8px] font-bold text-blue-500 uppercase">Tier 2</div>
+                                                                </div>
+                                                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                                                                    <div className="text-lg font-display font-black text-amber-700">
+                                                                        {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] >= 3).length}
+                                                                    </div>
+                                                                    <div className="text-[8px] font-bold text-amber-500 uppercase">Tier 3+</div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Footer with actions */}
+                                            <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-4">
+                                                <div className="text-[10px] text-slate-400 font-medium">
+                                                    Source: THE GUIDE TO FINANCIAL INDEPENDENCE - Tax Reference
+                                                </div>
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={() => setSelectedStateInfo(null)}
+                                                        className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-display font-black text-sm hover:bg-slate-50 transition-colors"
+                                                    >
+                                                        Close
+                                                    </button>
+                                                    {(COUNTIES[selectedStateInfo.abbr] || []).length > 0 && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedState(selectedStateInfo.abbr);
+                                                                setSelectedStateInfo(null);
+                                                                setView('list');
+                                                            }}
+                                                            className={`px-6 py-3 rounded-xl font-display font-black text-sm text-white shadow-lg transition-all hover:scale-105 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                                                        >
+                                                            🔍 Explore {COUNTIES[selectedStateInfo.abbr].length} Counties
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : view === 'guide' ? (
+                            /* User Guide View */
+                            <div className="space-y-6 overflow-auto max-h-[calc(100vh-180px)]">
+                                {/* Header */}
+                                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200/50">
+                                    <h2 className="text-3xl font-display font-black text-slate-900 mb-2">📚 User Guide</h2>
+                                    <p className="text-slate-500">Master the platform for optimal tax lien/deed investment research</p>
+                                </div>
+
+                                {/* Quick Start */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="bg-blue-50 px-5 py-4 border-b border-blue-100">
+                                        <h3 className="font-display font-black text-lg text-blue-900">🚀 Quick Start</h3>
+                                    </div>
+                                    <div className="p-5">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                <div className="text-2xl mb-2">📍</div>
+                                                <div className="font-bold text-slate-900 mb-1">Map Explorer</div>
+                                                <div className="text-xs text-slate-500">Visual overview - click any state to see counties</div>
+                                            </div>
+                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                <div className="text-2xl mb-2">📊</div>
+                                                <div className="font-bold text-slate-900 mb-1">State Database</div>
+                                                <div className="text-xs text-slate-500">Analyze counties by tier, export CSV data</div>
+                                            </div>
+                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                <div className="text-2xl mb-2">🏛️</div>
+                                                <div className="font-bold text-slate-900 mb-1">State Info</div>
+                                                <div className="text-xs text-slate-500">Lien vs Deed reference, interest rates</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Tier System */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="bg-amber-50 px-5 py-4 border-b border-amber-100">
+                                        <h3 className="font-display font-black text-lg text-amber-900">🎯 Understanding Tiers</h3>
+                                    </div>
+                                    <div className="p-5">
+                                        <div className="space-y-3">
+                                            {[
+                                                { tier: 1, name: 'Prime Investor', action: '✅ PURSUE', color: 'bg-emerald-500', desc: 'Population 500k+, high income, strong growth' },
+                                                { tier: 2, name: 'Strong/Selective', action: '✅ PURSUE', color: 'bg-blue-500', desc: 'Pop 200k-500k, solid fundamentals' },
+                                                { tier: 3, name: 'Opportunistic', action: '✅ CAUTIOUS', color: 'bg-amber-500', desc: 'Pop 100k-200k, stable regional markets' },
+                                                { tier: 4, name: 'Speculative', action: '⚠️ CAUTION', color: 'bg-orange-500', desc: 'Limited liquidity, higher exit risk' },
+                                                { tier: 5, name: 'Capital Trap', action: '❌ AVOID', color: 'bg-red-500', desc: 'Population decline, weak fundamentals' },
+                                            ].map(t => (
+                                                <div key={t.tier} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                    <div className={`w-10 h-10 ${t.color} rounded-xl flex items-center justify-center text-white font-black`}>T{t.tier}</div>
+                                                    <div className="flex-1">
+                                                        <div className="font-bold text-slate-900">{t.name}</div>
+                                                        <div className="text-xs text-slate-500">{t.desc}</div>
+                                                    </div>
+                                                    <div className="text-sm font-bold">{t.action}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Data Gathering Workflow */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="bg-purple-50 px-5 py-4 border-b border-purple-100">
+                                        <h3 className="font-display font-black text-lg text-purple-900">📥 Optimal Data Gathering</h3>
+                                    </div>
+                                    <div className="p-5">
+                                        <div className="space-y-4">
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">1</div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">Go to State Info → Filter by "Lien"</div>
+                                                    <div className="text-xs text-slate-500">Focus on states with interest-bearing investments</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">2</div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">Sort by Interest Rate (descending)</div>
+                                                    <div className="text-xs text-slate-500">Find highest return states (Iowa: 24%, Georgia: 20%)</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">3</div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">Click state → View county preview</div>
+                                                    <div className="text-xs text-slate-500">See tier breakdown and top counties instantly</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">4</div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">Click "Explore Counties" → Filter Tier 1-2</div>
+                                                    <div className="text-xs text-slate-500">Focus on prime opportunities with best liquidity</div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-start gap-3">
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">5</div>
+                                                <div>
+                                                    <div className="font-bold text-slate-900">Export to CSV for offline analysis</div>
+                                                    <div className="text-xs text-slate-500">Download data for due diligence and tracking</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pro Tips */}
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="bg-green-50 px-5 py-4 border-b border-green-100">
+                                        <h3 className="font-display font-black text-lg text-green-900">💡 Pro Tips</h3>
+                                    </div>
+                                    <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {[
+                                            { tip: 'Tier 1-2 counties have population > 100k', icon: '👥' },
+                                            { tip: '26 Lien states offer 8-24% interest rates', icon: '💰' },
+                                            { tip: '25 Deed states offer direct property acquisition', icon: '🏠' },
+                                            { tip: 'Iowa has highest rate at 24%', icon: '🏆' },
+                                            { tip: 'Wyoming has longest redemption (4 years)', icon: '⏰' },
+                                            { tip: 'Click column headers to sort data', icon: '📊' },
+                                        ].map((p, i) => (
+                                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-green-50/50 border border-green-100">
+                                                <span className="text-xl">{p.icon}</span>
+                                                <span className="text-sm font-medium text-green-900">{p.tip}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Key Stats */}
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 text-white">
+                                        <div className="text-3xl font-display font-black">26</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Lien States</div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-5 text-white">
+                                        <div className="text-3xl font-display font-black">25</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deed States</div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white">
+                                        <div className="text-3xl font-display font-black">{totalCounties}</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Total Counties</div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-5 text-white">
+                                        <div className="text-3xl font-display font-black">{totalT123}</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Prime Counties</div>
+                                    </div>
                                 </div>
                             </div>
                         ) : (
