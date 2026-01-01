@@ -52,6 +52,25 @@ function StateLabels({ geoData }) {
     return null;
 }
 
+// Component to handle map container mouseleave - clears hover when leaving map area
+function MapLeaveHandler({ onHoverState }) {
+    const map = useMap();
+
+    useEffect(() => {
+        const container = map.getContainer();
+        const handleMouseLeave = () => {
+            if (onHoverState) {
+                onHoverState(null);
+            }
+        };
+
+        container.addEventListener('mouseleave', handleMouseLeave);
+        return () => container.removeEventListener('mouseleave', handleMouseLeave);
+    }, [map, onHoverState]);
+
+    return null;
+}
+
 export default function USMap({ onStateClick, selectedState, hoveredState, onHoverState }) {
     const [geoData, setGeoData] = useState(null);
     const layersRef = useRef({});
@@ -206,6 +225,7 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png" attribution="" />
                 <GeoJSON data={geoData} style={getStyle} onEachFeature={onEachState} />
                 <StateLabels geoData={geoData} />
+                <MapLeaveHandler onHoverState={onHoverState} />
             </MapContainer>
         </>
     );
