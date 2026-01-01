@@ -527,14 +527,14 @@ export default function AuctionPlatform() {
                         {selectedCounty ? (
                             /* County Detail View */
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex items-start justify-between">
-                                    <div>
+                                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                    <div className="min-w-0">
                                         <button onClick={() => setSelectedCounty(null)} className="group text-slate-400 font-bold hover:text-blue-600 flex items-center gap-2 mb-3 transition-colors">
                                             <span className="group-hover:-translate-x-1 transition-transform">←</span>
                                             <span className="uppercase tracking-[0.15em] text-[9px] font-black">Return to {STATE_NAMES[selectedState]}</span>
                                         </button>
-                                        <div className="flex items-center gap-4 flex-wrap">
-                                            <h1 className="text-5xl font-display font-black text-slate-900 tracking-tighter">{selectedCounty[0]}</h1>
+                                        <div className="flex items-center gap-2 md:gap-4 flex-wrap">
+                                            <h1 className="text-2xl md:text-5xl font-display font-black text-slate-900 tracking-tighter">{selectedCounty[0]}</h1>
                                             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
                                                 <span className="w-2.5 h-2.5 rounded-full" style={{ background: TIERS[selectedCounty[6]].color }}></span>
                                                 <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{TIERS[selectedCounty[6]].name}</span>
@@ -554,11 +554,11 @@ export default function AuctionPlatform() {
                                             )}
                                         </div>
                                     </div>
-                                    <div className="flex gap-3">
-                                        <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-display font-black text-sm shadow-xl hover:bg-black transition-all flex items-center gap-2">
-                                            <span>📥</span> DOWNLOAD CSV
+                                    <div className="flex gap-2 md:gap-3 flex-wrap mt-3 md:mt-0">
+                                        <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm shadow-xl hover:bg-black transition-all flex items-center gap-1 md:gap-2">
+                                            <span>📥</span> <span className="hidden sm:inline">DOWNLOAD</span> CSV
                                         </button>
-                                        <button onClick={handlePrintCountyReport} className="bg-white text-slate-900 border-2 border-slate-200 px-6 py-3 rounded-xl font-display font-black text-sm hover:bg-slate-50 transition-all flex items-center gap-2">
+                                        <button onClick={handlePrintCountyReport} className="bg-white text-slate-900 border-2 border-slate-200 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm hover:bg-slate-50 transition-all flex items-center gap-1 md:gap-2">
                                             <span>📄</span> REPORT
                                         </button>
                                     </div>
