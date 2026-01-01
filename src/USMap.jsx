@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -54,31 +54,49 @@ function StateLabels({ geoData }) {
 
 export default function USMap({ onStateClick, selectedState, hoveredState, onHoverState }) {
     const [geoData, setGeoData] = useState(null);
+    const layersRef = useRef({});
 
     useEffect(() => {
         fetch('/us-states.json').then(r => r.json()).then(setGeoData).catch(console.error);
     }, []);
 
-    const getStyle = (feature) => {
+    // Update layer styles when hover or selection changes
+    useEffect(() => {
+        Object.entries(layersRef.current).forEach(([abbr, layer]) => {
+            const name = Object.keys(STATE_ABBREV).find(n => STATE_ABBREV[n] === abbr);
+            if (!name) return;
+            const isLien = LIEN_STATES.has(name);
+            const isSelected = selectedState === abbr;
+            const isHovered = hoveredState === abbr;
+            layer.setStyle({
+                fillColor: isLien ? '#7c3aed' : '#2563eb',
+                weight: isSelected ? 2.5 : isHovered ? 2 : 0.5,
+                color: isSelected ? '#1e293b' : isHovered ? '#374151' : '#94a3b8',
+                fillOpacity: isSelected ? 0.75 : isHovered ? 0.65 : 0.45
+            });
+        });
+    }, [selectedState, hoveredState]);
+
+    const getStyle = useCallback((feature) => {
         const name = feature.properties.name;
-        const abbr = STATE_ABBREV[name];
         const isLien = LIEN_STATES.has(name);
-        const isSelected = selectedState === abbr;
-        const isHovered = hoveredState === abbr;
         return {
             fillColor: isLien ? '#7c3aed' : '#2563eb',
-            weight: isSelected ? 2.5 : isHovered ? 2 : 0.5,
-            color: isSelected ? '#1e293b' : isHovered ? '#374151' : '#94a3b8',
-            fillOpacity: isSelected ? 0.75 : isHovered ? 0.65 : 0.45
+            weight: 0.5,
+            color: '#94a3b8',
+            fillOpacity: 0.45
         };
-    };
+    }, []);
 
-    const onEachState = (feature, layer) => {
+    const onEachState = useCallback((feature, layer) => {
         const name = feature.properties.name;
         const abbr = STATE_ABBREV[name];
         const isLien = LIEN_STATES.has(name);
         const type = isLien ? 'Lien' : 'Deed';
         const info = STATE_AUCTION_INFO[abbr];
+
+        // Store layer reference for programmatic style updates
+        layersRef.current[abbr] = layer;
 
         let html;
         if (info) {
@@ -111,7 +129,7 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
             mouseover: () => onHoverState && onHoverState(abbr),
             mouseout: () => onHoverState && onHoverState(null)
         });
-    };
+    }, [onStateClick, onHoverState]);
 
     if (!geoData) return <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-2xl"><span className="text-gray-400 text-sm">Loading...</span></div>;
 
