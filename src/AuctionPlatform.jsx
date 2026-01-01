@@ -438,85 +438,85 @@ export default function AuctionPlatform() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100 w-full md:w-auto">
-                {/* Top Navigation Bar */}
-                <header className="h-16 md:h-20 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-4 md:px-8 shadow-sm shrink-0 z-30">
-                    {/* Mobile Hamburger Menu */}
-                    <button
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors mr-3"
-                    >
-                        <span className="text-xl">{isSidebarOpen ? '✕' : '☰'}</span>
-                    </button>
-                    <div className="flex flex-col min-w-0 flex-1">
-                        <div className="hidden md:flex items-center gap-2 mb-0.5">
-                            <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                            <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">Global Statistics</span>
+            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100 w-full">
+                {/* Top Navigation Bar - All elements visible on all devices */}
+                <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm shrink-0 z-30">
+                    {/* Main header row */}
+                    <div className="flex items-center justify-between px-3 md:px-6 py-2 md:py-3">
+                        {/* Left: Hamburger + Title */}
+                        <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+                            {/* Mobile Hamburger Menu */}
+                            <button
+                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                                className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
+                            >
+                                <span className="text-lg">{isSidebarOpen ? '✕' : '☰'}</span>
+                            </button>
+
+                            <div className="min-w-0">
+                                <div className="hidden md:flex items-center gap-2 mb-0.5">
+                                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
+                                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">Global Statistics</span>
+                                </div>
+                                <div className="font-display font-black text-sm md:text-xl text-slate-900 tracking-tighter truncate">
+                                    {selectedCounty ? `${selectedCounty[0]} Region` : selectedState ? STATE_NAMES[selectedState] : 'Auction Intel'}
+                                </div>
+                            </div>
                         </div>
-                        <div className="font-display font-black text-base md:text-xl text-slate-900 tracking-tighter truncate">
-                            {selectedCounty ? `${selectedCounty[0]} Region` : selectedState ? STATE_NAMES[selectedState] : 'United States Nexus'}
+
+                        {/* Right: Profile Avatar (always visible) */}
+                        <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                            <div className="hidden sm:flex flex-col text-right">
+                                <div className="text-[9px] md:text-[10px] font-black text-slate-900 uppercase tracking-tight">Sam McFarlane</div>
+                                <div className="hidden md:flex gap-1 justify-end items-center">
+                                    <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                                    <div className="text-[8px] text-blue-600 font-bold uppercase">Premium</div>
+                                </div>
+                            </div>
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-xs md:text-sm shadow-lg">SM</div>
                         </div>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-6">
-                        <div className="relative group">
+                    {/* Search bar row - always visible */}
+                    <div className="px-3 md:px-6 pb-2 md:pb-3">
+                        <div className="relative">
                             <input
                                 type="text"
-                                placeholder="Search ZIP, state (TX), or county..."
+                                placeholder="Search ZIP, state, or county..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-64 lg:w-80 bg-slate-100/50 border-slate-200 border rounded-xl px-5 py-2.5 pl-10 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all duration-300"
+                                className="w-full bg-slate-100/70 border-slate-200 border rounded-lg md:rounded-xl px-4 py-2 md:py-2.5 pl-9 md:pl-10 text-sm font-medium focus:ring-2 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all"
                             />
-                            <span className="absolute left-4 top-2.5 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔍</span>
+                            <span className="absolute left-3 top-2 md:top-2.5 text-slate-400">🔍</span>
                             {searchResults.length > 0 && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-[60] overflow-hidden py-2 max-h-96 overflow-y-auto">
-                                    <div className="px-4 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Search Results</div>
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] overflow-hidden py-2 max-h-72 overflow-y-auto">
+                                    <div className="px-3 py-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Search Results</div>
                                     {searchResults.map((r, i) => {
-                                        // State-level result (no county)
                                         if (!r.county) {
                                             const auctionInfo = STATE_AUCTION_INFO[r.abbr];
                                             return (
-                                                <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(null); setSearch(''); setView('list'); }}
-                                                    className="flex items-center justify-between px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-slate-100 bg-gradient-to-r from-slate-50/50 to-transparent">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white text-xs font-black">{r.abbr}</div>
-                                                        <div>
-                                                            <div className="font-display font-black text-slate-900 text-sm">{r.state}</div>
-                                                            <div className="text-[9px] text-slate-500">
-                                                                {r.matchType === 'zip' && <span className="text-blue-600">📍 ZIP {r.zipCode}</span>}
-                                                                {r.matchType === 'abbreviation' && <span className="text-purple-600">🏷️ Abbreviation</span>}
-                                                                {r.matchType === 'state' && <span className="text-green-600">🗺️ State</span>}
-                                                            </div>
-                                                        </div>
+                                                <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(null); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
+                                                    className="flex items-center justify-between px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b border-slate-50">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center text-white text-xs font-black">{r.abbr}</div>
+                                                        <div className="font-bold text-slate-900 text-sm">{r.state}</div>
                                                     </div>
-                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black text-white ${auctionInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>{auctionInfo.type}</span>}
+                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-blue-600'}`}>{auctionInfo.type}</span>}
                                                 </div>
                                             );
                                         }
-                                        // County-level result
                                         const [name, , , , , , tier] = r.county;
                                         const t = TIERS[tier];
                                         return (
-                                            <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); }}
-                                                className="flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 cursor-pointer transition-colors">
-                                                <div><div className="font-display font-black text-slate-800 text-sm">{name}, {r.abbr}</div></div>
-                                                <span className="px-2 py-0.5 rounded-lg text-[9px] font-black text-white" style={{ background: t.color }}>{t.label}</span>
+                                            <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
+                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                                                <div className="font-bold text-slate-800 text-sm">{name}, {r.abbr}</div>
+                                                <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ background: t.color }}>{t.label}</span>
                                             </div>
                                         );
                                     })}
                                 </div>
                             )}
-                        </div>
-
-                        <div className="hidden lg:flex items-center gap-3">
-                            <div className="flex flex-col text-right">
-                                <div className="text-[10px] font-black text-slate-900 uppercase tracking-tight">Sam McFarlane</div>
-                                <div className="flex gap-1.5 justify-end items-center">
-                                    <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
-                                    <div className="text-[9px] text-blue-600 font-bold uppercase tracking-widest">Premium Entity</div>
-                                </div>
-                            </div>
-                            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-sm border-3 border-white shadow-lg hover:scale-105 transition-transform cursor-pointer">SM</div>
                         </div>
                     </div>
                 </header>
