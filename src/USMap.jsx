@@ -152,7 +152,7 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
                 maxZoom={8}
                 maxBounds={[[20, -130], [55, -60]]}
                 maxBoundsViscosity={1.0}
-                style={{ width: '100%', height: '100%', borderRadius: '16px', background: '#f8fafc', overflow: 'visible' }}
+                style={{ width: '100%', height: '100%', borderRadius: '16px', background: '#f8fafc' }}
                 scrollWheelZoom={true}
                 zoomControl={false}
             >

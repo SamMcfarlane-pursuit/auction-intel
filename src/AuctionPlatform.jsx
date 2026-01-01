@@ -745,7 +745,7 @@ export default function AuctionPlatform() {
                                 )}
                                 <div className="h-full flex flex-col gap-4">
                                     {/* Map Container */}
-                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0 relative" style={{ overflow: 'visible' }}>
+                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0 relative overflow-hidden">
                                         {/* Simple Header - Clickable to Expand */}
                                         <div
                                             className="flex items-center justify-between mb-3 cursor-pointer group"
@@ -773,7 +773,7 @@ export default function AuctionPlatform() {
                                         </div>
 
                                         {/* Map */}
-                                        <div className="flex-1 min-h-0 rounded-xl relative" style={{ minHeight: '450px', overflow: 'visible' }}>
+                                        <div className="flex-1 min-h-0 rounded-xl overflow-hidden relative" style={{ minHeight: '350px' }}>
                                             <USMap
                                                 onStateClick={(abbr) => { setSelectedState(abbr); setView('list'); }}
                                                 selectedState={selectedState}
