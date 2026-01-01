@@ -55,12 +55,13 @@ function StateLabels({ geoData }) {
 export default function USMap({ onStateClick, selectedState, hoveredState, onHoverState }) {
     const [geoData, setGeoData] = useState(null);
     const layersRef = useRef({});
+    const activeTooltipRef = useRef(null);
 
     useEffect(() => {
         fetch('/us-states.json').then(r => r.json()).then(setGeoData).catch(console.error);
     }, []);
 
-    // Update layer styles when hover or selection changes
+    // Update layer styles when hover or selection changes - also manage tooltip visibility
     useEffect(() => {
         Object.entries(layersRef.current).forEach(([abbr, layer]) => {
             const name = Object.keys(STATE_ABBREV).find(n => STATE_ABBREV[n] === abbr);
@@ -68,13 +69,33 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
             const isLien = LIEN_STATES.has(name);
             const isSelected = selectedState === abbr;
             const isHovered = hoveredState === abbr;
+
+            // Update visual style
             layer.setStyle({
                 fillColor: isLien ? '#7c3aed' : '#2563eb',
                 weight: isSelected ? 2.5 : isHovered ? 2 : 0.5,
                 color: isSelected ? '#1e293b' : isHovered ? '#374151' : '#94a3b8',
                 fillOpacity: isSelected ? 0.75 : isHovered ? 0.65 : 0.45
             });
+
+            // Manage tooltip visibility - only show for hovered state
+            if (isHovered) {
+                if (activeTooltipRef.current && activeTooltipRef.current !== layer) {
+                    activeTooltipRef.current.closeTooltip();
+                }
+                layer.openTooltip();
+                activeTooltipRef.current = layer;
+            } else if (activeTooltipRef.current === layer && !hoveredState) {
+                layer.closeTooltip();
+                activeTooltipRef.current = null;
+            }
         });
+
+        // Close all tooltips when not hovering any state
+        if (!hoveredState && activeTooltipRef.current) {
+            activeTooltipRef.current.closeTooltip();
+            activeTooltipRef.current = null;
+        }
     }, [selectedState, hoveredState]);
 
     const getStyle = useCallback((feature) => {
@@ -123,7 +144,15 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
             html = '<div style="font-family:system-ui;padding:4px 0"><div style="font-weight:700;font-size:14px">' + name + '</div><span style="background:' + (isLien ? '#7c3aed' : '#2563eb') + ';color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">' + type + '</span></div>';
         }
 
-        layer.bindTooltip(html, { direction: 'auto', className: 'custom-tooltip', permanent: false, sticky: true, offset: [0, -10] });
+        // Use non-sticky tooltip with manual control via useEffect
+        layer.bindTooltip(html, {
+            direction: 'auto',
+            className: 'custom-tooltip',
+            permanent: false,
+            sticky: false,
+            offset: [0, -10]
+        });
+
         layer.on({
             click: () => onStateClick && onStateClick(abbr),
             mouseover: () => onHoverState && onHoverState(abbr),
