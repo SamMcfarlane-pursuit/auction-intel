@@ -440,7 +440,7 @@ export default function AuctionPlatform() {
             {/* Main Content Area */}
             <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100 w-full">
                 {/* Top Navigation Bar - All elements visible on all devices */}
-                <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm shrink-0 z-30">
+                <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm shrink-0 z-40 relative">
                     {/* Main header row */}
                     <div className="flex items-center justify-between px-3 md:px-6 py-2 md:py-3">
                         {/* Left: Hamburger + Title */}
@@ -489,7 +489,7 @@ export default function AuctionPlatform() {
                             />
                             <span className="absolute left-3 top-2 md:top-2.5 text-slate-400">🔍</span>
                             {searchResults.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] overflow-hidden py-2 max-h-72 overflow-y-auto">
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-white rounded-xl shadow-2xl border border-slate-100 z-[100] overflow-hidden py-2 max-h-72 overflow-y-auto">
                                     <div className="px-3 py-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Search Results</div>
                                     {searchResults.map((r, i) => {
                                         if (!r.county) {
@@ -744,8 +744,8 @@ export default function AuctionPlatform() {
                                     </div>
                                 )}
                                 <div className="h-full flex flex-col gap-4">
-                                    {/* Map Container */}
-                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0 relative overflow-hidden">
+                                    {/* Map Container - lower z-index to not overlap header elements */}
+                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0 relative overflow-hidden z-10">
                                         {/* Simple Header - Clickable to Expand */}
                                         <div
                                             className="flex items-center justify-between mb-3 cursor-pointer group"
