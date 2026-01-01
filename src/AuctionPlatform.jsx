@@ -40,6 +40,7 @@ export default function AuctionPlatform() {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isMapExpanded, setIsMapExpanded] = useState(false); // Map expansion state
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
 
     // API-driven data with fallbacks to static data
     const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
@@ -322,8 +323,15 @@ export default function AuctionPlatform() {
 
     return (
         <div className="flex h-screen bg-slate-100 overflow-hidden text-sm font-sans selection:bg-blue-100 selection:text-blue-900">
-            {/* Sidebar - Premium Dark Theme */}
-            <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-50">
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+            {/* Sidebar - Premium Dark Theme with Mobile Responsiveness */}
+            <aside className={`fixed md:relative w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-50 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
                 <div className="p-6 border-b border-slate-800/50 flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-display font-black text-xl shadow-lg shadow-blue-500/20">A</div>
                     <div>
@@ -430,27 +438,34 @@ export default function AuctionPlatform() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100">
+            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100 w-full md:w-auto">
                 {/* Top Navigation Bar */}
-                <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-8 shadow-sm shrink-0 z-40">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2 mb-0.5">
+                <header className="h-16 md:h-20 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-4 md:px-8 shadow-sm shrink-0 z-30">
+                    {/* Mobile Hamburger Menu */}
+                    <button
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors mr-3"
+                    >
+                        <span className="text-xl">{isSidebarOpen ? '✕' : '☰'}</span>
+                    </button>
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <div className="hidden md:flex items-center gap-2 mb-0.5">
                             <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
                             <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">Global Statistics</span>
                         </div>
-                        <div className="font-display font-black text-xl text-slate-900 tracking-tighter">
+                        <div className="font-display font-black text-base md:text-xl text-slate-900 tracking-tighter truncate">
                             {selectedCounty ? `${selectedCounty[0]} Region` : selectedState ? STATE_NAMES[selectedState] : 'United States Nexus'}
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
+                    <div className="hidden md:flex items-center gap-6">
                         <div className="relative group">
                             <input
                                 type="text"
                                 placeholder="Search ZIP, state (TX), or county..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-80 bg-slate-100/50 border-slate-200 border rounded-xl px-5 py-2.5 pl-10 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all duration-300"
+                                className="w-64 lg:w-80 bg-slate-100/50 border-slate-200 border rounded-xl px-5 py-2.5 pl-10 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all duration-300"
                             />
                             <span className="absolute left-4 top-2.5 text-slate-400 group-focus-within:text-blue-500 transition-colors">🔍</span>
                             {searchResults.length > 0 && (
@@ -493,7 +508,7 @@ export default function AuctionPlatform() {
                             )}
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="hidden lg:flex items-center gap-3">
                             <div className="flex flex-col text-right">
                                 <div className="text-[10px] font-black text-slate-900 uppercase tracking-tight">Sam McFarlane</div>
                                 <div className="flex gap-1.5 justify-end items-center">
@@ -507,7 +522,7 @@ export default function AuctionPlatform() {
                 </header>
 
                 {/* Dynamic Content */}
-                <div className="flex-1 overflow-auto p-8 relative">
+                <div className="flex-1 overflow-auto p-4 md:p-8 relative">
                     <div className="max-w-[1600px] mx-auto h-full">
                         {selectedCounty ? (
                             /* County Detail View */
@@ -551,7 +566,7 @@ export default function AuctionPlatform() {
 
                                 {/* County Details from NY_COUNTY_DETAILS */}
                                 {getCountyDetails(selectedCounty[0]) && (
-                                    <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                                             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Investor Focus</h4>
                                             <p className="text-slate-800 font-medium">{getCountyDetails(selectedCounty[0]).investorFocus}</p>
@@ -564,20 +579,20 @@ export default function AuctionPlatform() {
                                 )}
 
                                 {/* Metric Cards */}
-                                <div className="grid grid-cols-4 gap-6">
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                                     {[
                                         { label: "Housing Value (ZHVI)", value: `$${(selectedCounty[3] / 1000).toFixed(0)}K`, sub: `${selectedCounty[4]}% YoY`, icon: "📈", color: "text-blue-600" },
                                         { label: "Population", value: `${(selectedCounty[1] / 1000).toFixed(0)}K`, sub: "Residents", icon: "👥", color: "text-indigo-600" },
                                         { label: "Median Income", value: `$${(selectedCounty[2] / 1000).toFixed(0)}K`, sub: "Household", icon: "💰", color: "text-slate-900" },
                                         { label: "Days on Market", value: `${selectedCounty[5]}`, sub: "Average", icon: "⏱️", color: "text-amber-600" }
                                     ].map((stat, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <span className="text-slate-400 text-[9px] font-black tracking-widest uppercase">{stat.label}</span>
-                                                <span className="text-xl">{stat.icon}</span>
+                                        <div key={i} className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all">
+                                            <div className="flex items-center justify-between mb-2 md:mb-4">
+                                                <span className="text-slate-400 text-[8px] md:text-[9px] font-black tracking-widest uppercase">{stat.label}</span>
+                                                <span className="text-lg md:text-xl">{stat.icon}</span>
                                             </div>
-                                            <div className={`text-3xl font-display font-black tracking-tighter ${stat.color}`}>{stat.value}</div>
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase mt-1">{stat.sub}</div>
+                                            <div className={`text-xl md:text-3xl font-display font-black tracking-tighter ${stat.color}`}>{stat.value}</div>
+                                            <div className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase mt-1">{stat.sub}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -781,7 +796,7 @@ export default function AuctionPlatform() {
                                     </div>
 
                                     {/* Simple Stats Row */}
-                                    <div className="grid grid-cols-3 gap-3 shrink-0">
+                                    <div className="grid grid-cols-3 gap-2 md:gap-3 shrink-0">
                                         <div className="bg-white rounded-xl p-4 border border-gray-100">
                                             <div className="text-2xl font-bold text-gray-900">{allStates.length}</div>
                                             <div className="text-xs text-gray-400">States</div>
@@ -1643,18 +1658,18 @@ export default function AuctionPlatform() {
                             </div>
                         )}
                     </div>
-                </div>
+                </div >
 
                 {/* Footer */}
-                <footer className="h-9 bg-white/50 backdrop-blur-sm border-t border-slate-200/40 flex items-center justify-between px-8 shrink-0">
+                < footer className="h-9 bg-white/50 backdrop-blur-sm border-t border-slate-200/40 flex items-center justify-between px-8 shrink-0" >
                     <div className="text-[8px] font-black text-slate-400 tracking-widest uppercase">System Core v4.2.19</div>
                     <div className="flex gap-4 items-center">
                         <span className="text-[8px] font-bold text-slate-400 uppercase">Data: Census • Zillow • Regrid</span>
                         <div className="h-3 w-px bg-slate-200"></div>
                         <span className="text-[8px] font-black text-blue-600 uppercase animate-pulse">Encrypted</span>
                     </div>
-                </footer>
-            </main>
-        </div>
+                </footer >
+            </main >
+        </div >
     );
 }
