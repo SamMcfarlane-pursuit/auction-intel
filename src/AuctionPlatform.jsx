@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip } from './data';
 import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
 import USMap from './USMap';
@@ -22,6 +23,7 @@ const generateParcels = (countyName) => {
 };
 
 export default function AuctionPlatform() {
+    const { user, signOut } = useAuth();
     const [view, setView] = useState('map');
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCounty, setSelectedCounty] = useState(null);
@@ -41,6 +43,7 @@ export default function AuctionPlatform() {
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [isMapExpanded, setIsMapExpanded] = useState(false); // Map expansion state
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // User dropdown menu state
 
     // API-driven data with fallbacks to static data
     const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
@@ -464,16 +467,74 @@ export default function AuctionPlatform() {
                             </div>
                         </div>
 
-                        {/* Right: Profile Avatar (always visible) */}
-                        <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                        {/* Right: User Profile Dropdown */}
+                        <div className="relative flex items-center gap-2 md:gap-3 shrink-0">
                             <div className="hidden sm:flex flex-col text-right">
-                                <div className="text-[9px] md:text-[10px] font-black text-slate-900 uppercase tracking-tight">Sam McFarlane</div>
+                                <div className="text-[9px] md:text-[10px] font-black text-slate-900 uppercase tracking-tight">{user?.name || 'User'}</div>
                                 <div className="hidden md:flex gap-1 justify-end items-center">
                                     <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
                                     <div className="text-[8px] text-blue-600 font-bold uppercase">Premium</div>
                                 </div>
                             </div>
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-xs md:text-sm shadow-lg">SM</div>
+                            <button
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-xs md:text-sm shadow-lg hover:scale-105 transition-transform"
+                            >
+                                {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
+                            </button>
+
+                            {/* User Dropdown Menu */}
+                            {isUserMenuOpen && (
+                                <>
+                                    {/* Backdrop */}
+                                    <div
+                                        className="fixed inset-0 z-40"
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    />
+                                    {/* Dropdown */}
+                                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                        {/* User Info */}
+                                        <div className="p-4 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-display font-black text-lg shadow-lg">
+                                                    {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="font-display font-bold text-slate-900 truncate">{user?.name || 'User'}</div>
+                                                    <div className="text-xs text-slate-500 truncate">{user?.email || ''}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Menu Items */}
+                                        <div className="p-2">
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                                <span>👤</span>
+                                                <span className="text-sm font-medium">Profile Settings</span>
+                                            </button>
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                                <span>⚙️</span>
+                                                <span className="text-sm font-medium">Preferences</span>
+                                            </button>
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                                <span>💎</span>
+                                                <span className="text-sm font-medium">Upgrade Plan</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Sign Out */}
+                                        <div className="p-2 border-t border-slate-100">
+                                            <button
+                                                onClick={() => { setIsUserMenuOpen(false); signOut(); }}
+                                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                <span>🚪</span>
+                                                <span className="text-sm font-medium">Sign Out</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
