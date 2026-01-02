@@ -1,5 +1,5 @@
 # ==============================================================================
-# BACKEND DOCKERFILE - Rust/Axum API Server for Railway Deployment
+# BACKEND DOCKERFILE - Rust/Axum API Server for Render.com Deployment
 # ==============================================================================
 
 # Build stage - compile Rust backend
@@ -10,7 +10,7 @@ WORKDIR /app
 # Install build dependencies
 RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
 
-# Copy backend source
+# Copy backend source (context is repo root, dockerfile is in backend/)
 COPY backend/Cargo.toml backend/Cargo.lock* ./
 COPY backend/src ./src
 
@@ -20,21 +20,21 @@ RUN cargo build --release
 # Production stage - minimal runtime image
 FROM debian:bookworm-slim
 
-# Install runtime dependencies
+# Install runtime dependencies (curl for healthcheck)
 RUN apt-get update && \
-    apt-get install -y ca-certificates && \
+    apt-get install -y ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the compiled binary
 COPY --from=builder /app/target/release/auction-intel-backend /usr/local/bin/
 
-# Railway provides PORT env var
-ENV PORT=8080
-EXPOSE 8080
+# Render uses PORT env var (default 10000)
+ENV PORT=10000
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/api/health || exit 1
+    CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
 # Run the backend
 CMD ["auction-intel-backend"]

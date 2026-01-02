@@ -1,0 +1,17 @@
+# Render.com Blueprint - Auto-deploy Rust Backend
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: auction-intel-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: RUST_LOG
+        value: info
