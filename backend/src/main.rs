@@ -1,12 +1,13 @@
 use axum::{
     extract::{Path, Query, State},
+    http::{header, Method},
     routing::{get, post},
     Json, Router,
 };
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{AllowOrigin, CorsLayer};
 
 // ============================================================================
 // DATA STRUCTURES
@@ -745,10 +746,18 @@ async fn get_rates() -> Json<RatesResponse> {
 
 #[tokio::main]
 async fn main() {
+    // Security: Restrict CORS to known domains only
+    let allowed_origins = [
+        "https://auction-intel.vercel.app".parse().unwrap(),
+        "http://localhost:5173".parse().unwrap(),  // Vite dev server
+        "http://localhost:3000".parse().unwrap(),  // Alt dev port
+        "http://127.0.0.1:5173".parse().unwrap(),
+    ];
+    
     let cors = CorsLayer::new()
-        .allow_origin(tower_http::cors::Any)
-        .allow_methods(tower_http::cors::Any)
-        .allow_headers(tower_http::cors::Any);
+        .allow_origin(AllowOrigin::list(allowed_origins))
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_headers([header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION]);
     
     let app = Router::new()
         .route("/api/health", get(health))
@@ -774,7 +783,11 @@ async fn main() {
     println!("   GET  /api/redfin/market");
     println!("   GET  /api/rates");
     
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    // Use PORT env var (Railway sets this) or default to 8080
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    let addr = format!("0.0.0.0:{}", port);
+    println!("🌐 Binding to {}", addr);
+    
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
-
