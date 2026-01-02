@@ -1,0 +1,36 @@
+# Fly.io Configuration - Rust Backend Deployment
+# https://fly.io/docs/reference/configuration/
+
+app = "auction-intel-api"
+primary_region = "iad"  # Washington DC (close to East Coast users)
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[env]
+  PORT = "8080"
+  RUST_LOG = "info"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false   # Keep running (no cold starts!)
+  auto_start_machines = true
+  min_machines_running = 1     # Always have 1 machine ready
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 250
+    soft_limit = 200
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/api/health"
+  timeout = "5s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
