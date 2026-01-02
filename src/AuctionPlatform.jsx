@@ -1063,10 +1063,6 @@ export default function AuctionPlatform() {
                                     <p className="text-slate-500">All tier detection uses publicly available, free data APIs</p>
                                     <div className="mt-4 flex gap-6">
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-green-600">$0</div>
-                                            <div className="text-[10px] font-bold text-slate-500 uppercase">Monthly Cost</div>
-                                        </div>
-                                        <div className="text-center">
                                             <div className="text-3xl font-display font-black text-blue-600">{FREE_DATA_SOURCES.length}</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Data Sources</div>
                                         </div>
