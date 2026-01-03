@@ -9,6 +9,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tower_http::cors::{AllowOrigin, CorsLayer};
 
+mod census;
+
 // ============================================================================
 // DATA STRUCTURES
 // ============================================================================
@@ -741,6 +743,68 @@ async fn get_rates() -> Json<RatesResponse> {
 }
 
 // ============================================================================
+// CENSUS API HANDLERS - All 3,144 US Counties
+// ============================================================================
+
+#[derive(Debug, Serialize)]
+struct CensusCountiesResponse {
+    updated: String,
+    source: String,
+    total_counties: usize,
+    data: Vec<census::CountyCensusData>,
+}
+
+// Get all counties from Census API (cached)
+async fn get_census_counties() -> Json<CensusCountiesResponse> {
+    let api_key = std::env::var("CENSUS_API_KEY").ok();
+    
+    match census::fetch_all_counties(api_key.as_deref()).await {
+        Ok(counties) => {
+            Json(CensusCountiesResponse {
+                updated: chrono::Utc::now().to_rfc3339(),
+                source: "US Census Bureau ACS 2022".to_string(),
+                total_counties: counties.len(),
+                data: counties,
+            })
+        }
+        Err(e) => {
+            eprintln!("Census API error: {}", e);
+            Json(CensusCountiesResponse {
+                updated: "error".to_string(),
+                source: format!("Census API Error: {}", e),
+                total_counties: 0,
+                data: vec![],
+            })
+        }
+    }
+}
+
+// Get counties for a specific state
+async fn get_census_state_counties(Path(state): Path<String>) -> Json<CensusCountiesResponse> {
+    let api_key = std::env::var("CENSUS_API_KEY").ok();
+    
+    match census::fetch_state_counties(&state, api_key.as_deref()).await {
+        Ok(counties) => {
+            Json(CensusCountiesResponse {
+                updated: chrono::Utc::now().to_rfc3339(),
+                source: format!("US Census Bureau ACS 2022 - {}", state.to_uppercase()),
+                total_counties: counties.len(),
+                data: counties,
+            })
+        }
+        Err(e) => {
+            eprintln!("Census API error for state {}: {}", state, e);
+            Json(CensusCountiesResponse {
+                updated: "error".to_string(),
+                source: format!("Census API Error: {}", e),
+                total_counties: 0,
+                data: vec![],
+            })
+        }
+    }
+}
+
+// ============================================================================
 // MAIN
 // ============================================================================
 
@@ -765,6 +829,8 @@ async fn main() {
         .route("/api/state-info", get(get_all_state_info))
         .route("/api/state-info/:abbr", get(get_state_info))
         .route("/api/counties", get(get_counties))
+        .route("/api/census/counties", get(get_census_counties))
+        .route("/api/census/counties/:state", get(get_census_state_counties))
         .route("/api/analyze", post(analyze_county))
         .route("/api/zillow/zhvi", get(get_zillow_zhvi))
         .route("/api/redfin/market", get(get_redfin_market))

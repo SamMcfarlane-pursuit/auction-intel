@@ -1,0 +1,12 @@
+/Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/deps/libserde-97385b9f13307cf1.rmeta: /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/build/serde-496277053e86700a/out/private.rs
+
+/Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/deps/serde-97385b9f13307cf1.d: /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/build/serde-496277053e86700a/out/private.rs
+
+/Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/samuelmcfarlane/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/build/serde-496277053e86700a/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/samuelmcfarlane/.gemini/antigravity/scratch/auction-intel/backend/target/debug/build/serde-496277053e86700a/out
