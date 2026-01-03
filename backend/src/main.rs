@@ -10,6 +10,8 @@ use std::collections::HashMap;
 use tower_http::cors::{AllowOrigin, CorsLayer};
 
 mod census;
+mod foreclosure;
+mod auctions;
 
 // ============================================================================
 // DATA STRUCTURES
@@ -805,6 +807,84 @@ async fn get_census_state_counties(Path(state): Path<String>) -> Json<CensusCoun
 }
 
 // ============================================================================
+// FORECLOSURE DATA HANDLERS
+// ============================================================================
+
+#[derive(Debug, Serialize)]
+struct ForeclosureStatsResponse {
+    updated: String,
+    source: String,
+    states: HashMap<String, foreclosure::ForeclosureSummary>,
+}
+
+async fn get_foreclosure_stats_handler() -> Json<ForeclosureStatsResponse> {
+    let stats = foreclosure::get_all_foreclosure_stats();
+    Json(ForeclosureStatsResponse {
+        updated: chrono::Utc::now().to_rfc3339(),
+        source: "HUD, Fannie Mae, Freddie Mac - Aggregated".to_string(),
+        states: stats,
+    })
+}
+
+#[derive(Debug, Serialize)]
+struct StateForeclosuresResponse {
+    state: String,
+    updated: String,
+    source: String,
+    properties: Vec<foreclosure::ForeclosureProperty>,
+}
+
+async fn get_state_foreclosures_handler(Path(state): Path<String>) -> Json<StateForeclosuresResponse> {
+    let properties = foreclosure::get_state_foreclosures(&state).await;
+    Json(StateForeclosuresResponse {
+        state: state.to_uppercase(),
+        updated: chrono::Utc::now().to_rfc3339(),
+        source: "HUD Homes".to_string(),
+        properties,
+    })
+}
+
+// ============================================================================
+// AUCTION LISTINGS HANDLERS
+// ============================================================================
+
+#[derive(Debug, Serialize)]
+struct AuctionsResponse {
+    updated: String,
+    total: usize,
+    auctions: Vec<auctions::AuctionListing>,
+}
+
+async fn get_all_auctions() -> Json<AuctionsResponse> {
+    let auction_list = auctions::get_upcoming_auctions();
+    Json(AuctionsResponse {
+        updated: chrono::Utc::now().to_rfc3339(),
+        total: auction_list.len(),
+        auctions: auction_list,
+    })
+}
+
+async fn get_state_auctions_handler(Path(state): Path<String>) -> Json<AuctionsResponse> {
+    let auction_list = auctions::get_state_auctions(&state);
+    Json(AuctionsResponse {
+        updated: chrono::Utc::now().to_rfc3339(),
+        total: auction_list.len(),
+        auctions: auction_list,
+    })
+}
+
+#[derive(Debug, Serialize)]
+struct PlatformsResponse {
+    platforms: Vec<auctions::AuctionPlatform>,
+}
+
+async fn get_auction_platforms() -> Json<PlatformsResponse> {
+    Json(PlatformsResponse {
+        platforms: auctions::get_platforms(),
+    })
+}
+
+// ============================================================================
 // MAIN
 // ============================================================================
 
@@ -831,6 +911,11 @@ async fn main() {
         .route("/api/counties", get(get_counties))
         .route("/api/census/counties", get(get_census_counties))
         .route("/api/census/counties/:state", get(get_census_state_counties))
+        .route("/api/foreclosures", get(get_foreclosure_stats_handler))
+        .route("/api/foreclosures/:state", get(get_state_foreclosures_handler))
+        .route("/api/auctions", get(get_all_auctions))
+        .route("/api/auctions/:state", get(get_state_auctions_handler))
+        .route("/api/auctions/platforms", get(get_auction_platforms))
         .route("/api/analyze", post(analyze_county))
         .route("/api/zillow/zhvi", get(get_zillow_zhvi))
         .route("/api/redfin/market", get(get_redfin_market))
