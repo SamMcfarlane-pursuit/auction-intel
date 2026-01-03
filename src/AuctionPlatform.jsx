@@ -71,20 +71,45 @@ export default function AuctionPlatform() {
                     setSTATE_AUCTION_INFO(stateMap);
                 }
 
-                // Fetch all counties
-                const countyRes = await fetch(`${API_BASE}/counties`);
-                if (countyRes.ok) {
-                    const countyData = await countyRes.json();
-                    // Transform array to object keyed by state
-                    const countyMap = {};
-                    countyData.forEach(c => {
-                        if (!countyMap[c.state]) countyMap[c.state] = [];
-                        // Format: [name, pop, income, zhvi, growth, dom, tier, notes]
-                        countyMap[c.state].push([
-                            c.name, c.pop, c.income, c.zhvi, c.growth, c.dom, c.tier, c.notes
-                        ]);
-                    });
-                    setCOUNTIES(countyMap);
+                // Try to fetch Census API data (all 3,143 counties)
+                const censusRes = await fetch(`${API_BASE}/census/counties`);
+                if (censusRes.ok) {
+                    const censusData = await censusRes.json();
+                    if (censusData.data && censusData.data.length > 0) {
+                        // Transform Census data to expected format, grouped by state
+                        const countyMap = {};
+                        censusData.data.forEach(c => {
+                            if (!countyMap[c.state]) countyMap[c.state] = [];
+                            // Format: [name, pop, income, zhvi, growth, dom, tier, notes]
+                            // Census provides: name, population, median_income, median_home_value, tier
+                            countyMap[c.state].push([
+                                c.name,
+                                c.population,
+                                c.median_income,
+                                c.median_home_value,
+                                0, // growth (not in Census data)
+                                45, // days on market (default)
+                                c.tier,
+                                `FIPS: ${c.fips}`
+                            ]);
+                        });
+                        setCOUNTIES(countyMap);
+                        console.log(`Loaded ${censusData.total_counties} counties from Census API`);
+                    }
+                } else {
+                    // Fallback to legacy counties endpoint
+                    const countyRes = await fetch(`${API_BASE}/counties`);
+                    if (countyRes.ok) {
+                        const countyData = await countyRes.json();
+                        const countyMap = {};
+                        countyData.forEach(c => {
+                            if (!countyMap[c.state]) countyMap[c.state] = [];
+                            countyMap[c.state].push([
+                                c.name, c.pop, c.income, c.zhvi, c.growth, c.dom, c.tier, c.notes
+                            ]);
+                        });
+                        setCOUNTIES(countyMap);
+                    }
                 }
 
                 setApiStatus('live');
