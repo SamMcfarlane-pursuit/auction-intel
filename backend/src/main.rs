@@ -884,6 +884,33 @@ async fn get_auction_platforms() -> Json<PlatformsResponse> {
     })
 }
 
+#[derive(Debug, Serialize)]
+struct ScheduleResponse {
+    state: String,
+    schedule: Option<auctions::StateAuctionSchedule>,
+}
+
+async fn get_state_schedule_handler(Path(state): Path<String>) -> Json<ScheduleResponse> {
+    Json(ScheduleResponse {
+        state: state.to_uppercase(),
+        schedule: auctions::get_state_schedule(&state),
+    })
+}
+
+#[derive(Debug, Serialize)]
+struct AllSchedulesResponse {
+    total: usize,
+    schedules: Vec<auctions::StateAuctionSchedule>,
+}
+
+async fn get_all_schedules_handler() -> Json<AllSchedulesResponse> {
+    let schedules = auctions::get_all_schedules();
+    Json(AllSchedulesResponse {
+        total: schedules.len(),
+        schedules,
+    })
+}
+
 // ============================================================================
 // MAIN
 // ============================================================================
@@ -916,6 +943,8 @@ async fn main() {
         .route("/api/auctions", get(get_all_auctions))
         .route("/api/auctions/:state", get(get_state_auctions_handler))
         .route("/api/auctions/platforms", get(get_auction_platforms))
+        .route("/api/auctions/schedules", get(get_all_schedules_handler))
+        .route("/api/auctions/schedule/:state", get(get_state_schedule_handler))
         .route("/api/analyze", post(analyze_county))
         .route("/api/zillow/zhvi", get(get_zillow_zhvi))
         .route("/api/redfin/market", get(get_redfin_market))
