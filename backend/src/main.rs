@@ -161,12 +161,12 @@ static STATE_AUCTION_DATA: Lazy<HashMap<String, StateAuctionInfo>> = Lazy::new(|
     add_state!("CT", "Lien", "18%", "6 months", "Combined lien/deed format; larger towns only");
     add_state!("DC", "Lien", "18%", "6 months - 1 year", "Premium bidding; no interest on overbid");
     add_state!("FL", "Lien", "18%", "2 years", "Bid-down; guaranteed 5% minimum return");
-    add_state!("GA", "Lien", "20%", "1 year", "20% per year on aggregate from purchase date");
+    add_state!("GA", "Lien", "20-40%", "1 year", "20% year 1; escalates to 30% after 2yrs, 40% after 3yrs");
     add_state!("IL", "Lien", "18%", "2 years", "Bid-down from 18%; graduated penalty redemption");
     add_state!("IN", "Lien", "Graduated", "1 year", "A/B/C Sales process; Commissioner's Sale for county-titled");
     add_state!("IA", "Lien", "24%", "1 year 9 months", "Bid least undivided ownership interest; highest rate");
     add_state!("KY", "Lien", "12%", "1 year", "12% interest from date of issuance");
-    add_state!("LA", "Lien", "12% + 5% penalty", "3 years", "Purchase price + 5% penalty + 1%/month interest");
+    add_state!("LA", "Lien", "Bid-down", "3 years", "2024-2025 reform: bid-down interest system; online now available");
     add_state!("MD", "Lien", "18-24%", "6 months", "Statutory 6% but most counties charge 18-24%");
     add_state!("MA", "Lien", "16%", "Collector's deed", "Smallest undivided part auction; 16% rate");
     add_state!("MS", "Lien", "18%", "2 years", "Tax lien state");
