@@ -302,6 +302,231 @@ static STATE_SCHEDULES: Lazy<HashMap<String, StateAuctionSchedule>> = Lazy::new(
         notes: "Active market; high property values; each municipality runs own sale".to_string(),
     });
     
+    m.insert("CT".to_string(), StateAuctionSchedule {
+        state: "CT".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["June".to_string(), "July".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "18%".to_string(),
+        redemption_period: "6 months".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "County (in-person)".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Combined lien/deed format; larger towns only; limited availability".to_string(),
+    });
+    
+    m.insert("DC".to_string(), StateAuctionSchedule {
+        state: "DC".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["July".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "18%".to_string(),
+        redemption_period: "6 months".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: true,
+        primary_platform: "DC Government".to_string(),
+        deposit_range: "$1,000-$5,000".to_string(),
+        notes: "Short 6-month redemption; premium bidding; high competition".to_string(),
+    });
+    
+    m.insert("MA".to_string(), StateAuctionSchedule {
+        state: "MA".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies by town".to_string(),
+        interest_rate: "16%".to_string(),
+        redemption_period: "Collector's deed".to_string(),
+        bidding_method: "Bid down ownership percentage".to_string(),
+        online_available: false,
+        primary_platform: "Town Collector".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Bid for smallest undivided part; complex process; high property values".to_string(),
+    });
+    
+    m.insert("MS".to_string(), StateAuctionSchedule {
+        state: "MS".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["August".to_string()],
+        typical_day: "Last Monday".to_string(),
+        interest_rate: "18%".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "Less competition; in-person required; smaller market".to_string(),
+    });
+    
+    m.insert("MO".to_string(), StateAuctionSchedule {
+        state: "MO".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["August".to_string()],
+        typical_day: "4th Monday".to_string(),
+        interest_rate: "10%".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "10% interest; 18% penalty each year delinquent; in-person sales".to_string(),
+    });
+    
+    m.insert("MT".to_string(), StateAuctionSchedule {
+        state: "MT".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["July".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "10%".to_string(),
+        redemption_period: "2-3 years".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "5/6 of 1% per month (10% annual); small market; rural properties".to_string(),
+    });
+    
+    m.insert("NE".to_string(), StateAuctionSchedule {
+        state: "NE".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["March".to_string()],
+        typical_day: "1st Monday".to_string(),
+        interest_rate: "14%".to_string(),
+        redemption_period: "3 years".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: true,
+        primary_platform: "GovEase / County".to_string(),
+        deposit_range: "$200-$500".to_string(),
+        notes: "14% annual interest; undivided interest system; moderate market".to_string(),
+    });
+    
+    m.insert("NH".to_string(), StateAuctionSchedule {
+        state: "NH".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["May".to_string(), "June".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "18%".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Bid down ownership percentage".to_string(),
+        online_available: false,
+        primary_platform: "Town".to_string(),
+        deposit_range: "$500-$1,000".to_string(),
+        notes: "Bid for percentage of undivided interest; high property values".to_string(),
+    });
+    
+    m.insert("OK".to_string(), StateAuctionSchedule {
+        state: "OK".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["June".to_string()],
+        typical_day: "2nd Monday".to_string(),
+        interest_rate: "8%".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Random drawing".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "Unique random drawing for ties; 8% rate is lower; in-person".to_string(),
+    });
+    
+    m.insert("RI".to_string(), StateAuctionSchedule {
+        state: "RI".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["December".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "10% + 1%/month".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "City/Town".to_string(),
+        deposit_range: "$500-$1,000".to_string(),
+        notes: "10% first 6 months, 1%/month after; Collector's Deed; small state".to_string(),
+    });
+    
+    m.insert("SC".to_string(), StateAuctionSchedule {
+        state: "SC".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["October".to_string(), "November".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "8% penalty".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Highest and best bid".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "8% penalty rather than interest; short 1-year redemption".to_string(),
+    });
+    
+    m.insert("SD".to_string(), StateAuctionSchedule {
+        state: "SD".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["December".to_string()],
+        typical_day: "3rd Tuesday".to_string(),
+        interest_rate: "12% (max 10% bid)".to_string(),
+        redemption_period: "3-4 years".to_string(),
+        bidding_method: "Bid down interest rate".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$300".to_string(),
+        notes: "Bid down from 10% max; 12% statutory; long redemption".to_string(),
+    });
+    
+    m.insert("VT".to_string(), StateAuctionSchedule {
+        state: "VT".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["April".to_string(), "May".to_string(), "June".to_string(), "July".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "12%".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "Town".to_string(),
+        deposit_range: "$200-$500".to_string(),
+        notes: "12% interest; 1-year redemption; small rural market".to_string(),
+    });
+    
+    m.insert("WV".to_string(), StateAuctionSchedule {
+        state: "WV".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["October".to_string(), "November".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "12%".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "12% interest; highest bidder at public auction; rural properties".to_string(),
+    });
+    
+    m.insert("WY".to_string(), StateAuctionSchedule {
+        state: "WY".to_string(),
+        sale_type: "Tax Lien".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["September".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "15% + 3% penalty".to_string(),
+        redemption_period: "4 years".to_string(),
+        bidding_method: "Premium bidding".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "Longest redemption period; 15% interest + 3% penalty + fees".to_string(),
+    });
+    
     // === DEED STATES (25) ===
     m.insert("TX".to_string(), StateAuctionSchedule {
         state: "TX".to_string(),
@@ -391,6 +616,276 @@ static STATE_SCHEDULES: Lazy<HashMap<String, StateAuctionSchedule>> = Lazy::new(
         primary_platform: "Zeusauction / County".to_string(),
         deposit_range: "$1,000-$5,000".to_string(),
         notes: "2yr standard; 3-4yr residential/farm; judicial process; high values".to_string(),
+    });
+    
+    m.insert("AK".to_string(), StateAuctionSchedule {
+        state: "AK".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "Borough/City".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Municipal foreclosure; deeded to borough/city if unredeemed; limited sales".to_string(),
+    });
+    
+    m.insert("AR".to_string(), StateAuctionSchedule {
+        state: "AR".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "30 days".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$200-$1,000".to_string(),
+        notes: "Forfeited to state; limited warranty deed after 30 days; short redemption".to_string(),
+    });
+    
+    m.insert("DE".to_string(), StateAuctionSchedule {
+        state: "DE".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "15%".to_string(),
+        redemption_period: "60 days".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "Bid4Assets".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Judicial foreclosure; 15% penalty on redemption; 60-day redemption".to_string(),
+    });
+    
+    m.insert("HI".to_string(), StateAuctionSchedule {
+        state: "HI".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$1,000-$5,000".to_string(),
+        notes: "3-year lien before auction; 1-year redemption after sale; high values".to_string(),
+    });
+    
+    m.insert("ID".to_string(), StateAuctionSchedule {
+        state: "ID".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["January".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "3 years before deed".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$200-$1,000".to_string(),
+        notes: "Tax deed to county after 3 years; then sold at auction".to_string(),
+    });
+    
+    m.insert("KS".to_string(), StateAuctionSchedule {
+        state: "KS".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["September".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "Court judgment".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$200-$1,000".to_string(),
+        notes: "Bid off to county; court petition for foreclosure".to_string(),
+    });
+    
+    m.insert("ME".to_string(), StateAuctionSchedule {
+        state: "ME".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "18 months".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "Town".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Tax lien mortgage auto-forecloses after 18 months".to_string(),
+    });
+    
+    m.insert("MN".to_string(), StateAuctionSchedule {
+        state: "MN".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["May".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "None after sale".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Tax-forfeited land auctions; cash or installment; no redemption".to_string(),
+    });
+    
+    m.insert("NC".to_string(), StateAuctionSchedule {
+        state: "NC".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "Upset bid period".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "Bid4Assets".to_string(),
+        deposit_range: "$500-$2,500".to_string(),
+        notes: "Judicial foreclosure or docketing certificate; upset bid period".to_string(),
+    });
+    
+    m.insert("ND".to_string(), StateAuctionSchedule {
+        state: "ND".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["October".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "Max 9%".to_string(),
+        redemption_period: "4 years".to_string(),
+        bidding_method: "Bid down interest rate".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$100-$500".to_string(),
+        notes: "Bid down from 9%; 4-year redemption from due date".to_string(),
+    });
+    
+    m.insert("NM".to_string(), StateAuctionSchedule {
+        state: "NM".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "120 days IRS only".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$200-$1,000".to_string(),
+        notes: "No owner redemption; Quitclaim Deed issued; IRS has 120 days".to_string(),
+    });
+    
+    m.insert("NV".to_string(), StateAuctionSchedule {
+        state: "NV".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["June".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "2 years before deed".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Tax deed to Treasurer after 2 years; then auction; Las Vegas active".to_string(),
+    });
+    
+    m.insert("OR".to_string(), StateAuctionSchedule {
+        state: "OR".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Foreclosure after 3 years; sold to county; 2-year redemption".to_string(),
+    });
+    
+    m.insert("TN".to_string(), StateAuctionSchedule {
+        state: "TN".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "1 year".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: false,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "2-year delinquent before Chancery Court suit; 1-year redemption".to_string(),
+    });
+    
+    m.insert("UT".to_string(), StateAuctionSchedule {
+        state: "UT".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["May".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "4 years".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Preliminary sale Jan 16; final sale May 4 years later".to_string(),
+    });
+    
+    m.insert("VA".to_string(), StateAuctionSchedule {
+        state: "VA".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Varies".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "Surplus rights only".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "Bid4Assets".to_string(),
+        deposit_range: "$1,000-$5,000".to_string(),
+        notes: "Judicial foreclosure; 3 years after due date; surplus to former owner".to_string(),
+    });
+    
+    m.insert("WA".to_string(), StateAuctionSchedule {
+        state: "WA".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["Varies".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "3 years before sale".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "Bid4Assets".to_string(),
+        deposit_range: "$500-$2,500".to_string(),
+        notes: "Certificate of delinquency after 3 years; foreclosure judgment".to_string(),
+    });
+    
+    m.insert("WI".to_string(), StateAuctionSchedule {
+        state: "WI".to_string(),
+        sale_type: "Tax Deed".to_string(),
+        frequency: "Annual".to_string(),
+        typical_months: vec!["September".to_string()],
+        typical_day: "Varies".to_string(),
+        interest_rate: "N/A".to_string(),
+        redemption_period: "2 years".to_string(),
+        bidding_method: "Highest bidder".to_string(),
+        online_available: true,
+        primary_platform: "County".to_string(),
+        deposit_range: "$500-$2,000".to_string(),
+        notes: "Tax deed after 2-year certificate; county cannot sell certificate".to_string(),
     });
     
     m
