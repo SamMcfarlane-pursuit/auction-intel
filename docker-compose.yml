@@ -5,10 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=https://auction-intel-api.fly.dev/api
     container_name: auction-intel-app
     ports:
       - "3000:80"
     restart: unless-stopped
+    environment:
+      - VITE_API_URL=https://auction-intel-api.fly.dev/api
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80"]
       interval: 30s
