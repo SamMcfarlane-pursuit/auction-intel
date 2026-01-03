@@ -839,9 +839,13 @@ async fn get_state_foreclosures_handler(Path(state): Path<String>) -> Json<State
     Json(StateForeclosuresResponse {
         state: state.to_uppercase(),
         updated: chrono::Utc::now().to_rfc3339(),
-        source: "HUD Homes".to_string(),
+        source: "HUD/Fannie/Freddie".to_string(),
         properties,
     })
+}
+
+async fn get_foreclosure_trends_handler() -> Json<foreclosure::NationalTrends> {
+    Json(foreclosure::get_national_trends())
 }
 
 // ============================================================================
@@ -940,6 +944,7 @@ async fn main() {
         .route("/api/census/counties/:state", get(get_census_state_counties))
         .route("/api/foreclosures", get(get_foreclosure_stats_handler))
         .route("/api/foreclosures/:state", get(get_state_foreclosures_handler))
+        .route("/api/foreclosures/trends", get(get_foreclosure_trends_handler))
         .route("/api/auctions", get(get_all_auctions))
         .route("/api/auctions/:state", get(get_state_auctions_handler))
         .route("/api/auctions/platforms", get(get_auction_platforms))
