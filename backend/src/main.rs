@@ -12,6 +12,7 @@ use tower_http::cors::{AllowOrigin, CorsLayer};
 mod census;
 mod foreclosure;
 mod auctions;
+mod fred_api;
 
 // ============================================================================
 // DATA STRUCTURES
@@ -731,16 +732,21 @@ async fn get_redfin_market() -> Json<RedfResponse> {
     })
 }
 
-// Current mortgage rates handler (Freddie Mac PMMS data)
+// Current mortgage rates handler - Now with LIVE FRED API data!
 async fn get_rates() -> Json<RatesResponse> {
-    // Current rates as of Dec 19, 2024 from Freddie Mac Primary Mortgage Market Survey
+    // Try to get FRED API key from environment
+    let api_key = std::env::var("FRED_API_KEY").ok();
+    
+    // Fetch live rates (falls back to defaults if no API key)
+    let live_data = fred_api::fetch_live_rates(api_key.as_deref()).await;
+    
     Json(RatesResponse {
-        updated: "2024-12-19".to_string(),
-        source: "Freddie Mac PMMS".to_string(),
-        mortgage_30yr: 6.72,        // 30-year fixed-rate mortgage
-        mortgage_15yr: 5.92,        // 15-year fixed-rate mortgage
-        mortgage_30yr_change: 0.12, // Week-over-week change
-        unemployment_rate: 4.2,     // BLS unemployment rate (Nov 2024)
+        updated: live_data.updated,
+        source: live_data.source,
+        mortgage_30yr: live_data.mortgage_30yr as f32,
+        mortgage_15yr: live_data.mortgage_15yr as f32,
+        mortgage_30yr_change: live_data.mortgage_30yr_change as f32,
+        unemployment_rate: live_data.unemployment as f32,
     })
 }
 

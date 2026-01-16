@@ -134,6 +134,29 @@ export function AuthProvider({ children }) {
         saveCurrentUser(null);
     };
 
+    const resetPassword = async (email) => {
+        setError(null);
+
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const users = getStoredUsers();
+        const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+        if (!foundUser) {
+            const err = 'No account found with this email';
+            setError(err);
+            throw new Error(err);
+        }
+
+        // Generate temporary password (in production, this would send an email)
+        const tempPassword = Math.random().toString(36).slice(-8);
+        foundUser.password = tempPassword;
+        saveUsers(users);
+
+        return { tempPassword, email: foundUser.email };
+    };
+
     const clearError = () => setError(null);
 
     const value = {
@@ -143,6 +166,7 @@ export function AuthProvider({ children }) {
         signIn,
         signUp,
         signOut,
+        resetPassword,
         clearError,
         isAuthenticated: !!user
     };

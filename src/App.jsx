@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
+import { WatchlistProvider } from './WatchlistContext';
+import { ToastProvider } from './ToastContext';
 import AuctionPlatform from './AuctionPlatform';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import ForgotPassword from './ForgotPassword';
 import './App.css';
 
 function AuthenticatedApp() {
   const { isAuthenticated, loading } = useAuth();
-  const [view, setView] = useState('signin'); // 'signin' | 'signup'
+  const [view, setView] = useState('signin'); // 'signin' | 'signup' | 'forgot'
 
   // Show loading state while checking for existing session
   if (loading) {
@@ -31,14 +34,22 @@ function AuthenticatedApp() {
     return <SignUp onNavigateToSignIn={() => setView('signin')} />;
   }
 
-  return <SignIn onNavigateToSignUp={() => setView('signup')} />;
+  if (view === 'forgot') {
+    return <ForgotPassword onNavigateToSignIn={() => setView('signin')} />;
+  }
+
+  return <SignIn onNavigateToSignUp={() => setView('signup')} onNavigateToForgot={() => setView('forgot')} />;
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <AuthenticatedApp />
-    </AuthProvider>
+    <ToastProvider>
+      <WatchlistProvider>
+        <AuthProvider>
+          <AuthenticatedApp />
+        </AuthProvider>
+      </WatchlistProvider>
+    </ToastProvider>
   );
 }
 

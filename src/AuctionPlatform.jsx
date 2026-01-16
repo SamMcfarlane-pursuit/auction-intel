@@ -1,29 +1,485 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { useWatchlist } from './WatchlistContext';
+import { useToast } from './ToastContext';
 import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip } from './data';
 import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
 import USMap from './USMap';
 import UpcomingAuctions from './UpcomingAuctions';
+import ROICalculator from './components/ROICalculator';
+import AuctionCalendar from './components/AuctionCalendar';
+import { StateCountdown } from './components/CountdownTimer';
+import InvestmentHeatMap from './components/InvestmentHeatMap';
+import MarketDataDashboard from './components/MarketDataDashboard';
+import { AlertSettings, NotificationBell } from './components/AlertSettings';
+import { PropertyFeed, SAMPLE_PROPERTIES } from './components/PropertyFeed';
+import { PropertyModal } from './components/PropertyModal';
+import PropertyDueDiligence from './components/PropertyDueDiligence';
+import MobileNav from './components/MobileNav';
+import WelcomeScreen from './components/WelcomeScreen';
+import UserSettings from './components/UserSettings';
 import 'leaflet/dist/leaflet.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-// Mock parcel data generator
-const generateParcels = (countyName) => {
-    const owners = ["BLULIGHT CRE LLC", "CROSSCOUNTRY MORTGAGE", "LEE KRISTEN D", "VANDEGRIFT JACQUELINE", "JENKINS SHAQUANNA", "JOHNSON BOBBY", "WISTERIA INVEST LLC"];
-    const types = ["Vacant Land", "Single Family", "Commercial", "Industrial", "Multi-Family"];
-    return Array.from({ length: 12 }, (_, i) => ({
-        id: `2025-${1000 + i}`,
-        parcelId: `${12 + i}-${30 + (i * 2)}`,
-        owner: owners[i % owners.length],
-        type: types[i % types.length],
-        amount: (Math.random() * 5000 + 50).toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
-        status: Math.random() > 0.2 ? "Active" : "Sold"
-    }));
+// Watchlist View Component
+function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
+    const { watchlist, removeFromWatchlist, clearWatchlist, updateWatchlistItem, getWatchlistStats } = useWatchlist();
+    const [sortBy, setSortBy] = useState('addedAt');
+    const [sortAsc, setSortAsc] = useState(false);
+    const [expandedId, setExpandedId] = useState(null);
+
+    const sortedWatchlist = useMemo(() => {
+        return [...watchlist].sort((a, b) => {
+            let aVal, bVal;
+            switch (sortBy) {
+                case 'tier': aVal = a.tier; bVal = b.tier; break;
+                case 'county': aVal = a.county; bVal = b.county; break;
+                case 'state': aVal = a.stateAbbr; bVal = b.stateAbbr; break;
+                case 'population': aVal = a.population; bVal = b.population; break;
+                case 'priority':
+                    const po = { high: 1, medium: 2, low: 3 };
+                    aVal = po[a.priority] || 2; bVal = po[b.priority] || 2; break;
+                default: aVal = new Date(a.addedAt); bVal = new Date(b.addedAt);
+            }
+            if (typeof aVal === 'string') return sortAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            return sortAsc ? aVal - bVal : bVal - aVal;
+        });
+    }, [watchlist, sortBy, sortAsc]);
+
+    const stats = getWatchlistStats ? getWatchlistStats() : { total: watchlist.length, completed: 0, highPriority: 0 };
+
+    const ddLabels = {
+        titleSearch: '🔍 Title Search', propertyInspection: '🏠 Property Inspection',
+        taxStatusVerified: '📋 Tax Status Verified', neighborhoodResearch: '🏘️ Neighborhood Research',
+        auctionRegistered: '✅ Auction Registered', fundsSecured: '💰 Funds Secured'
+    };
+
+    const getProgress = (item) => {
+        if (!item.dueDiligence) return 0;
+        const done = Object.values(item.dueDiligence).filter(v => v).length;
+        return Math.round((done / 6) * 100);
+    };
+
+    const handleExportWatchlist = () => {
+        const csv = ['County,State,Tier,Population,Income,ZHVI,Growth,DOM,Priority,Notes,Added'];
+        sortedWatchlist.forEach(item => {
+            csv.push(`"${item.county}","${item.stateAbbr}",T${item.tier},${item.population},${item.income},${item.zhvi},${item.growth}%,${item.dom},"${item.priority || 'medium'}","${(item.userNotes || '').replace(/"/g, '""')}","${new Date(item.addedAt).toLocaleDateString()}"`);
+        });
+        const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'watchlist_export.csv'; a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    if (watchlist.length === 0) {
+        return (
+            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-12 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl flex items-center justify-center text-4xl">⭐</div>
+                <h2 className="text-3xl font-display font-black text-slate-900 tracking-tighter mb-3">Your Watchlist is Empty</h2>
+                <p className="text-slate-500 mb-6 max-w-md mx-auto">Start building your investment portfolio by adding counties from the State Database.</p>
+                <button onClick={() => onSelectState(null)} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-display font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">📊 Browse State Database</button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full">
+            <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100">
+                <div>
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                        <h2 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tighter">My Watchlist</h2>
+                        <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-bold">{stats.total} saved</span>
+                        {stats.highPriority > 0 && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">🔥 {stats.highPriority} high priority</span>}
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Your tracked opportunities • {stats.completed} fully researched</p>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                    <button onClick={handleExportWatchlist} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2"><span>📥</span> Export CSV</button>
+                    <button onClick={clearWatchlist} className="bg-white text-red-600 border border-red-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-red-50 transition-all flex items-center gap-2"><span>🗑️</span> Clear All</button>
+                </div>
+            </div>
+
+            <div className="p-4 md:p-6 border-b border-slate-50 flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
+                {[{ id: 'addedAt', label: 'Recent' }, { id: 'priority', label: 'Priority' }, { id: 'tier', label: 'Tier' }, { id: 'state', label: 'State' }, { id: 'population', label: 'Population' }].map(opt => (
+                    <button key={opt.id} onClick={() => { setSortBy(opt.id); setSortAsc(!sortAsc); }}
+                        className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${sortBy === opt.id ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                        {opt.label} {sortBy === opt.id && (sortAsc ? '↑' : '↓')}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex-1 overflow-auto p-4 md:p-6">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+                    {sortedWatchlist.map(item => {
+                        const tier = TIERS[item.tier] || TIERS[5];
+                        const isExpanded = expandedId === item.id;
+                        const progress = getProgress(item);
+                        return (
+                            <div key={item.id} className={`bg-gradient-to-br from-white to-slate-50 rounded-2xl border-2 ${item.priority === 'high' ? 'border-red-200' : 'border-slate-100'} p-5 hover:shadow-lg transition-all group`}>
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-display font-black text-lg text-slate-900 truncate">{item.county}</div>
+                                            {item.priority === 'high' && <span className="text-red-500">🔥</span>}
+                                        </div>
+                                        <div className="text-xs font-bold text-slate-400">{item.stateName} ({item.stateAbbr})</div>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-black text-white" style={{ background: tier.color }}>{tier.label}</span>
+                                        <button onClick={() => removeFromWatchlist(item.id)} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-100 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100">×</button>
+                                    </div>
+                                </div>
+                                {/* Progress Bar */}
+                                <div className="mb-3">
+                                    <div className="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1"><span>Due Diligence</span><span>{progress}%</span></div>
+                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div className={`h-full transition-all ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${progress}%` }}></div></div>
+                                </div>
+                                {/* Priority Buttons */}
+                                <div className="flex gap-1 mb-3">
+                                    {['low', 'medium', 'high'].map(p => (
+                                        <button key={p} onClick={() => updateWatchlistItem && updateWatchlistItem(item.id, { priority: p })}
+                                            className={`flex-1 py-1 rounded text-[10px] font-bold capitalize transition-all ${item.priority === p ? (p === 'high' ? 'bg-red-500 text-white' : p === 'low' ? 'bg-slate-300 text-slate-700' : 'bg-amber-500 text-white') : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{p}</button>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-3 gap-3 mb-3">
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Pop</div><div className="font-bold text-slate-900">{(item.population / 1000).toFixed(0)}K</div></div>
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Income</div><div className="font-bold text-slate-900">${(item.income / 1000).toFixed(0)}K</div></div>
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">ZHVI</div><div className="font-bold text-slate-900">${(item.zhvi / 1000).toFixed(0)}K</div></div>
+                                </div>
+                                {/* Expand Toggle */}
+                                <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-700 py-2 border-t border-slate-100">
+                                    {isExpanded ? '▲ Close Details' : '▼ Notes & Checklist'}
+                                </button>
+                                {isExpanded && (
+                                    <div className="mt-3 space-y-3">
+                                        <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase mb-1 block">📝 Research Notes</label>
+                                            <textarea value={item.userNotes || ''} onChange={(e) => updateWatchlistItem && updateWatchlistItem(item.id, { userNotes: e.target.value })} placeholder="Add your research notes..." className="w-full p-2 text-xs border border-slate-200 rounded-lg resize-none h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase mb-2 block">✓ Due Diligence Checklist</label>
+                                            <div className="space-y-1">
+                                                {Object.entries(ddLabels).map(([key, label]) => (
+                                                    <label key={key} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                                        <input type="checkbox" checked={item.dueDiligence?.[key] || false}
+                                                            onChange={(e) => updateWatchlistItem && updateWatchlistItem(item.id, { dueDiligence: { ...item.dueDiligence, [key]: e.target.checked } })}
+                                                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                                        <span className={`text-xs ${item.dueDiligence?.[key] ? 'text-emerald-600 font-bold line-through' : 'text-slate-600'}`}>{label}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex gap-2 mt-3">
+                                    <button onClick={() => onSelectCounty(item)} className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">View Details</button>
+                                    <button onClick={() => onSelectState(item.stateAbbr)} className="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">State →</button>
+                                </div>
+                                <div className="mt-2 pt-2 border-t border-slate-100 text-[9px] text-slate-400">Added {new Date(item.addedAt).toLocaleDateString()}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ============================================================================
+// AUCTION PLATFORM LINKS - Direct links to real auction sites
+// ============================================================================
+const AUCTION_PLATFORMS = {
+    'Bid4Assets': { url: 'https://www.bid4assets.com', logo: '🏷️' },
+    'RealAuction': { url: 'https://www.realauction.com', logo: '🔨' },
+    'GovEase': { url: 'https://www.govease.com', logo: '🏛️' },
+    'Zeusauction': { url: 'https://www.zeusauction.com', logo: '⚡' },
+    'CivicSource': { url: 'https://www.civicsource.com', logo: '📋' },
+    'SRI': { url: 'https://www.tax-sale.info', logo: '📊' },
+};
+
+// County to Platform Mapping - 200+ Major Counties
+const COUNTY_PLATFORMS = {
+    // TEXAS (254 counties - top 20)
+    'Harris': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/harris-county-tx', taxCollector: 'https://www.hctax.net' },
+    'Dallas': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/dallas-county-tx', taxCollector: 'https://www.dallascounty.org/departments/tax' },
+    'Tarrant': { state: 'TX', platform: 'SRI', url: 'https://www.tax-sale.info/tarrant-county', taxCollector: 'https://www.tarrantcounty.com/taxoffice' },
+    'Bexar': { state: 'TX', platform: 'County', url: 'https://www.bexar.org/taxsale', taxCollector: 'https://www.bexar.org/tax' },
+    'Travis': { state: 'TX', platform: 'County', url: 'https://tax-office.traviscountytx.gov', taxCollector: 'https://tax-office.traviscountytx.gov' },
+    'Collin': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/collin-tx', taxCollector: 'https://www.collincountytx.gov/tax' },
+    'Denton': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/denton-tx', taxCollector: 'https://dentoncounty.gov/tax' },
+    'Fort Bend': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/fortbend-tx', taxCollector: 'https://www.fortbendcountytx.gov/tax' },
+    'Hidalgo': { state: 'TX', platform: 'County', url: 'https://www.co.hidalgo.tx.us/tax', taxCollector: 'https://www.co.hidalgo.tx.us/tax' },
+    'El Paso': { state: 'TX', platform: 'County', url: 'https://www.epcounty.com/tax', taxCollector: 'https://www.epcounty.com/tax' },
+    'Williamson': { state: 'TX', platform: 'County', url: 'https://www.wilco.org/tax', taxCollector: 'https://www.wilco.org/tax' },
+    'Montgomery': { state: 'TX', platform: 'RealAuction', url: 'https://www.realauction.com/montgomery-tx', taxCollector: 'https://www.mctx.org/tax' },
+
+    // FLORIDA (67 counties - top 15)
+    'Miami-Dade': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/miami-dade-fl', taxCollector: 'https://www.miamidade.gov/tax' },
+    'Broward': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/broward-fl', taxCollector: 'https://www.broward.org/RecordsTaxesTreasury' },
+    'Palm Beach': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/palm-beach-fl', taxCollector: 'https://www.pbctax.com' },
+    'Hillsborough': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/hillsborough-fl', taxCollector: 'https://www.hillstax.org' },
+    'Orange': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/orange-fl', taxCollector: 'https://www.octaxcol.com' },
+    'Pinellas': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/pinellas-fl', taxCollector: 'https://www.pinellascounty.org/taxcoll' },
+    'Duval': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/duval-fl', taxCollector: 'https://www.coj.net/tax' },
+    'Lee': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/lee-fl', taxCollector: 'https://www.leetc.com' },
+    'Polk': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/polk-fl', taxCollector: 'https://www.polktaxes.com' },
+    'Brevard': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/brevard-fl', taxCollector: 'https://brevardtc.com' },
+    'Volusia': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/volusia-fl', taxCollector: 'https://vcso.us/tax' },
+    'Pasco': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/pasco-fl', taxCollector: 'https://www.pascotaxes.com' },
+    'Seminole': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/seminole-fl', taxCollector: 'https://www.seminoletax.org' },
+    'Sarasota': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/sarasota-fl', taxCollector: 'https://www.sarasotataxcollector.com' },
+    'Manatee': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/manatee-fl', taxCollector: 'https://www.taxcollector.com' },
+
+    // ARIZONA (15 counties - all)
+    'Maricopa': { state: 'AZ', platform: 'RealAuction', url: 'https://www.realauction.com/maricopa-az', taxCollector: 'https://treasurer.maricopa.gov' },
+    'Pima': { state: 'AZ', platform: 'County', url: 'https://www.pima.gov/tax-lien-sale', taxCollector: 'https://www.pima.gov/treasurer' },
+    'Pinal': { state: 'AZ', platform: 'County', url: 'https://www.pinalcountyaz.gov/treasurer', taxCollector: 'https://www.pinalcountyaz.gov/treasurer' },
+    'Yavapai': { state: 'AZ', platform: 'County', url: 'https://www.yavapai.us/treasurer', taxCollector: 'https://www.yavapai.us/treasurer' },
+    'Mohave': { state: 'AZ', platform: 'County', url: 'https://www.mohavecounty.us/treasurer', taxCollector: 'https://www.mohavecounty.us/treasurer' },
+    'Yuma': { state: 'AZ', platform: 'County', url: 'https://www.yumacountyaz.gov/treasurer', taxCollector: 'https://www.yumacountyaz.gov/treasurer' },
+    'Cochise': { state: 'AZ', platform: 'County', url: 'https://www.cochise.az.gov/treasurer', taxCollector: 'https://www.cochise.az.gov/treasurer' },
+    'Coconino': { state: 'AZ', platform: 'County', url: 'https://www.coconino.az.gov/treasurer', taxCollector: 'https://www.coconino.az.gov/treasurer' },
+
+    // GEORGIA (159 counties - top 15)
+    'Fulton': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fulton-ga', taxCollector: 'https://www.fultoncountytaxes.org' },
+    'DeKalb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/dekalb-ga', taxCollector: 'https://www.dekalbcountyga.gov/tax' },
+    'Gwinnett': { state: 'GA', platform: 'County', url: 'https://www.gwinnettcounty.com/taxsale', taxCollector: 'https://www.gwinnettcounty.com/tax' },
+    'Cobb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cobb-ga', taxCollector: 'https://www.cobbcounty.org/tax' },
+    'Clayton': { state: 'GA', platform: 'County', url: 'https://www.claytoncountyga.gov/tax', taxCollector: 'https://www.claytoncountyga.gov/tax' },
+    'Cherokee': { state: 'GA', platform: 'County', url: 'https://www.cherokeega.com/tax', taxCollector: 'https://www.cherokeega.com/tax' },
+    'Forsyth': { state: 'GA', platform: 'County', url: 'https://www.forsythco.com/tax', taxCollector: 'https://www.forsythco.com/tax' },
+    'Henry': { state: 'GA', platform: 'County', url: 'https://www.co.henry.ga.us/tax', taxCollector: 'https://www.co.henry.ga.us/tax' },
+    'Richmond': { state: 'GA', platform: 'County', url: 'https://www.augustaga.gov/tax', taxCollector: 'https://www.augustaga.gov/tax' },
+    'Chatham': { state: 'GA', platform: 'County', url: 'https://www.chathamcounty.org/tax', taxCollector: 'https://www.chathamcounty.org/tax' },
+
+    // CALIFORNIA (58 counties - top 15)
+    'Los Angeles': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/la-county', taxCollector: 'https://ttc.lacounty.gov' },
+    'San Diego': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/san-diego', taxCollector: 'https://www.sdttc.com' },
+    'Riverside': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/riverside-ca', taxCollector: 'https://www.countytreasurer.org' },
+    'San Bernardino': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanbernardino', taxCollector: 'https://www.sbcounty.gov/atc' },
+    'Santa Clara': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/santaclara', taxCollector: 'https://www.sccgov.org/tax' },
+    'Alameda': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/alameda-ca', taxCollector: 'https://www.acgov.org/treasurer' },
+    'Sacramento': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sacramento', taxCollector: 'https://www.finance.saccounty.net' },
+    'Contra Costa': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/contracosta', taxCollector: 'https://www.cctax.us' },
+    'Fresno': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fresno', taxCollector: 'https://www.co.fresno.ca.us/ttc' },
+    'Kern': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/kern', taxCollector: 'https://www.kcttc.co.kern.ca.us' },
+    'Ventura': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/ventura', taxCollector: 'https://www.ventura.org/ttc' },
+    'San Mateo': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanmateo', taxCollector: 'https://www.smcacre.org' },
+
+    // PENNSYLVANIA (67 counties - top 10)
+    'Philadelphia': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/philadelphia', taxCollector: 'https://www.phila.gov/revenue' },
+    'Allegheny': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/allegheny', taxCollector: 'https://www.alleghenycounty.us/real-estate' },
+    'Montgomery': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-pa', taxCollector: 'https://www.montcopa.org/tax' },
+    'Bucks': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/bucks-pa', taxCollector: 'https://www.buckscounty.gov/tax' },
+    'Delaware': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/delaware-pa', taxCollector: 'https://www.delcopa.gov/tax' },
+    'Chester': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chester-pa', taxCollector: 'https://www.chesco.org/tax' },
+    'Lancaster': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/lancaster-pa', taxCollector: 'https://www.co.lancaster.pa.us/tax' },
+    'York': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/york-pa', taxCollector: 'https://www.yorkcountypa.gov/tax' },
+
+    // NEW JERSEY (21 counties - all major)
+    'Essex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/essex-nj', taxCollector: 'https://www.essexcountynj.org' },
+    'Hudson': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/hudson-nj', taxCollector: 'https://www.hudsoncountynj.org' },
+    'Bergen': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bergen-nj', taxCollector: 'https://www.bergencountynj.gov' },
+    'Middlesex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/middlesex-nj', taxCollector: 'https://www.middlesexcountynj.gov' },
+    'Union': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/union-nj', taxCollector: 'https://ucnj.org' },
+    'Passaic': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/passaic-nj', taxCollector: 'https://www.passaiccountynj.org' },
+    'Monmouth': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/monmouth-nj', taxCollector: 'https://www.visitmonmouth.com' },
+    'Ocean': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/ocean-nj', taxCollector: 'https://www.co.ocean.nj.us' },
+    'Camden': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/camden-nj', taxCollector: 'https://www.camdencounty.com' },
+    'Morris': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/morris-nj', taxCollector: 'https://www.morriscountynj.gov' },
+
+    // ILLINOIS (102 counties - top 10)
+    'Cook': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/cook-il', taxCollector: 'https://www.cookcountytreasurer.com' },
+    'DuPage': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/dupage-il', taxCollector: 'https://www.dupageco.org/tax' },
+    'Lake': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/lake-il', taxCollector: 'https://www.lakecountyil.gov/tax' },
+    'Will': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/will-il', taxCollector: 'https://www.willcountyillinois.com/tax' },
+    'Kane': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/kane-il', taxCollector: 'https://www.countyofkane.org/tax' },
+    'McHenry': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/mchenry-il', taxCollector: 'https://www.mchenrycountyil.gov' },
+    'Winnebago': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/winnebago-il', taxCollector: 'https://www.wincoil.us' },
+    'Madison': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/madison-il', taxCollector: 'https://www.co.madison.il.us' },
+
+    // OHIO (88 counties - top 10)
+    'Cuyahoga': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/cuyahoga', taxCollector: 'https://fiscalofficer.cuyahogacounty.us' },
+    'Franklin': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/franklin-oh', taxCollector: 'https://treasurer.franklincountyohio.gov' },
+    'Hamilton': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/hamilton-oh', taxCollector: 'https://www.hamiltoncountytreasurer.org' },
+    'Summit': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/summit-oh', taxCollector: 'https://fiscaloffice.summitoh.net' },
+    'Montgomery': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/montgomery-oh', taxCollector: 'https://www.mctreasurer.org' },
+    'Lucas': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/lucas-oh', taxCollector: 'https://www.co.lucas.oh.us/treasurer' },
+    'Stark': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/stark-oh', taxCollector: 'https://starkcountyohio.gov/treasurer' },
+    'Butler': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/butler-oh', taxCollector: 'https://www.butlercountyohio.org/treasurer' },
+
+    // MICHIGAN (83 counties - top 10)
+    'Wayne': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/wayne-mi', taxCollector: 'https://www.waynecounty.com/treasurer' },
+    'Oakland': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/oakland-mi', taxCollector: 'https://www.oakgov.com/treasurer' },
+    'Macomb': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/macomb-mi', taxCollector: 'https://treasurer.macombgov.org' },
+    'Kent': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kent-mi', taxCollector: 'https://www.accesskent.com/Treasurer' },
+    'Genesee': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/genesee-mi', taxCollector: 'https://www.gc4me.com/treasurer' },
+    'Washtenaw': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/washtenaw-mi', taxCollector: 'https://www.washtenaw.org/treasurer' },
+    'Ingham': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/ingham-mi', taxCollector: 'https://tr.ingham.org' },
+    'Kalamazoo': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kalamazoo-mi', taxCollector: 'https://www.kalcounty.com/treasurer' },
+
+    // INDIANA (92 counties - top 8)
+    'Marion': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/marion-in', taxCollector: 'https://www.indy.gov/treasurer' },
+    'Lake': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/lake-in', taxCollector: 'https://www.lakecountyin.org/treasurer' },
+    'Allen': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/allen-in', taxCollector: 'https://www.allencounty.us/treasurer' },
+    'Hamilton': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/hamilton-in', taxCollector: 'https://www.hamiltoncounty.in.gov/treasurer' },
+    'St. Joseph': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/stjoseph-in', taxCollector: 'https://www.sjcindiana.com/treasurer' },
+    'Elkhart': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/elkhart-in', taxCollector: 'https://www.elkhartcounty.com/treasurer' },
+
+    // NEW YORK (62 counties - top 10)
+    'Kings': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/kings-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'Queens': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/queens-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'New York': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/manhattan-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'Suffolk': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/suffolk-ny', taxCollector: 'https://www.suffolkcountyny.gov/tax' },
+    'Nassau': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/nassau-ny', taxCollector: 'https://www.nassaucountyny.gov/treasurer' },
+    'Bronx': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bronx-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'Erie': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/erie-ny', taxCollector: 'https://www2.erie.gov/comptroller' },
+    'Westchester': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/westchester-ny', taxCollector: 'https://www.westchestergov.com/finance' },
+
+    // NORTH CAROLINA (100 counties - top 10)
+    'Mecklenburg': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/mecklenburg-nc', taxCollector: 'https://www.mecknc.gov/tax' },
+    'Wake': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/wake-nc', taxCollector: 'https://www.wakegov.com/tax' },
+    'Guilford': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/guilford-nc', taxCollector: 'https://www.guilfordcountync.gov/tax' },
+    'Forsyth': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/forsyth-nc', taxCollector: 'https://www.forsyth.cc/tax' },
+    'Cumberland': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cumberland-nc', taxCollector: 'https://www.cumberlandcountync.gov/tax' },
+    'Durham': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/durham-nc', taxCollector: 'https://www.dconc.gov/tax' },
+
+    // VIRGINIA (133 counties - top 8)
+    'Fairfax': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fairfax-va', taxCollector: 'https://www.fairfaxcounty.gov/taxes' },
+    'Prince William': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princewilliam-va', taxCollector: 'https://www.pwcgov.org/tax' },
+    'Loudoun': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/loudoun-va', taxCollector: 'https://www.loudoun.gov/tax' },
+    'Chesterfield': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chesterfield-va', taxCollector: 'https://www.chesterfield.gov/tax' },
+    'Henrico': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/henrico-va', taxCollector: 'https://henrico.us/finance' },
+    'Virginia Beach': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/virginiabeach', taxCollector: 'https://www.vbgov.com/finance' },
+
+    // MARYLAND (24 counties - top 8)
+    'Montgomery': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-md', taxCollector: 'https://www.montgomerycountymd.gov/finance' },
+    'Prince George\'s': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princegeorges-md', taxCollector: 'https://www.princegeorgescountymd.gov/tax' },
+    'Baltimore County': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-county', taxCollector: 'https://www.baltimorecountymd.gov/finance' },
+    'Baltimore City': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-city', taxCollector: 'https://finance.baltimorecity.gov' },
+    'Anne Arundel': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/annearundel-md', taxCollector: 'https://www.aacounty.org/finance' },
+    'Howard': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/howard-md', taxCollector: 'https://www.howardcountymd.gov/finance' },
+
+    // COLORADO (64 counties - top 8)
+    'Denver': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/denver-co', taxCollector: 'https://www.denvergov.org/treasury' },
+    'El Paso': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/elpaso-co', taxCollector: 'https://treasurer.elpasoco.com' },
+    'Arapahoe': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/arapahoe-co', taxCollector: 'https://www.arapahoegov.com/treasurer' },
+    'Jefferson': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/jefferson-co', taxCollector: 'https://www.jeffco.us/treasurer' },
+    'Adams': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/adams-co', taxCollector: 'https://www.adcogov.org/treasurer' },
+    'Douglas': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/douglas-co', taxCollector: 'https://www.douglas.co.us/treasurer' },
+    'Larimer': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/larimer-co', taxCollector: 'https://www.larimer.org/treasurer' },
+    'Boulder': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/boulder-co', taxCollector: 'https://www.bouldercounty.org/treasurer' },
+
+    // IOWA (99 counties - top 6)
+    'Polk': { state: 'IA', platform: 'County', url: 'https://www.polkcountyiowa.gov/treasurer', taxCollector: 'https://www.polkcountyiowa.gov/treasurer' },
+    'Linn': { state: 'IA', platform: 'County', url: 'https://www.linncounty.org/treasurer', taxCollector: 'https://www.linncounty.org/treasurer' },
+    'Scott': { state: 'IA', platform: 'County', url: 'https://www.scottcountyiowa.gov/treasurer', taxCollector: 'https://www.scottcountyiowa.gov/treasurer' },
+    'Johnson': { state: 'IA', platform: 'County', url: 'https://www.johnson-county.com/treasurer', taxCollector: 'https://www.johnson-county.com/treasurer' },
+    'Black Hawk': { state: 'IA', platform: 'County', url: 'https://www.blackhawkcounty.iowa.gov/treasurer', taxCollector: 'https://www.blackhawkcounty.iowa.gov/treasurer' },
+    'Woodbury': { state: 'IA', platform: 'County', url: 'https://www.woodburycountyiowa.gov/treasurer', taxCollector: 'https://www.woodburycountyiowa.gov/treasurer' },
+
+    // WASHINGTON (39 counties - top 6)
+    'King': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/king-wa', taxCollector: 'https://kingcounty.gov/depts/finance' },
+    'Pierce': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/pierce-wa', taxCollector: 'https://www.piercecountywa.gov/tax' },
+    'Snohomish': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/snohomish-wa', taxCollector: 'https://www.snohomishcountywa.gov/treasurer' },
+    'Spokane': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/spokane-wa', taxCollector: 'https://www.spokanecounty.org/treasurer' },
+    'Clark': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/clark-wa', taxCollector: 'https://www.clark.wa.gov/treasurer' },
+    'Thurston': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/thurston-wa', taxCollector: 'https://www.thurstoncountywa.gov/treasurer' },
+
+    // MINNESOTA (87 counties - top 6)
+    'Hennepin': { state: 'MN', platform: 'County', url: 'https://www.hennepin.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.hennepin.us/property-taxes' },
+    'Ramsey': { state: 'MN', platform: 'County', url: 'https://www.ramseycounty.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.ramseycounty.us/property-taxes' },
+    'Dakota': { state: 'MN', platform: 'County', url: 'https://www.co.dakota.mn.us/Government/PropertyTaxes', taxCollector: 'https://www.co.dakota.mn.us/Government/PropertyTaxes' },
+    'Anoka': { state: 'MN', platform: 'County', url: 'https://www.anokacounty.us/tax', taxCollector: 'https://www.anokacounty.us/tax' },
+    'Washington': { state: 'MN', platform: 'County', url: 'https://www.co.washington.mn.us/property-taxes', taxCollector: 'https://www.co.washington.mn.us/property-taxes' },
+    'Scott': { state: 'MN', platform: 'County', url: 'https://www.scottcountymn.gov/tax', taxCollector: 'https://www.scottcountymn.gov/tax' },
+
+    // NEVADA (17 counties - top 4)
+    'Clark': { state: 'NV', platform: 'County', url: 'https://www.clarkcountynv.gov/tax-sale', taxCollector: 'https://www.clarkcountynv.gov/treasurer' },
+    'Washoe': { state: 'NV', platform: 'County', url: 'https://www.washoecounty.us/treasurer', taxCollector: 'https://www.washoecounty.us/treasurer' },
+    'Nye': { state: 'NV', platform: 'County', url: 'https://www.nyecounty.net/treasurer', taxCollector: 'https://www.nyecounty.net/treasurer' },
+    'Elko': { state: 'NV', platform: 'County', url: 'https://www.elkocountynv.net/treasurer', taxCollector: 'https://www.elkocountynv.net/treasurer' },
+};
+
+// State-level auction info - ALL 51 JURISDICTIONS
+const STATE_AUCTION_DETAILS = {
+    // === LIEN STATES (26) ===
+    'AL': { type: 'Lien', rate: '12%', redemption: '3 years', frequency: 'May-June', platform: 'County' },
+    'AZ': { type: 'Lien', rate: '16% max (bid down)', redemption: '3 years', frequency: 'February', platform: 'RealAuction' },
+    'CO': { type: 'Lien', rate: 'Fed+9%', redemption: '3 years', frequency: 'November', platform: 'RealAuction' },
+    'FL': { type: 'Lien', rate: '18% max (bid down)', redemption: '2 years', frequency: 'May-June', platform: 'RealAuction' },
+    'GA': { type: 'Lien', rate: '20% (escalates to 40%)', redemption: '1 year', frequency: '1st Tuesday monthly', platform: 'Bid4Assets' },
+    'IL': { type: 'Lien', rate: '18% (bid down)', redemption: '2-3 years', frequency: 'Oct-Nov', platform: 'GovEase' },
+    'IN': { type: 'Lien', rate: '10-15% graduated', redemption: '1 year', frequency: 'Sept-Oct', platform: 'GovEase' },
+    'IA': { type: 'Lien', rate: '24% (HIGHEST IN US)', redemption: '1yr 9mo', frequency: 'June 3rd Monday', platform: 'County (in-person)' },
+    'KY': { type: 'Lien', rate: '12%', redemption: '1 year', frequency: 'July-Aug', platform: 'County' },
+    'LA': { type: 'Lien', rate: 'Bid-down (reformed 2024)', redemption: '3 years', frequency: 'June-July', platform: 'CivicSource' },
+    'MD': { type: 'Lien', rate: '18-24%', redemption: '6 months', frequency: 'May-June', platform: 'Bid4Assets' },
+    'MS': { type: 'Lien', rate: '18%', redemption: '2 years', frequency: 'August', platform: 'County' },
+    'MO': { type: 'Lien', rate: '10%', redemption: '2 years', frequency: 'August 4th Monday', platform: 'County' },
+    'MT': { type: 'Lien', rate: '10%', redemption: '2-3 years', frequency: 'July', platform: 'County' },
+    'NE': { type: 'Lien', rate: '14%', redemption: '3 years', frequency: 'March 1st Monday', platform: 'GovEase' },
+    'NH': { type: 'Lien', rate: '18%', redemption: '2 years', frequency: 'May-June', platform: 'Town' },
+    'NJ': { type: 'Lien', rate: '18% (bid down)', redemption: '2 years', frequency: 'Oct-Dec', platform: 'Zeusauction' },
+    'OK': { type: 'Lien', rate: '8%', redemption: '2 years', frequency: 'June 2nd Monday', platform: 'County' },
+    'RI': { type: 'Lien', rate: '10% + 1%/mo', redemption: '1 year', frequency: 'December', platform: 'City/Town' },
+    'SC': { type: 'Lien', rate: '8% penalty', redemption: '1 year', frequency: 'Oct-Nov', platform: 'County' },
+    'SD': { type: 'Lien', rate: '12% (max 10% bid)', redemption: '3-4 years', frequency: 'Dec 3rd Tuesday', platform: 'County' },
+    'VT': { type: 'Lien', rate: '12%', redemption: '1 year', frequency: 'April-July', platform: 'Town' },
+    'WV': { type: 'Lien', rate: '12%', redemption: '1 year', frequency: 'Oct-Nov', platform: 'County' },
+    'WY': { type: 'Lien', rate: '15% + 3% penalty', redemption: '4 years', frequency: 'September', platform: 'County' },
+    'CT': { type: 'Lien', rate: '18%', redemption: '6 months', frequency: 'June-July', platform: 'County' },
+    'DC': { type: 'Lien', rate: '18%', redemption: '6 months', frequency: 'July', platform: 'DC Government' },
+    'MA': { type: 'Lien', rate: '16%', redemption: "Collector's deed", frequency: 'Varies', platform: 'Town Collector' },
+
+    // === DEED STATES (25) ===
+    'TX': { type: 'Deed', rate: '25% penalty', redemption: '6mo-2yr', frequency: '1st Tuesday monthly', platform: 'RealAuction' },
+    'CA': { type: 'Deed', rate: 'N/A', redemption: '5yr pre-sale', frequency: 'Varies', platform: 'Bid4Assets' },
+    'MI': { type: 'Deed', rate: 'N/A', redemption: 'None after sale', frequency: 'July 3rd Tuesday', platform: 'GovEase' },
+    'OH': { type: 'Deed', rate: 'N/A', redemption: 'None after sale', frequency: 'Year-round', platform: 'GovEase' },
+    'PA': { type: 'Deed', rate: 'N/A', redemption: 'None after upset', frequency: 'Monthly/Quarterly', platform: 'Bid4Assets' },
+    'NY': { type: 'Deed', rate: 'N/A', redemption: '2-4 years', frequency: 'Spring/Fall', platform: 'Zeusauction' },
+    'AK': { type: 'Deed', rate: 'N/A', redemption: '1 year', frequency: 'Varies', platform: 'Borough/City' },
+    'AR': { type: 'Deed', rate: 'N/A', redemption: '30 days', frequency: 'Varies', platform: 'County' },
+    'DE': { type: 'Deed', rate: '15% penalty', redemption: '60 days', frequency: 'Annual', platform: 'Bid4Assets' },
+    'HI': { type: 'Deed', rate: 'N/A', redemption: '1 year', frequency: 'Varies', platform: 'County' },
+    'ID': { type: 'Deed', rate: 'N/A', redemption: '3yr before deed', frequency: 'January', platform: 'County' },
+    'KS': { type: 'Deed', rate: 'N/A', redemption: 'Court judgment', frequency: 'September', platform: 'County' },
+    'ME': { type: 'Deed', rate: 'N/A', redemption: '18 months', frequency: 'Varies', platform: 'Town' },
+    'MN': { type: 'Deed', rate: 'N/A', redemption: 'None after sale', frequency: 'May', platform: 'County' },
+    'NC': { type: 'Deed', rate: 'N/A', redemption: 'Upset bid period', frequency: 'Varies', platform: 'Bid4Assets' },
+    'ND': { type: 'Deed', rate: 'Max 9% (bid down)', redemption: '4 years', frequency: 'October', platform: 'County' },
+    'NM': { type: 'Deed', rate: 'N/A', redemption: '120 days IRS only', frequency: 'Varies', platform: 'County' },
+    'NV': { type: 'Deed', rate: 'N/A', redemption: '2yr before deed', frequency: 'June', platform: 'County' },
+    'OR': { type: 'Deed', rate: 'N/A', redemption: '2yr before deed', frequency: 'Varies', platform: 'County' },
+    'TN': { type: 'Deed', rate: 'N/A', redemption: '1 year', frequency: 'Varies', platform: 'County' },
+    'UT': { type: 'Deed', rate: 'N/A', redemption: '4yr before deed', frequency: 'May', platform: 'County' },
+    'VA': { type: 'Deed', rate: 'N/A', redemption: 'Varies by locality', frequency: 'Varies', platform: 'Bid4Assets' },
+    'WA': { type: 'Deed', rate: 'N/A', redemption: 'None', frequency: 'Varies', platform: 'Bid4Assets' },
+    'WI': { type: 'Deed', rate: 'N/A', redemption: '2yr to county', frequency: 'Varies', platform: 'County' },
+};
+
+// Get county auction info with platform links (listings now fetched from API)
+const getCountyAuctionInfo = (countyName, stateAbbr) => {
+    const countyInfo = COUNTY_PLATFORMS[countyName];
+    const stateInfo = STATE_AUCTION_DETAILS[stateAbbr] || { type: 'Deed', rate: 'Varies', platform: 'County' };
+
+    return {
+        platform: countyInfo?.platform || stateInfo.platform || 'County',
+        platformUrl: countyInfo?.url || AUCTION_PLATFORMS[stateInfo.platform]?.url || null,
+        taxCollectorUrl: countyInfo?.taxCollector || null,
+        saleType: stateInfo.type,
+        interestRate: stateInfo.rate,
+        redemption: stateInfo.redemption,
+        frequency: stateInfo.frequency,
+    };
 };
 
 export default function AuctionPlatform() {
     const { user, signOut } = useAuth();
+    const { addToWatchlist, isInWatchlist } = useWatchlist();
+    const toast = useToast();
     const [view, setView] = useState('map');
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCounty, setSelectedCounty] = useState(null);
@@ -49,6 +505,10 @@ export default function AuctionPlatform() {
     const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
     const [STATE_AUCTION_INFO, setSTATE_AUCTION_INFO] = useState(STATIC_STATE_AUCTION_INFO);
     const [apiStatus, setApiStatus] = useState('connecting'); // 'connecting', 'live', 'offline'
+    const [realListings, setRealListings] = useState([]); // Real HUD/REO listings from API
+    const [listingsLoading, setListingsLoading] = useState(false);
+    const [selectedPropertyForModal, setSelectedPropertyForModal] = useState(null); // Property detail modal
+    const [dueDiligenceProperty, setDueDiligenceProperty] = useState(null); // Full Due Diligence view
 
     // Fetch data from backend API on mount
     useEffect(() => {
@@ -227,9 +687,39 @@ export default function AuctionPlatform() {
     const totalCounties = Object.values(COUNTIES).reduce((s, c) => s + c.length, 0);
     const totalT123 = Object.values(COUNTIES).reduce((s, c) => s + c.filter(x => x[6] <= 3).length, 0);
 
-    const parcels = useMemo(() => {
-        return selectedCounty ? generateParcels(selectedCounty[0]) : [];
-    }, [selectedCounty]);
+    const auctionInfo = useMemo(() => {
+        return selectedCounty && selectedState ? getCountyAuctionInfo(selectedCounty[0], selectedState) : null;
+    }, [selectedCounty, selectedState]);
+
+    // Fetch real HUD/REO listings from backend API when state changes
+    useEffect(() => {
+        if (!selectedState) {
+            setRealListings([]);
+            return;
+        }
+
+        const fetchListings = async () => {
+            setListingsLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/foreclosures/${selectedState}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setRealListings(data.properties || []);
+                } else {
+                    setRealListings([]);
+                }
+            } catch (err) {
+                console.warn('Failed to fetch foreclosure listings:', err.message);
+                setRealListings([]);
+            } finally {
+                setListingsLoading(false);
+            }
+        };
+
+        fetchListings();
+    }, [selectedState]);
+
+    const parcels = realListings; // Now using real API data
 
     // Get county details if available (for NY)
     const getCountyDetails = (countyName) => {
@@ -324,7 +814,7 @@ export default function AuctionPlatform() {
         const text = tableToText(data, columns);
         const success = await copyToClipboard(text);
         if (success) {
-            alert('Copied to clipboard!');
+            toast.success('Copied to clipboard!');
         }
     };
 
@@ -368,49 +858,95 @@ export default function AuctionPlatform() {
                     </div>
                 </div>
 
-                <nav className="flex-1 py-6 overflow-y-auto scrollbar-hide px-4">
-                    <div className="mb-8">
-                        <div className="space-y-1">
+                <nav className="flex-1 py-4 overflow-y-auto scrollbar-hide px-3">
+                    {/* 1 DISCOVER */}
+                    <div className="mb-5">
+                        <div className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded bg-blue-500/20 flex items-center justify-center text-[8px]">1</span>
+                            <span>Explore</span>
+                        </div>
+                        <div className="space-y-0.5">
                             {[
-                                { id: 'map', label: 'Map Explorer', icon: '📍' },
-                                { id: 'auctions', label: 'Upcoming Sales', icon: '🔔' },
-                                { id: 'list', label: 'State Database', icon: '📊' },
-                                { id: 'stateinfo', label: 'State Info', icon: '🏛️' },
-                                { id: 'detection', label: 'Tier Detection', icon: '🎯' },
-                                { id: 'sources', label: 'Data Sources', icon: '📡' },
-                                { id: 'guide', label: 'User Guide', icon: '📚' },
+                                { id: 'map', label: 'Market Map', icon: '🗺️' },
+                                { id: 'properties', label: 'Properties', icon: '🏠' },
                             ].map(item => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => { setView(item.id); setSelectedCounty(null); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${view === item.id ? 'bg-blue-600 text-white font-bold shadow-xl shadow-blue-600/20' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'}`}
-                                >
-                                    <span className="text-base leading-none">{item.icon}</span>
-                                    <span className="text-sm tracking-tight">{item.label}</span>
+                                <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-blue-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    <span className="text-sm">{item.icon}</span>
+                                    <span className="text-xs font-semibold">{item.label}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    <div>
-                        <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3 pl-2">Dynamic Filtering</div>
-                        <div className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50">
-                            <div className="text-[9px] font-black text-slate-400 mb-3 uppercase tracking-widest">Minimum Tiers</div>
+                    {/* 2 RESEARCH */}
+                    <div className="mb-5">
+                        <div className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded bg-emerald-500/20 flex items-center justify-center text-[8px]">2</span>
+                            <span>Research</span>
+                        </div>
+                        <div className="space-y-0.5">
+                            {[
+                                { id: 'stateinfo', label: 'State Database', icon: '⚖️' },
+                                { id: 'roi', label: 'ROI Calculator', icon: '💰' },
+                            ].map(item => (
+                                <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-emerald-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    <span className="text-sm">{item.icon}</span>
+                                    <span className="text-xs font-semibold">{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 3 MY PORTFOLIO */}
+                    <div className="mb-5">
+                        <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-[8px]">3</span>
+                            <span>Portfolio</span>
+                        </div>
+                        <div className="space-y-0.5">
+                            {[
+                                { id: 'watchlist', label: 'Watchlist', icon: '⭐' },
+                                { id: 'alerts', label: 'Alerts', icon: '🔔' },
+                            ].map(item => (
+                                <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-amber-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    <span className="text-sm">{item.icon}</span>
+                                    <span className="text-xs font-semibold">{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mb-4 pt-3 border-t border-slate-800">
+                        <div className="space-y-0.5">
+                            {[
+                                { id: 'guide', label: 'Quick Start', icon: '📖' },
+                                { id: 'settings', label: 'Settings', icon: '⚙️' },
+                            ].map(item => (
+                                <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-slate-700 text-white font-bold' : 'hover:bg-slate-800 text-slate-500 hover:text-slate-300'}`}>
+                                    <span className="text-sm">{item.icon}</span>
+                                    <span className="text-xs">{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Tier Filter */}
+                    <div className="pt-3 border-t border-slate-800">
+                        <div className="text-[8px] font-bold text-slate-600 uppercase tracking-wider mb-2 px-2">Filter by Tier</div>
+                        <div className="px-2">
                             <div className="grid grid-cols-5 gap-1">
                                 {[1, 2, 3, 4, 5].map(t => (
-                                    <button
-                                        key={t}
-                                        onClick={() => setFilterTier(t)}
-                                        className={`h-9 rounded-lg flex items-center justify-center text-xs font-black transition-all transform active:scale-95 ${filterTier >= t ? 'text-white shadow-lg' : 'bg-slate-700 text-slate-500 hover:bg-slate-600'}`}
-                                        style={filterTier >= t ? { backgroundColor: TIERS[t].color } : {}}
-                                    >
+                                    <button key={t} onClick={() => setFilterTier(t)}
+                                        className={`h-6 rounded text-[9px] font-bold transition-all ${filterTier >= t ? 'text-white' : 'bg-slate-800 text-slate-600 hover:bg-slate-700'}`}
+                                        style={filterTier >= t ? { backgroundColor: TIERS[t].color } : {}}>
                                         T{t}
                                     </button>
                                 ))}
-                            </div>
-                            <div className="mt-3 pt-3 border-t border-slate-700/50">
-                                <div className="text-[8px] font-bold text-slate-500 uppercase">Current Filter:</div>
-                                <div className="text-xs font-bold text-slate-300 mt-0.5">T1 through T{filterTier}</div>
                             </div>
                         </div>
                     </div>
@@ -484,10 +1020,34 @@ export default function AuctionPlatform() {
                             <div className="min-w-0">
                                 <div className="hidden md:flex items-center gap-2 mb-0.5">
                                     <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">Global Statistics</span>
+                                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">
+                                        {view === 'properties' ? 'Property Intelligence' :
+                                            view === 'alerts' ? 'Alert Management' :
+                                                view === 'watchlist' ? 'My Watchlist' :
+                                                    view === 'market' ? 'Market Analytics' :
+                                                        view === 'roi' ? 'ROI Calculator' :
+                                                            view === 'stateinfo' ? 'State Database' :
+                                                                view === 'detection' ? 'County Analysis' :
+                                                                    view === 'heatmap' ? 'Opportunity Heatmap' :
+                                                                        view === 'auctions' ? 'Auction Calendar' :
+                                                                            view === 'calendar' ? 'Auction Schedule' :
+                                                                                'Global Statistics'}
+                                    </span>
                                 </div>
                                 <div className="font-display font-black text-sm md:text-xl text-slate-900 tracking-tighter truncate">
-                                    {selectedCounty ? `${selectedCounty[0]} Region` : selectedState ? STATE_NAMES[selectedState] : 'Auction Intel'}
+                                    {view === 'properties' ? 'Live Property Feed' :
+                                        view === 'alerts' ? 'Alert Settings' :
+                                            view === 'watchlist' ? 'Saved Counties' :
+                                                view === 'market' ? 'Market Data Dashboard' :
+                                                    view === 'roi' ? 'Investment Calculator' :
+                                                        view === 'stateinfo' ? 'State Rules & Info' :
+                                                            view === 'detection' ? 'County Tier Detection' :
+                                                                view === 'heatmap' ? 'Best Opportunities' :
+                                                                    view === 'auctions' ? 'Upcoming Auctions' :
+                                                                        view === 'calendar' ? '2026 Auction Calendar' :
+                                                                            selectedCounty ? `${selectedCounty[0]} Region` :
+                                                                                selectedState ? STATE_NAMES[selectedState] :
+                                                                                    'Auction Intel'}
                                 </div>
                             </div>
                         </div>
@@ -501,6 +1061,8 @@ export default function AuctionPlatform() {
                                     <div className="text-[8px] text-blue-600 font-bold uppercase">Premium</div>
                                 </div>
                             </div>
+                            {/* Notification Bell */}
+                            <NotificationBell onClick={() => setView('alerts')} />
                             <button
                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                 className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-xs md:text-sm shadow-lg hover:scale-105 transition-transform"
@@ -638,9 +1200,27 @@ export default function AuctionPlatform() {
                                                     </span>
                                                 </div>
                                             )}
+                                            {/* Auction Countdown Timer */}
+                                            <StateCountdown stateAbbr={selectedState} />
                                         </div>
                                     </div>
                                     <div className="flex gap-2 md:gap-3 flex-wrap mt-3 md:mt-0">
+                                        {selectedCounty && selectedState && (
+                                            <button
+                                                onClick={() => {
+                                                    const added = addToWatchlist(selectedCounty, selectedState, STATE_NAMES[selectedState]);
+                                                    if (added) {
+                                                        toast.success(`${selectedCounty[0]} added to watchlist!`);
+                                                    } else {
+                                                        toast.info(`${selectedCounty[0]} is already in your watchlist.`);
+                                                    }
+                                                }}
+                                                disabled={isInWatchlist(selectedState, selectedCounty[0])}
+                                                className={`px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm transition-all flex items-center gap-1 md:gap-2 ${isInWatchlist(selectedState, selectedCounty[0]) ? 'bg-amber-100 text-amber-700 border-2 border-amber-200' : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-xl hover:from-amber-600 hover:to-yellow-600'}`}
+                                            >
+                                                <span>{isInWatchlist(selectedState, selectedCounty[0]) ? '⭐' : '☆'}</span> {isInWatchlist(selectedState, selectedCounty[0]) ? 'In Watchlist' : 'Add to Watchlist'}
+                                            </button>
+                                        )}
                                         <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm shadow-xl hover:bg-black transition-all flex items-center gap-1 md:gap-2">
                                             <span>📥</span> <span className="hidden sm:inline">DOWNLOAD</span> CSV
                                         </button>
@@ -683,36 +1263,118 @@ export default function AuctionPlatform() {
                                     ))}
                                 </div>
 
-                                {/* Parcels Table */}
+                                {/* Tax Sale Inventory with Platform Links */}
                                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                                    <div className="p-6 flex items-center justify-between border-b border-slate-50">
-                                        <div className="flex items-baseline gap-3">
-                                            <h3 className="font-display font-black text-lg text-slate-900">Tax Sale Inventory</h3>
-                                            <span className="text-xs font-bold text-slate-400">{parcels.length} Listings</span>
+                                    <div className="p-6 border-b border-slate-50">
+                                        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                            <div className="flex items-baseline gap-3">
+                                                <h3 className="font-display font-black text-lg text-slate-900">Tax Sale Inventory</h3>
+                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${auctionInfo?.saleType === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                    {auctionInfo?.saleType || 'Deed'} State
+                                                </span>
+                                                <span className="text-xs font-bold text-emerald-600">{parcels.length} HUD/REO Listings</span>
+                                            </div>
+                                            {auctionInfo?.platformUrl && (
+                                                <a
+                                                    href={auctionInfo.platformUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-bold text-xs hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/20"
+                                                >
+                                                    🔗 View Live Auctions on {auctionInfo.platform}
+                                                </a>
+                                            )}
                                         </div>
+
+                                        {/* Auction Info Cards */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            <div className="bg-slate-50 rounded-xl p-3">
+                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Interest/Penalty</div>
+                                                <div className="font-display font-black text-slate-900">{auctionInfo?.interestRate || 'Varies'}</div>
+                                            </div>
+                                            <div className="bg-slate-50 rounded-xl p-3">
+                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Redemption</div>
+                                                <div className="font-display font-black text-slate-900">{auctionInfo?.redemption || 'Varies'}</div>
+                                            </div>
+                                            <div className="bg-slate-50 rounded-xl p-3">
+                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Sale Frequency</div>
+                                                <div className="font-display font-black text-slate-900">{auctionInfo?.frequency || 'Varies'}</div>
+                                            </div>
+                                            <div className="bg-slate-50 rounded-xl p-3">
+                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Platform</div>
+                                                <div className="font-display font-black text-slate-900">{auctionInfo?.platform || 'County'}</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Tax Collector Link */}
+                                        {auctionInfo?.taxCollectorUrl && (
+                                            <div className="mt-4 pt-4 border-t border-slate-100">
+                                                <a
+                                                    href={auctionInfo.taxCollectorUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700"
+                                                >
+                                                    🏛️ Official Tax Collector Website →
+                                                </a>
+                                            </div>
+                                        )}
                                     </div>
+
+                                    <div className="p-4 bg-emerald-50 border-b border-emerald-100">
+                                        <p className="text-xs text-emerald-700 font-medium flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                            <strong>Live Data:</strong> Real-time HUD, Fannie Mae, and Freddie Mac foreclosure listings from official sources.
+                                            {listingsLoading && <span className="text-slate-500 ml-2">(Loading...)</span>}
+                                        </p>
+                                    </div>
+
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left">
                                             <thead className="bg-slate-50">
                                                 <tr className="text-slate-400 text-[9px] font-black tracking-widest uppercase">
-                                                    <th className="px-6 py-4">ID</th>
-                                                    <th className="px-6 py-4">Parcel</th>
-                                                    <th className="px-6 py-4">Owner</th>
+                                                    <th className="px-6 py-4">Address</th>
+                                                    <th className="px-6 py-4">City</th>
+                                                    <th className="px-6 py-4 text-right">Price</th>
+                                                    <th className="px-6 py-4 text-center">Beds/Baths</th>
+                                                    <th className="px-6 py-4 text-right">Sqft</th>
                                                     <th className="px-6 py-4">Type</th>
-                                                    <th className="px-6 py-4 text-right">Amount</th>
+                                                    <th className="px-6 py-4">Source</th>
                                                     <th className="px-6 py-4 text-center">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-50">
+                                                {parcels.length === 0 && !listingsLoading && (
+                                                    <tr>
+                                                        <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
+                                                            No listings available for this state. Select a state to view HUD/REO properties.
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                                {listingsLoading && (
+                                                    <tr>
+                                                        <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
+                                                            <div className="animate-pulse">Loading real foreclosure listings...</div>
+                                                        </td>
+                                                    </tr>
+                                                )}
                                                 {parcels.map((p, i) => (
                                                     <tr key={i} className="hover:bg-slate-50/80 transition-all">
-                                                        <td className="px-6 py-4 font-display font-black text-blue-600">{p.id}</td>
-                                                        <td className="px-6 py-4 font-bold text-slate-900">{p.parcelId}</td>
-                                                        <td className="px-6 py-4 font-bold text-slate-600 uppercase text-xs">{p.owner}</td>
-                                                        <td className="px-6 py-4"><span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-500 uppercase">{p.type}</span></td>
-                                                        <td className="px-6 py-4 text-right font-display font-black text-slate-900">{p.amount}</td>
+                                                        <td className="px-6 py-4 font-bold text-slate-900">{p.address}</td>
+                                                        <td className="px-6 py-4 text-slate-600">{p.city}, {p.state} {p.zip}</td>
+                                                        <td className="px-6 py-4 text-right font-display font-black text-emerald-600">${p.price?.toLocaleString()}</td>
+                                                        <td className="px-6 py-4 text-center font-bold text-slate-700">{p.bedrooms}bd / {p.bathrooms}ba</td>
+                                                        <td className="px-6 py-4 text-right text-slate-600">{p.sqft?.toLocaleString()} sqft</td>
+                                                        <td className="px-6 py-4"><span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-500 uppercase">{p.property_type}</span></td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={`px-2 py-1 rounded text-[9px] font-black uppercase ${p.source === 'HUD' ? 'bg-blue-100 text-blue-700' :
+                                                                p.source === 'Fannie Mae' ? 'bg-purple-100 text-purple-700' :
+                                                                    'bg-amber-100 text-amber-700'
+                                                                }`}>{p.source}</span>
+                                                        </td>
                                                         <td className="px-6 py-4 text-center">
-                                                            <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${p.status === 'Active' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>{p.status}</span>
+                                                            <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${p.status === 'Available' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'
+                                                                }`}>{p.status}</span>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -909,6 +1571,144 @@ export default function AuctionPlatform() {
                                     }
                                 }}
                             />
+                        ) : view === 'calendar' ? (
+                            /* 2026 Auction Calendar View */
+                            <AuctionCalendar
+                                onSelectState={(abbr) => {
+                                    setSelectedState(abbr);
+                                    setView('list');
+                                }}
+                            />
+                        ) : view === 'roi' ? (
+                            /* ROI Calculator View */
+                            <div className="p-6">
+                                <ROICalculator />
+                            </div>
+                        ) : view === 'heatmap' ? (
+                            /* Investment Heat Map View */
+                            <div className="h-full overflow-auto">
+                                <InvestmentHeatMap
+                                    onStateSelect={(abbr) => {
+                                        setSelectedState(abbr);
+                                        setView('list');
+                                    }}
+                                />
+                            </div>
+                        ) : view === 'market' ? (
+                            /* Market Intelligence Dashboard View */
+                            <div className="h-full overflow-auto">
+                                <MarketDataDashboard />
+                            </div>
+                        ) : view === 'alerts' ? (
+                            /* Alert Settings View */
+                            <div className="h-full overflow-auto p-6">
+                                <AlertSettings onClose={() => setView('map')} />
+                            </div>
+                        ) : view === 'properties' ? (
+                            /* Live Property Feed View with Due Diligence Modal */
+                            <div className="h-full overflow-auto p-6">
+                                <PropertyFeed
+                                    properties={SAMPLE_PROPERTIES}
+                                    onViewDetails={(p) => setSelectedPropertyForModal(p)}
+                                    onAddToWatchlist={(p) => toast.success(`${p.address} added to watchlist!`)}
+                                />
+                                {selectedPropertyForModal && (
+                                    <PropertyModal
+                                        property={selectedPropertyForModal}
+                                        onClose={() => setSelectedPropertyForModal(null)}
+                                        onAddToWatchlist={(p) => {
+                                            toast.success(`${p.address} added to watchlist!`);
+                                            setSelectedPropertyForModal(null);
+                                        }}
+                                        onOpenDueDiligence={(p) => {
+                                            setSelectedPropertyForModal(null);
+                                            setDueDiligenceProperty(p);
+                                        }}
+                                    />
+                                )}
+                                {dueDiligenceProperty && (
+                                    <PropertyDueDiligence
+                                        property={dueDiligenceProperty}
+                                        onClose={() => setDueDiligenceProperty(null)}
+                                        onAddToWatchlist={(p) => {
+                                            toast.success(`${p.address} added to watchlist!`);
+                                        }}
+                                    />
+                                )}
+                            </div>
+                        ) : view === 'watchlist' ? (
+                            /* Watchlist View - Saved Counties */
+                            <WatchlistView
+                                onSelectState={(abbr) => { setSelectedState(abbr); setView('list'); }}
+                                onSelectCounty={(item) => {
+                                    setSelectedState(item.stateAbbr);
+                                    const county = (COUNTIES[item.stateAbbr] || []).find(c => c[0] === item.county);
+                                    if (county) {
+                                        setSelectedCounty(county);
+                                        setView('list');
+                                    }
+                                }}
+                                TIERS={TIERS}
+                            />
+                        ) : view === 'alerts' ? (
+                            /* Alerts View - Notifications Center */
+                            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 h-full overflow-auto">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div>
+                                        <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter">My Alerts</h2>
+                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Stay updated on your investments</p>
+                                    </div>
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-xl font-display font-bold text-sm shadow-lg hover:bg-blue-700 transition-all flex items-center gap-2">
+                                        <span>🔔</span> Create Alert
+                                    </button>
+                                </div>
+
+                                {/* Alert Categories */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white text-lg">💰</div>
+                                            <div>
+                                                <div className="text-2xl font-display font-black text-green-700">0</div>
+                                                <div className="text-[9px] font-bold text-green-600 uppercase tracking-wider">Price Drops</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white text-lg">📅</div>
+                                            <div>
+                                                <div className="text-2xl font-display font-black text-amber-700">0</div>
+                                                <div className="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Auction Reminders</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-5 border border-purple-100">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center text-white text-lg">⭐</div>
+                                            <div>
+                                                <div className="text-2xl font-display font-black text-purple-700">0</div>
+                                                <div className="text-[9px] font-bold text-purple-600 uppercase tracking-wider">Watchlist Updates</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Empty State */}
+                                <div className="flex flex-col items-center justify-center py-16 text-center">
+                                    <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center text-4xl mb-6">🔕</div>
+                                    <h3 className="text-xl font-display font-black text-slate-700 mb-2">No Active Alerts</h3>
+                                    <p className="text-slate-400 text-sm max-w-md mb-6">Set up alerts to get notified about price changes, upcoming auctions, and updates to your watchlist properties.</p>
+                                    <div className="flex gap-3">
+                                        <button onClick={() => setView('properties')} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-display font-bold text-sm shadow-lg hover:bg-blue-700 transition-all">
+                                            Browse Properties
+                                        </button>
+                                        <button onClick={() => setView('watchlist')} className="bg-white text-slate-700 border border-slate-200 px-5 py-2.5 rounded-xl font-display font-bold text-sm hover:bg-slate-50 transition-all">
+                                            View Watchlist
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         ) : view === 'list' ? (
                             /* List View - State Database */
                             <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full">
@@ -1251,7 +2051,7 @@ export default function AuctionPlatform() {
                                                         `${STATE_NAMES[abbr] || abbr}\t${info.type}\t${info.interestRate}\t${info.redemptionPeriod}\t${info.notes}`
                                                     ).join('\n');
                                                     await copyToClipboard(`State\tType\tInterest Rate\tRedemption\tNotes\n${text}`);
-                                                    alert('Copied to clipboard!');
+                                                    toast.success('Copied to clipboard!');
                                                 }}
                                                 className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2"
                                             >
@@ -1715,11 +2515,11 @@ export default function AuctionPlatform() {
                                 {/* Key Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">26</div>
+                                        <div className="text-3xl font-display font-black">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Lien States</div>
                                     </div>
                                     <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">25</div>
+                                        <div className="text-3xl font-display font-black">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deed States</div>
                                     </div>
                                     <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white">
@@ -1732,6 +2532,11 @@ export default function AuctionPlatform() {
                                     </div>
                                 </div>
                             </div>
+                        ) : view === 'settings' ? (
+                            /* User Settings View */
+                            <div className="h-full overflow-auto p-6">
+                                <UserSettings onClose={() => setView('map')} />
+                            </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full gap-4 opacity-30">
                                 <div className="text-6xl">⚡</div>
@@ -1743,7 +2548,7 @@ export default function AuctionPlatform() {
                 </div >
 
                 {/* Footer */}
-                < footer className="h-9 bg-white/50 backdrop-blur-sm border-t border-slate-200/40 flex items-center justify-between px-8 shrink-0" >
+                <footer className="h-9 bg-white/50 backdrop-blur-sm border-t border-slate-200/40 flex items-center justify-between px-8 shrink-0" >
                     <div className="text-[8px] font-black text-slate-400 tracking-widest uppercase">System Core v4.2.19</div>
                     <div className="flex gap-4 items-center">
                         <span className="text-[8px] font-bold text-slate-400 uppercase">Data: Census • Zillow • Regrid</span>
@@ -1752,6 +2557,19 @@ export default function AuctionPlatform() {
                     </div>
                 </footer >
             </main >
+
+            {/* Welcome Screen for first-time users */}
+            <WelcomeScreen user={user} onDismiss={() => { }} />
+
+            {/* Mobile Bottom Navigation */}
+            <MobileNav
+                activeView={view}
+                onNavigate={(newView) => {
+                    setView(newView);
+                    setSelectedCounty(null);
+                    setIsSidebarOpen(false);
+                }}
+            />
         </div >
     );
 }

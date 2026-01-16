@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 
-export default function SignIn({ onNavigateToSignUp }) {
+export default function SignIn({ onNavigateToSignUp, onNavigateToForgot }) {
     const { signIn, error, clearError } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -82,8 +82,8 @@ export default function SignIn({ onNavigateToSignUp }) {
                                 value={email}
                                 onChange={(e) => { setEmail(e.target.value); clearError(); }}
                                 className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.email
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
+                                    ? 'border-red-400 focus:ring-red-400'
+                                    : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
                                     }`}
                                 placeholder="you@example.com"
                             />
@@ -103,8 +103,8 @@ export default function SignIn({ onNavigateToSignUp }) {
                                     value={password}
                                     onChange={(e) => { setPassword(e.target.value); clearError(); }}
                                     className={`w-full px-4 py-3 pr-12 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.password
-                                            ? 'border-red-400 focus:ring-red-400'
-                                            : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
+                                        ? 'border-red-400 focus:ring-red-400'
+                                        : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
                                         }`}
                                     placeholder="••••••••"
                                 />
@@ -132,7 +132,7 @@ export default function SignIn({ onNavigateToSignUp }) {
                                 />
                                 <span className="text-sm text-slate-300">Remember me</span>
                             </label>
-                            <button type="button" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                            <button type="button" onClick={onNavigateToForgot} className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
                                 Forgot password?
                             </button>
                         </div>
