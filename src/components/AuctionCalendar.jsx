@@ -1,201 +1,444 @@
 import React, { useState, useMemo } from 'react';
 
-// 2026 Auction Calendar - Exact dates for each state
+// 2026 Auction Calendar - Expanded dates for all states
 const AUCTION_CALENDAR_2026 = {
     // MONTHLY STATES
-    'TX': { frequency: 'Monthly', dates: ['Jan 7', 'Feb 3', 'Mar 3', 'Apr 7', 'May 5', 'Jun 2', 'Jul 7', 'Aug 4', 'Sep 1', 'Oct 6', 'Nov 3', 'Dec 1'], note: '1st Tuesday of each month' },
-    'GA': { frequency: 'Monthly', dates: ['Jan 6', 'Feb 3', 'Mar 3', 'Apr 7', 'May 5', 'Jun 2', 'Jul 7', 'Aug 4', 'Sep 1', 'Oct 6', 'Nov 3', 'Dec 1'], note: '1st Tuesday of each month' },
+    'TX': { frequency: 'Monthly', type: 'Deed', dates: ['2026-01-06', '2026-02-03', '2026-03-03', '2026-04-07', '2026-05-05', '2026-06-02', '2026-07-07', '2026-08-04', '2026-09-01', '2026-10-06', '2026-11-03', '2026-12-01'], note: '1st Tuesday of each month', rate: '25% penalty' },
+    'GA': { frequency: 'Monthly', type: 'Lien', dates: ['2026-01-06', '2026-02-03', '2026-03-03', '2026-04-07', '2026-05-05', '2026-06-02', '2026-07-07', '2026-08-04', '2026-09-01', '2026-10-06', '2026-11-03', '2026-12-01'], note: '1st Tuesday of each month', rate: '20-40%' },
+    'PA': { frequency: 'Monthly', type: 'Deed', dates: ['2026-01-21', '2026-02-18', '2026-03-18', '2026-04-15', '2026-05-20', '2026-06-17', '2026-07-15', '2026-08-19', '2026-09-16', '2026-10-21', '2026-11-18', '2026-12-16'], note: 'Monthly/Quarterly by county', rate: 'N/A' },
+    'OH': { frequency: 'Year-round', type: 'Deed', dates: ['2026-01-15', '2026-02-12', '2026-03-12', '2026-04-09', '2026-05-14', '2026-06-11', '2026-07-09', '2026-08-13', '2026-09-10', '2026-10-08', '2026-11-12', '2026-12-10'], note: 'Sheriff sales year-round by county', rate: 'N/A' },
 
     // ANNUAL STATES - Specific months
-    'FL': { frequency: 'Annual', dates: ['May 28', 'Jun 1-15'], note: 'County-specific dates in May-June' },
-    'AZ': { frequency: 'Annual', dates: ['Feb 10'], note: 'February, 2nd Tuesday - Maricopa largest' },
-    'IL': { frequency: 'Annual', dates: ['Oct 20', 'Nov 3'], note: 'October-November' },
-    'IN': { frequency: 'Annual', dates: ['Sep 14', 'Oct 5'], note: 'September-October' },
-    'CO': { frequency: 'Annual', dates: ['Nov 4', 'Nov 11'], note: 'November' },
-    'NJ': { frequency: 'Varies', dates: ['Oct 15', 'Nov 1', 'Dec 1'], note: 'October-December by municipality' },
-    'MD': { frequency: 'Annual', dates: ['May 11', 'Jun 8'], note: 'May-June' },
-    'IA': { frequency: 'Annual', dates: ['Jun 15'], note: '3rd Monday of June - HIGHEST RATE 24%' },
-    'AL': { frequency: 'Annual', dates: ['May 18', 'Jun 1'], note: 'May-June' },
-    'KY': { frequency: 'Annual', dates: ['Jul 13', 'Aug 10'], note: 'July-August' },
-    'LA': { frequency: 'Varies', dates: ['Jun 8', 'Jul 6'], note: 'June-July by parish' },
-    'MS': { frequency: 'Annual', dates: ['Aug 31'], note: 'Last Monday of August' },
-    'MO': { frequency: 'Annual', dates: ['Aug 24'], note: '4th Monday of August' },
-    'MT': { frequency: 'Annual', dates: ['Jul 13'], note: 'July' },
-    'NE': { frequency: 'Annual', dates: ['Mar 2'], note: '1st Monday of March' },
-    'NH': { frequency: 'Annual', dates: ['May 18', 'Jun 15'], note: 'May-June' },
-    'OK': { frequency: 'Annual', dates: ['Jun 8'], note: '2nd Monday of June' },
-    'SC': { frequency: 'Annual', dates: ['Oct 5', 'Nov 2'], note: 'October-November' },
-    'SD': { frequency: 'Annual', dates: ['Dec 15'], note: '3rd Tuesday of December' },
-    'VT': { frequency: 'Annual', dates: ['Apr 13', 'May 11'], note: 'April-June' },
-    'WV': { frequency: 'Annual', dates: ['Oct 19', 'Nov 16'], note: 'October-November' },
-    'WY': { frequency: 'Annual', dates: ['Sep 8'], note: 'September' },
-    'CT': { frequency: 'Annual', dates: ['Jun 8', 'Jul 6'], note: 'June-July' },
-    'DC': { frequency: 'Annual', dates: ['Jul 13'], note: 'July' },
+    'FL': { frequency: 'Annual', type: 'Lien', dates: ['2026-05-28', '2026-06-01', '2026-06-08', '2026-06-15'], note: 'County-specific dates in May-June', rate: '18%' },
+    'AZ': { frequency: 'Annual', type: 'Lien', dates: ['2026-02-10', '2026-02-15'], note: 'February - Maricopa largest', rate: '16%' },
+    'IL': { frequency: 'Annual', type: 'Lien', dates: ['2026-10-20', '2026-11-03'], note: 'October-November', rate: '18%' },
+    'IN': { frequency: 'Annual', type: 'Lien', dates: ['2026-09-14', '2026-10-05'], note: 'September-October', rate: '10-15%' },
+    'CO': { frequency: 'Annual', type: 'Lien', dates: ['2026-11-04', '2026-11-11'], note: 'November', rate: 'Fed+9pts' },
+    'NJ': { frequency: 'Varies', type: 'Lien', dates: ['2026-10-15', '2026-11-01', '2026-12-01'], note: 'Oct-Dec by municipality', rate: '18%' },
+    'MD': { frequency: 'Annual', type: 'Lien', dates: ['2026-05-11', '2026-06-08'], note: 'May-June', rate: '18-24%' },
+    'IA': { frequency: 'Annual', type: 'Lien', dates: ['2026-06-15'], note: '3rd Monday of June – HIGHEST RATE 24%', rate: '24%' },
+    'AL': { frequency: 'Annual', type: 'Lien', dates: ['2026-05-18', '2026-06-01'], note: 'May-June', rate: '12%' },
+    'KY': { frequency: 'Annual', type: 'Lien', dates: ['2026-07-13', '2026-08-10'], note: 'July-August', rate: '12%' },
+    'LA': { frequency: 'Varies', type: 'Lien', dates: ['2026-06-08', '2026-07-06'], note: 'June-July by parish', rate: 'Bid-down' },
+    'MS': { frequency: 'Annual', type: 'Lien', dates: ['2026-08-31'], note: 'Last Monday of August', rate: '18%' },
+    'MO': { frequency: 'Annual', type: 'Lien', dates: ['2026-08-24'], note: '4th Monday of August', rate: '10%' },
+    'MT': { frequency: 'Annual', type: 'Lien', dates: ['2026-07-13'], note: 'July', rate: '10%' },
+    'NE': { frequency: 'Annual', type: 'Lien', dates: ['2026-03-02'], note: '1st Monday of March', rate: '14%' },
+    'NH': { frequency: 'Annual', type: 'Lien', dates: ['2026-05-18', '2026-06-15'], note: 'May-June', rate: '18%' },
+    'OK': { frequency: 'Annual', type: 'Lien', dates: ['2026-06-08'], note: '2nd Monday of June', rate: '8%' },
+    'SC': { frequency: 'Annual', type: 'Lien', dates: ['2026-10-05', '2026-11-02'], note: 'October-November', rate: '3-12%' },
+    'SD': { frequency: 'Annual', type: 'Lien', dates: ['2026-12-15'], note: '3rd Tuesday of December', rate: '10-12%' },
+    'VT': { frequency: 'Annual', type: 'Deed', dates: ['2026-04-13', '2026-05-11'], note: 'April-June', rate: 'N/A' },
+    'WV': { frequency: 'Annual', type: 'Lien', dates: ['2026-10-19', '2026-11-16'], note: 'October-November', rate: '12%' },
+    'WY': { frequency: 'Annual', type: 'Lien', dates: ['2026-09-08'], note: 'September', rate: '15%+3%' },
+    'CT': { frequency: 'Annual', type: 'Lien', dates: ['2026-06-08', '2026-07-06'], note: 'June-July', rate: '18%' },
+    'DC': { frequency: 'Annual', type: 'Lien', dates: ['2026-07-13'], note: 'July', rate: '18%' },
 
     // DEED STATES
-    'CA': { frequency: 'Varies', dates: ['Mar 15', 'Apr 12', 'Sep 20'], note: 'Varies by county - March/April/September' },
-    'MI': { frequency: 'Annual', dates: ['Jul 21'], note: '3rd Tuesday of July' },
-    'OH': { frequency: 'Year-round', dates: ['Ongoing'], note: 'Sheriff sales year-round by county' },
-    'PA': { frequency: 'Monthly', dates: ['Varies'], note: 'Monthly/Quarterly by county' },
-    'NY': { frequency: 'Varies', dates: ['Spring', 'Fall'], note: 'Spring and Fall by county' },
-    'MN': { frequency: 'Annual', dates: ['May 11'], note: 'May' },
-    'NV': { frequency: 'Annual', dates: ['Jun 8'], note: 'June - Clark County' },
-    'NC': { frequency: 'Varies', dates: ['Varies'], note: 'By county' },
-    'TN': { frequency: 'Varies', dates: ['Varies'], note: 'By county' },
-    'VA': { frequency: 'Varies', dates: ['Varies'], note: 'By locality' },
-    'WA': { frequency: 'Varies', dates: ['Varies'], note: 'By county' },
+    'CA': { frequency: 'Varies', type: 'Deed', dates: ['2026-03-15', '2026-04-12', '2026-09-20'], note: 'Varies – March/April/September', rate: 'N/A' },
+    'MI': { frequency: 'Annual', type: 'Deed', dates: ['2026-07-21'], note: '3rd Tuesday of July', rate: 'N/A' },
+    'NY': { frequency: 'Varies', type: 'Deed', dates: ['2026-04-15', '2026-10-15'], note: 'Spring and Fall by county', rate: 'N/A' },
+    'MN': { frequency: 'Annual', type: 'Deed', dates: ['2026-05-11'], note: 'May', rate: 'N/A' },
+    'NV': { frequency: 'Annual', type: 'Deed', dates: ['2026-06-08'], note: 'June – Clark County', rate: 'N/A' },
+    'NC': { frequency: 'Varies', type: 'Deed', dates: ['2026-03-20', '2026-06-19', '2026-09-18'], note: 'Quarterly by county', rate: 'N/A' },
+    'TN': { frequency: 'Varies', type: 'Deed', dates: ['2026-04-10', '2026-07-10', '2026-10-09'], note: 'Quarterly by county', rate: 'N/A' },
+    'VA': { frequency: 'Varies', type: 'Deed', dates: ['2026-03-12', '2026-06-11', '2026-09-10', '2026-12-10'], note: 'Quarterly by locality', rate: 'N/A' },
+    'WA': { frequency: 'Varies', type: 'Deed', dates: ['2026-03-16', '2026-06-15', '2026-09-14'], note: 'Quarterly by county', rate: 'N/A' },
+    'AR': { frequency: 'Varies', type: 'Deed', dates: ['2026-03-10', '2026-06-09'], note: 'Quarterly', rate: 'N/A' },
 };
 
-// Get months for filtering
-const MONTHS = ['All', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export default function AuctionCalendar({ onSelectState }) {
-    const [selectedMonth, setSelectedMonth] = useState('All');
+export default function AuctionCalendar({ auctions, onSelectState }) {
+    const today = new Date();
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
+    const [selectedDay, setSelectedDay] = useState(null);
     const [typeFilter, setTypeFilter] = useState('all'); // 'all', 'lien', 'deed'
 
-    // State type mapping
-    const lienStates = ['FL', 'AZ', 'GA', 'IL', 'IN', 'CO', 'NJ', 'MD', 'IA', 'AL', 'KY', 'LA', 'MS', 'MO', 'MT', 'NE', 'NH', 'OK', 'SC', 'SD', 'VT', 'WV', 'WY', 'CT', 'DC'];
+    // Build an index: dateString -> [{state, info}]
+    const dateIndex = useMemo(() => {
+        const idx = {};
 
-    // Filter and sort calendar entries
-    const filteredCalendar = useMemo(() => {
-        return Object.entries(AUCTION_CALENDAR_2026)
-            .filter(([state, info]) => {
-                // Type filter
-                if (typeFilter === 'lien' && !lienStates.includes(state)) return false;
-                if (typeFilter === 'deed' && lienStates.includes(state)) return false;
-
-                // Month filter
-                if (selectedMonth !== 'All') {
-                    const hasMonth = info.dates.some(d => d.toLowerCase().includes(selectedMonth.toLowerCase()));
-                    if (!hasMonth) return false;
-                }
-                return true;
-            })
-            .sort((a, b) => {
-                // Sort by frequency (Monthly first) then by first date
-                if (a[1].frequency === 'Monthly' && b[1].frequency !== 'Monthly') return -1;
-                if (a[1].frequency !== 'Monthly' && b[1].frequency === 'Monthly') return 1;
-                return a[0].localeCompare(b[0]);
+        // Add static schedule data
+        Object.entries(AUCTION_CALENDAR_2026).forEach(([state, info]) => {
+            if (typeFilter === 'lien' && info.type !== 'Lien') return;
+            if (typeFilter === 'deed' && info.type !== 'Deed') return;
+            info.dates.forEach(d => {
+                if (!idx[d]) idx[d] = [];
+                idx[d].push({ state, ...info });
             });
-    }, [selectedMonth, typeFilter]);
+        });
 
-    // Count upcoming sales this month
-    const currentMonth = MONTHS[new Date().getMonth() + 1];
-    const thisMonthCount = Object.entries(AUCTION_CALENDAR_2026)
-        .filter(([_, info]) => info.dates.some(d => d.toLowerCase().includes(currentMonth.toLowerCase())))
-        .length;
+        // Merge live auction data from backend
+        if (auctions && auctions.length > 0) {
+            auctions.forEach(a => {
+                const dateStr = a.sale_date;
+                if (typeFilter === 'lien' && a.sale_type !== 'Tax Lien') return;
+                if (typeFilter === 'deed' && (a.sale_type !== 'Tax Deed' && a.sale_type !== 'Sheriff Sale')) return;
+
+                if (!idx[dateStr]) idx[dateStr] = [];
+                // Only add if not already present from static data (prefer live data)
+                const exists = idx[dateStr].some(e => e.state === a.state && e.county === a.county);
+                if (!exists) {
+                    idx[dateStr].push({
+                        state: a.state,
+                        county: a.county,
+                        type: a.sale_type === 'Tax Lien' ? 'Lien' : 'Deed',
+                        frequency: 'Confirmed',
+                        rate: a.interest_rate || 'N/A',
+                        note: a.notes || `${a.county} Live Auction`,
+                        isLive: true
+                    });
+                }
+            });
+        }
+
+        return idx;
+    }, [auctions, typeFilter]);
+
+    // Calendar grid generation
+    const calendarDays = useMemo(() => {
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+
+        const days = [];
+        // Previous month trailing days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            days.push({ day: prevMonthDays - i, currentMonth: false, date: null });
+        }
+        // Current month days
+        for (let d = 1; d <= daysInMonth; d++) {
+            const mm = String(currentMonth + 1).padStart(2, '0');
+            const dd = String(d).padStart(2, '0');
+            const dateStr = `${currentYear}-${mm}-${dd}`;
+            days.push({ day: d, currentMonth: true, date: dateStr, events: dateIndex[dateStr] || [] });
+        }
+        // Next month leading days
+        const remaining = 42 - days.length;
+        for (let i = 1; i <= remaining; i++) {
+            days.push({ day: i, currentMonth: false, date: null });
+        }
+        return days;
+    }, [currentMonth, currentYear, dateIndex]);
+
+    // Monthly stats
+    const monthStats = useMemo(() => {
+        let totalAuctions = 0;
+        let lienCount = 0;
+        let deedCount = 0;
+        let highRateStates = [];
+
+        calendarDays.forEach(d => {
+            if (d.currentMonth && d.events.length > 0) {
+                totalAuctions += d.events.length;
+                d.events.forEach(e => {
+                    if (e.type === 'Lien') lienCount++;
+                    else deedCount++;
+                    if (['IA', 'GA', 'FL', 'MD', 'CT', 'DC', 'NJ'].includes(e.state)) {
+                        if (!highRateStates.includes(e.state)) highRateStates.push(e.state);
+                    }
+                });
+            }
+        });
+        return { totalAuctions, lienCount, deedCount, highRateStates };
+    }, [calendarDays]);
+
+    const goToday = () => { setCurrentMonth(today.getMonth()); setCurrentYear(today.getFullYear()); setSelectedDay(null); };
+    const goPrev = () => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); } else { setCurrentMonth(m => m - 1); } setSelectedDay(null); };
+    const goNext = () => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); } else { setCurrentMonth(m => m + 1); } setSelectedDay(null); };
+
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+    // Events for selected day
+    const selectedDayEvents = selectedDay ? (dateIndex[selectedDay] || []) : [];
 
     return (
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-6 md:p-8 h-full overflow-auto">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <div>
-                    <h2 className="font-display font-black text-2xl text-slate-900">📅 2026 Tax Sale Calendar</h2>
-                    <p className="text-slate-500 text-sm mt-1">Upcoming auction dates by state</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-black">
-                        {thisMonthCount} sales this month
-                    </span>
-                </div>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-wrap gap-3 mb-6">
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-slate-400 uppercase">Month:</span>
-                    <div className="flex flex-wrap gap-1">
-                        {MONTHS.map(month => (
-                            <button
-                                key={month}
-                                onClick={() => setSelectedMonth(month)}
-                                className={`px-2 py-1 rounded text-xs font-bold transition-all ${selectedMonth === month ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                            >
-                                {month}
+        <div className="h-full flex flex-col lg:flex-row gap-4 overflow-hidden">
+            {/* Main Calendar */}
+            <div className="flex-1 bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col overflow-hidden">
+                {/* Header */}
+                <div className="p-4 md:p-6 border-b border-slate-100">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 className="font-display font-black text-2xl md:text-3xl text-slate-900 tracking-tight">
+                                {MONTH_NAMES[currentMonth]} {currentYear}
+                            </h2>
+                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Tax Sale Calendar</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button onClick={goToday} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">
+                                Today
                             </button>
-                        ))}
+                            <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-all">
+                                ←
+                            </button>
+                            <button onClick={goNext} className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-all">
+                                →
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Filters + Stats */}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            {['all', 'lien', 'deed'].map(type => (
+                                <button
+                                    key={type}
+                                    onClick={() => setTypeFilter(type)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all capitalize ${typeFilter === type
+                                        ? (type === 'lien' ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : type === 'deed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-900 text-white shadow-lg')
+                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    {type === 'all' ? 'All Types' : type}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-black">
+                                {monthStats.totalAuctions} auctions
+                            </span>
+                            {monthStats.lienCount > 0 && (
+                                <span className="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-[10px] font-black">
+                                    {monthStats.lienCount} Lien
+                                </span>
+                            )}
+                            {monthStats.deedCount > 0 && (
+                                <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black">
+                                    {monthStats.deedCount} Deed
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-slate-400 uppercase">Type:</span>
-                    {['all', 'lien', 'deed'].map(type => (
-                        <button
-                            key={type}
-                            onClick={() => setTypeFilter(type)}
-                            className={`px-3 py-1 rounded text-xs font-bold transition-all capitalize ${typeFilter === type ? (type === 'lien' ? 'bg-purple-600 text-white' : type === 'deed' ? 'bg-indigo-600 text-white' : 'bg-blue-600 text-white') : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                        >
-                            {type}
-                        </button>
+
+                {/* Day Headers */}
+                <div className="grid grid-cols-7 border-b border-slate-100">
+                    {DAY_NAMES.map(d => (
+                        <div key={d} className="py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            {d}
+                        </div>
                     ))}
+                </div>
+
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 flex-1 overflow-auto">
+                    {calendarDays.map((cell, i) => {
+                        const isToday = cell.date === todayStr;
+                        const isSelected = cell.date === selectedDay;
+                        const hasEvents = cell.events && cell.events.length > 0;
+                        const lienEvents = hasEvents ? cell.events.filter(e => e.type === 'Lien') : [];
+                        const deedEvents = hasEvents ? cell.events.filter(e => e.type !== 'Lien') : [];
+
+                        return (
+                            <div
+                                key={i}
+                                onClick={() => cell.currentMonth && cell.date && setSelectedDay(cell.date === selectedDay ? null : cell.date)}
+                                className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-50 transition-all relative ${!cell.currentMonth ? 'bg-slate-50/50' :
+                                    isSelected ? 'bg-blue-50 ring-2 ring-blue-500 ring-inset z-10' :
+                                        hasEvents ? 'bg-white hover:bg-blue-50/50 cursor-pointer' :
+                                            'bg-white'
+                                    }`}
+                            >
+                                <div className={`text-sm font-bold mb-1 ${!cell.currentMonth ? 'text-slate-300' :
+                                    isToday ? 'text-white' :
+                                        isSelected ? 'text-blue-700' :
+                                            'text-slate-700'
+                                    }`}>
+                                    {isToday ? (
+                                        <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-600 rounded-full text-white text-xs font-black">
+                                            {cell.day}
+                                        </span>
+                                    ) : cell.day}
+                                </div>
+
+                                {/* Event dots */}
+                                {hasEvents && (
+                                    <div className="flex flex-wrap gap-0.5 mt-0.5">
+                                        {lienEvents.slice(0, 3).map((e, j) => (
+                                            <div key={`l${j}`} className="flex items-center gap-0.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+                                                <span className="text-[8px] font-black text-purple-600 hidden md:inline">{e.state}</span>
+                                            </div>
+                                        ))}
+                                        {deedEvents.slice(0, 3).map((e, j) => (
+                                            <div key={`d${j}`} className="flex items-center gap-0.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                                                <span className="text-[8px] font-black text-indigo-600 hidden md:inline">{e.state}</span>
+                                            </div>
+                                        ))}
+                                        {cell.events.length > 6 && (
+                                            <span className="text-[8px] font-bold text-slate-400">+{cell.events.length - 6}</span>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Event count badge */}
+                                {hasEvents && cell.events.length > 0 && (
+                                    <div className="absolute top-1 right-1 w-4 h-4 md:w-5 md:h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                        <span className="text-[8px] md:text-[9px] font-black text-white">{cell.events.length}</span>
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Legend */}
+                <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-100 bg-slate-50/50">
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                        <span className="text-[10px] font-bold text-slate-500">Lien State</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                        <span className="text-[10px] font-bold text-slate-500">Deed State</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span className="text-[7px] text-white font-bold">3</span>
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-500"># of Sales</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Results count */}
-            <div className="text-xs font-bold text-slate-400 mb-4">{filteredCalendar.length} states found</div>
-
-            {/* Calendar Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredCalendar.map(([state, info]) => {
-                    const isLien = lienStates.includes(state);
-                    const isHighRate = ['IA', 'GA', 'FL', 'MD'].includes(state);
-
-                    return (
-                        <div
-                            key={state}
-                            onClick={() => onSelectState && onSelectState(state)}
-                            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all hover:shadow-lg ${isHighRate ? 'border-amber-300 bg-amber-50' : 'border-slate-100 bg-white hover:border-blue-200'}`}
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-display font-black text-lg">{state}</span>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black text-white ${isLien ? 'bg-purple-600' : 'bg-indigo-600'}`}>
-                                        {isLien ? 'Lien' : 'Deed'}
-                                    </span>
-                                    {isHighRate && <span className="text-amber-500">🔥</span>}
+            {/* Right Sidebar — Day Detail or Summary */}
+            <div className="w-full lg:w-96 flex flex-col gap-4 overflow-auto">
+                {/* Selected Day Panel */}
+                {selectedDay ? (
+                    <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col overflow-hidden">
+                        <div className="p-5 border-b border-slate-100">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Auction Date</div>
+                                    <div className="font-display font-black text-xl text-slate-900 mt-0.5">
+                                        {new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                                    </div>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${info.frequency === 'Monthly' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
-                                    {info.frequency}
-                                </span>
+                                <button onClick={() => setSelectedDay(null)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold transition-all text-sm">
+                                    ×
+                                </button>
                             </div>
-
-                            <div className="flex flex-wrap gap-1 mb-2">
-                                {info.dates.slice(0, 4).map((date, i) => (
-                                    <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-bold">
-                                        {date}
+                            {selectedDayEvents.length > 0 && (
+                                <div className="mt-2 flex gap-2">
+                                    <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-black">
+                                        {selectedDayEvents.length} {selectedDayEvents.length === 1 ? 'sale' : 'sales'}
                                     </span>
-                                ))}
-                                {info.dates.length > 4 && (
-                                    <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded text-xs font-bold">
-                                        +{info.dates.length - 4} more
-                                    </span>
-                                )}
-                            </div>
-
-                            <p className="text-xs text-slate-500">{info.note}</p>
+                                </div>
+                            )}
                         </div>
-                    );
-                })}
-            </div>
 
-            {/* High Rate States Highlight */}
-            <div className="mt-8 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200">
-                <div className="font-display font-black text-amber-800 mb-2">🔥 Highest Return States</div>
-                <div className="flex flex-wrap gap-2">
-                    {[
-                        { state: 'IA', rate: '24%', date: 'Jun 15' },
-                        { state: 'GA', rate: '20%+', date: 'Monthly' },
-                        { state: 'FL', rate: '18%', date: 'May-Jun' },
-                        { state: 'MD', rate: '18-24%', date: 'May-Jun' },
-                    ].map(s => (
-                        <button
-                            key={s.state}
-                            onClick={() => onSelectState && onSelectState(s.state)}
-                            className="flex items-center gap-2 px-3 py-2 bg-white rounded-xl border border-amber-200 hover:border-amber-400 transition-all"
-                        >
-                            <span className="font-display font-black">{s.state}</span>
-                            <span className="text-emerald-600 font-bold text-sm">{s.rate}</span>
-                            <span className="text-slate-400 text-xs">→ {s.date}</span>
-                        </button>
-                    ))}
+                        <div className="flex-1 overflow-auto p-4 space-y-3">
+                            {selectedDayEvents.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-12 text-center">
+                                    <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl mb-3">📅</div>
+                                    <p className="text-slate-400 text-sm font-medium">No auctions scheduled</p>
+                                </div>
+                            ) : (
+                                selectedDayEvents.map((e, i) => {
+                                    const isLien = e.type === 'Lien';
+                                    const isHighRate = ['IA', 'GA', 'FL', 'MD', 'CT', 'DC', 'NJ', 'NH', 'MS', 'IL'].includes(e.state);
+                                    return (
+                                        <div
+                                            key={i}
+                                            onClick={() => onSelectState && onSelectState(e.state)}
+                                            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01] ${isHighRate ? 'border-amber-200 bg-amber-50/50' : 'border-slate-100 bg-white hover:border-blue-200'
+                                                }`}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-display font-black text-lg text-slate-900">{e.state}</span>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${isLien ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                        {e.type}
+                                                    </span>
+                                                    {isHighRate && <span className="text-amber-500">🔥</span>}
+                                                </div>
+                                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${e.frequency === 'Monthly' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                                                    {e.frequency}
+                                                </span>
+                                            </div>
+                                            {e.rate && e.rate !== 'N/A' && (
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Rate</span>
+                                                    <span className="text-sm font-black text-emerald-600">{e.rate}</span>
+                                                </div>
+                                            )}
+                                            <p className="text-xs text-slate-500">{e.note}</p>
+                                            <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-bold">
+                                                <span>Explore State →</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    /* Summary Panel when no day is selected */
+                    <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-5">
+                        <h3 className="font-display font-black text-lg text-slate-900 mb-1">📅 Month Summary</h3>
+                        <p className="text-xs text-slate-400 mb-4">Click any day with events to see details</p>
+
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="bg-blue-50 rounded-xl p-3 text-center">
+                                <div className="font-display font-black text-xl text-blue-700">{monthStats.totalAuctions}</div>
+                                <div className="text-[9px] font-bold text-blue-500 uppercase">Total</div>
+                            </div>
+                            <div className="bg-purple-50 rounded-xl p-3 text-center">
+                                <div className="font-display font-black text-xl text-purple-700">{monthStats.lienCount}</div>
+                                <div className="text-[9px] font-bold text-purple-500 uppercase">Lien</div>
+                            </div>
+                            <div className="bg-indigo-50 rounded-xl p-3 text-center">
+                                <div className="font-display font-black text-xl text-indigo-700">{monthStats.deedCount}</div>
+                                <div className="text-[9px] font-bold text-indigo-500 uppercase">Deed</div>
+                            </div>
+                        </div>
+
+                        {monthStats.highRateStates.length > 0 && (
+                            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-3 border border-amber-200">
+                                <div className="text-[10px] font-black text-amber-800 uppercase tracking-wider mb-2">🔥 High-Yield States This Month</div>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {monthStats.highRateStates.map(s => (
+                                        <button
+                                            key={s}
+                                            onClick={() => onSelectState && onSelectState(s)}
+                                            className="px-2.5 py-1 bg-white rounded-lg border border-amber-200 text-xs font-black text-slate-700 hover:border-amber-400 transition-all"
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Quick Navigation */}
+                <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-lg p-5">
+                    <h3 className="font-display font-black text-white mb-3">🚀 Quick Jump</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                        {MONTH_NAMES.map((name, i) => {
+                            const isActive = i === currentMonth;
+                            const mm = String(i + 1).padStart(2, '0');
+                            const monthHasEvents = Object.keys(dateIndex).some(d => d.startsWith(`2026-${mm}`));
+                            return (
+                                <button
+                                    key={name}
+                                    onClick={() => { setCurrentMonth(i); setCurrentYear(2026); setSelectedDay(null); }}
+                                    className={`py-2 rounded-lg text-[10px] font-black uppercase transition-all ${isActive ? 'bg-blue-600 text-white shadow-lg' :
+                                        monthHasEvents ? 'bg-white/10 text-white hover:bg-white/20' :
+                                            'bg-white/5 text-white/30'
+                                        }`}
+                                >
+                                    {name.slice(0, 3)}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
         </div>

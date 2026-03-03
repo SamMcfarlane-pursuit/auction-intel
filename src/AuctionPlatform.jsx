@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useWatchlist } from './WatchlistContext';
 import { useToast } from './ToastContext';
-import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip } from './data';
+import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip, UPCOMING_AUCTIONS } from './data';
 import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
 import USMap from './USMap';
 import UpcomingAuctions from './UpcomingAuctions';
@@ -20,7 +20,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import UserSettings from './components/UserSettings';
 import 'leaflet/dist/leaflet.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
 
 // Watchlist View Component
 function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
@@ -509,6 +509,8 @@ export default function AuctionPlatform() {
     const [listingsLoading, setListingsLoading] = useState(false);
     const [selectedPropertyForModal, setSelectedPropertyForModal] = useState(null); // Property detail modal
     const [dueDiligenceProperty, setDueDiligenceProperty] = useState(null); // Full Due Diligence view
+    const [showWelcome, setShowWelcome] = useState(true);
+    const [realAuctions, setRealAuctions] = useState([]);
 
     // Fetch data from backend API on mount
     useEffect(() => {
@@ -573,6 +575,37 @@ export default function AuctionPlatform() {
                 }
 
                 setApiStatus('live');
+
+                // Fetch live auctions
+                const auctionRes = await fetch(`${API_BASE}/auctions`);
+                if (auctionRes.ok) {
+                    const auctionData = await auctionRes.json();
+                    if (auctionData.auctions) {
+                        setRealAuctions(auctionData.auctions);
+
+                        // Generate alerts from real auctions (clear and concise)
+                        const newAlerts = auctionData.auctions
+                            .filter(a => {
+                                const saleDate = new Date(a.sale_date);
+                                const today = new Date();
+                                const diffDays = Math.ceil((saleDate - today) / (1000 * 60 * 60 * 24));
+                                return diffDays > 0 && diffDays <= 7; // Sales in next 7 days
+                            })
+                            .map(a => ({
+                                id: `auction-${a.id}`,
+                                type: 'auction',
+                                message: `${a.county}, ${a.state} sale in ${Math.ceil((new Date(a.sale_date) - new Date()) / (1000 * 60 * 60 * 24))} days`,
+                                time: 'Just now',
+                                read: false
+                            }));
+
+                        if (newAlerts.length > 0) {
+                            const existing = JSON.parse(localStorage.getItem('auction_alerts') || '[]');
+                            const merged = [...newAlerts, ...existing.filter(e => !newAlerts.some(n => n.id === e.id))].slice(0, 20);
+                            localStorage.setItem('auction_alerts', JSON.stringify(merged));
+                        }
+                    }
+                }
             } catch (err) {
                 console.warn('Backend API unavailable, using static data:', err.message);
                 setApiStatus('offline');
@@ -868,6 +901,7 @@ export default function AuctionPlatform() {
                         <div className="space-y-0.5">
                             {[
                                 { id: 'map', label: 'Market Map', icon: '🗺️' },
+                                { id: 'auctions', label: 'Live Auctions', icon: '🔨' },
                                 { id: 'properties', label: 'Properties', icon: '🏠' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
@@ -888,6 +922,7 @@ export default function AuctionPlatform() {
                         <div className="space-y-0.5">
                             {[
                                 { id: 'stateinfo', label: 'State Database', icon: '⚖️' },
+                                { id: 'calendar', label: 'Auction Calendar', icon: '📅' },
                                 { id: 'roi', label: 'ROI Calculator', icon: '💰' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
@@ -1263,6 +1298,66 @@ export default function AuctionPlatform() {
                                     ))}
                                 </div>
 
+                                {/* ═══ Live Auctions for this State/County ═══ */}
+                                {(() => {
+                                    const stateAuctions = UPCOMING_AUCTIONS
+                                        .filter(a => {
+                                            const matchState = a.state === selectedState;
+                                            const matchCounty = selectedCounty ? a.county === selectedCounty[0] : true;
+                                            const daysUntil = Math.ceil((new Date(a.saleDate) - new Date()) / (1000 * 60 * 60 * 24));
+                                            return matchState && daysUntil >= 0;
+                                        })
+                                        .sort((a, b) => new Date(a.saleDate) - new Date(b.saleDate))
+                                        .slice(0, 5);
+
+                                    if (stateAuctions.length === 0) return null;
+
+                                    return (
+                                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200/50 overflow-hidden">
+                                            <div className="p-5 border-b border-blue-100/50">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                                        <h3 className="font-display font-black text-slate-900">Upcoming Auctions</h3>
+                                                        <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[9px] font-black">{stateAuctions.length}</span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => setView('auctions')}
+                                                        className="text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                                                    >
+                                                        View All →
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="divide-y divide-blue-100/50">
+                                                {stateAuctions.map(a => {
+                                                    const days = Math.ceil((new Date(a.saleDate) - new Date()) / (1000 * 60 * 60 * 24));
+                                                    const isUrgent = days <= 7;
+                                                    return (
+                                                        <div key={a.id} className="p-4 flex items-center justify-between gap-3 hover:bg-white/50 transition-all">
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center gap-2 mb-0.5">
+                                                                    <span className="font-bold text-slate-900 text-sm">{a.county} County</span>
+                                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black text-white ${a.saleType.includes('Lien') ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                        {a.saleType}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="text-xs text-slate-500">
+                                                                    {new Date(a.saleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {a.propertyCount}+ props • {a.platform}
+                                                                </div>
+                                                            </div>
+                                                            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white shrink-0 ${isUrgent ? 'bg-red-500 animate-pulse' : days <= 30 ? 'bg-amber-500' : 'bg-blue-500'
+                                                                }`}>
+                                                                {days === 0 ? 'TODAY' : days <= 3 ? `${days}d LEFT` : `${days} days`}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
+
                                 {/* Tax Sale Inventory with Platform Links */}
                                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
                                     <div className="p-6 border-b border-slate-50">
@@ -1563,12 +1658,12 @@ export default function AuctionPlatform() {
                         ) : view === 'auctions' ? (
                             /* Auctions View - Upcoming Sales */
                             <UpcomingAuctions
+                                auctions={realAuctions.length > 0 ? realAuctions : null}
                                 onSelectState={(abbr) => { setSelectedState(abbr); setView('list'); }}
-                                onSelectCounty={(name) => {
-                                    if (selectedState) {
-                                        const county = (COUNTIES[selectedState] || []).find(c => c[0] === name);
-                                        if (county) setSelectedCounty(county);
-                                    }
+                                onSelectCounty={(c) => {
+                                    const found = (COUNTIES[selectedState] || []).find(co => co[0] === c);
+                                    if (found) setSelectedCounty(found);
+                                    setView('list');
                                 }}
                             />
                         ) : view === 'calendar' ? (
@@ -2559,7 +2654,7 @@ export default function AuctionPlatform() {
             </main >
 
             {/* Welcome Screen for first-time users */}
-            <WelcomeScreen user={user} onDismiss={() => { }} />
+            {showWelcome && <WelcomeScreen user={user} onDismiss={() => setShowWelcome(false)} />}
 
             {/* Mobile Bottom Navigation */}
             <MobileNav

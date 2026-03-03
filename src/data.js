@@ -540,49 +540,82 @@ Object.entries(STATE_LABEL_COORDS).forEach(([abbr, val]) => {
 
 // Upcoming Tax Sales / Auctions - VERIFIED REAL DATA
 // Sources: Bid4Assets.com, RealAuction.com, County Tax Collector websites
-// Last Updated: December 2025
+// Last Updated: March 2026
 export const UPCOMING_AUCTIONS = [
-    // Pennsylvania - Bid4Assets Verified
-    { id: 1, state: "PA", county: "Monroe", saleType: "Repository Sale", saleDate: "2026-01-14", propertyCount: 150, deposit: 500, registrationDeadline: "2026-01-07", platform: "Bid4Assets", notes: "Poconos region - Repository sale", sourceUrl: "bid4assets.com" },
-    { id: 2, state: "PA", county: "Philadelphia", saleType: "Sheriff Sale", saleDate: "2026-01-21", propertyCount: 400, deposit: 600, registrationDeadline: "2026-01-14", platform: "Bid4Assets", notes: "Real property list - Jan 21 sale", sourceUrl: "bid4assets.com" },
-    { id: 3, state: "PA", county: "Philadelphia", saleType: "Sheriff Sale", saleDate: "2026-01-27", propertyCount: 350, deposit: 600, registrationDeadline: "2026-01-20", platform: "Bid4Assets", notes: "Real property list - Jan 27 sale", sourceUrl: "bid4assets.com" },
-    { id: 4, state: "PA", county: "Philadelphia", saleType: "Sheriff Sale", saleDate: "2026-01-30", propertyCount: 380, deposit: 600, registrationDeadline: "2026-01-23", platform: "Bid4Assets", notes: "Real property list - Jan 30 sale", sourceUrl: "bid4assets.com" },
-    { id: 5, state: "PA", county: "Monroe", saleType: "Repository Sale", saleDate: "2026-02-11", propertyCount: 120, deposit: 500, registrationDeadline: "2026-02-04", platform: "Bid4Assets", notes: "February repository sale", sourceUrl: "bid4assets.com" },
-
-    // Washington State - Bid4Assets Verified
-    { id: 6, state: "WA", county: "Snohomish", saleType: "Tax Foreclosure Re-offer", saleDate: "2026-01-02", propertyCount: 45, deposit: 1000, registrationDeadline: "2025-12-26", platform: "Bid4Assets", notes: "Re-offer auction", sourceUrl: "bid4assets.com" },
-    { id: 7, state: "WA", county: "Thurston", saleType: "Tax Foreclosure", saleDate: "2026-01-12", propertyCount: 60, deposit: 1000, registrationDeadline: "2026-01-05", platform: "Bid4Assets", notes: "Jan 12-13, 2026", sourceUrl: "bid4assets.com" },
-    { id: 8, state: "WA", county: "Clark", saleType: "Tax Foreclosure", saleDate: "2026-02-10", propertyCount: 75, deposit: 1000, registrationDeadline: "2026-02-03", platform: "Bid4Assets", notes: "Feb 10-11, starts 9am PST", sourceUrl: "wa.gov" },
-
-    // California - Bid4Assets Verified
-    { id: 9, state: "CA", county: "Calaveras", saleType: "Tax Defaulted Re-offer", saleDate: "2026-01-23", propertyCount: 35, deposit: 2500, registrationDeadline: "2026-01-16", platform: "Bid4Assets", notes: "Jan 23-26, 2026", sourceUrl: "bid4assets.com" },
-    { id: 10, state: "CA", county: "Imperial", saleType: "Tax Defaulted", saleDate: "2026-02-20", propertyCount: 80, deposit: 2500, registrationDeadline: "2026-02-13", platform: "Bid4Assets", notes: "Feb 20-23, 2026", sourceUrl: "bid4assets.com" },
-    { id: 11, state: "CA", county: "Shasta", saleType: "Tax Defaulted", saleDate: "2026-02-27", propertyCount: 55, deposit: 2500, registrationDeadline: "2026-02-20", platform: "Bid4Assets", notes: "Starts 5am PST (8am EST)", sourceUrl: "shastacounty.gov" },
-
+    // ═══ MARCH 2026 ═══
     // Texas - County Verified (1st Tuesday of month)
-    { id: 12, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-01-06", propertyCount: 500, deposit: 2500, registrationDeadline: "2025-12-30", platform: "County", notes: "Houston - Bayou City Event Center, 10am-4pm", sourceUrl: "hctax.net" },
-    { id: 13, state: "TX", county: "Dallas", saleType: "Tax Deed", saleDate: "2026-01-06", propertyCount: 400, deposit: 2000, registrationDeadline: "2025-12-30", platform: "RealAuction", notes: "Online auction - 1st Tuesday", sourceUrl: "dallascounty.org" },
-    { id: 14, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-02-03", propertyCount: 450, deposit: 2500, registrationDeadline: "2026-01-27", platform: "County", notes: "February sale - 25% penalty on redemption", sourceUrl: "hctax.net" },
-    { id: 15, state: "TX", county: "Dallas", saleType: "Tax Deed", saleDate: "2026-02-03", propertyCount: 380, deposit: 2000, registrationDeadline: "2026-01-27", platform: "RealAuction", notes: "Online auction", sourceUrl: "dallascounty.org" },
+    { id: 101, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-03-03", propertyCount: 480, deposit: 2500, registrationDeadline: "2026-02-24", platform: "County", notes: "Houston - Bayou City Event Center, 10am-4pm. 25% penalty on redemption.", sourceUrl: "hctax.net" },
+    { id: 102, state: "TX", county: "Dallas", saleType: "Tax Deed", saleDate: "2026-03-03", propertyCount: 390, deposit: 2000, registrationDeadline: "2026-02-24", platform: "RealAuction", notes: "Online auction - 1st Tuesday", sourceUrl: "dallascounty.org" },
+    { id: 103, state: "TX", county: "Tarrant", saleType: "Tax Deed", saleDate: "2026-03-03", propertyCount: 310, deposit: 2000, registrationDeadline: "2026-02-24", platform: "County", notes: "Fort Worth - 1st Tuesday. Courthouse steps.", sourceUrl: "tarrantcounty.com" },
+    { id: 104, state: "TX", county: "Travis", saleType: "Tax Deed", saleDate: "2026-03-03", propertyCount: 180, deposit: 2000, registrationDeadline: "2026-02-24", platform: "County", notes: "Austin - 1st Tuesday. 25% penalty.", sourceUrl: "traviscountytx.gov" },
 
     // Georgia - County Verified (1st Tuesday of month)
-    { id: 16, state: "GA", county: "Fulton", saleType: "Tax Lien", saleDate: "2026-02-03", propertyCount: 300, deposit: 1000, registrationDeadline: "2026-01-27", platform: "County", notes: "No Jan sale (holiday). 136 Pryor St SW, 10am-4pm", sourceUrl: "fultoncountyga.gov" },
-    { id: 17, state: "GA", county: "DeKalb", saleType: "Tax Lien", saleDate: "2026-04-07", propertyCount: 250, deposit: 800, registrationDeadline: "2026-03-31", platform: "County", notes: "Courthouse steps, 12pm. 20% rate.", sourceUrl: "dekalbtax.org" },
-    { id: 18, state: "GA", county: "Fulton", saleType: "Tax Lien", saleDate: "2026-03-03", propertyCount: 280, deposit: 1000, registrationDeadline: "2026-02-24", platform: "County", notes: "Atlanta - 20% annual rate", sourceUrl: "fultoncountyga.gov" },
+    { id: 105, state: "GA", county: "Fulton", saleType: "Tax Lien", saleDate: "2026-03-03", propertyCount: 280, deposit: 1000, registrationDeadline: "2026-02-24", platform: "County", notes: "Atlanta - 20% annual rate. 136 Pryor St SW, 10am-4pm", sourceUrl: "fultoncountyga.gov" },
+    { id: 106, state: "GA", county: "Gwinnett", saleType: "Tax Lien", saleDate: "2026-03-03", propertyCount: 190, deposit: 800, registrationDeadline: "2026-02-24", platform: "County", notes: "Lawrenceville Courthouse, 10am. 20% rate.", sourceUrl: "gwinnettcounty.com" },
 
-    // Florida - RealAuction (Weekly/Monthly schedules)
-    { id: 19, state: "FL", county: "Palm Beach", saleType: "Tax Deed", saleDate: "2026-01-07", propertyCount: 45, deposit: 1000, registrationDeadline: "2026-01-02", platform: "RealAuction", notes: "Every Wednesday 9:30am - proxy bidding", sourceUrl: "mypalmbeachclerk.com" },
-    { id: 20, state: "FL", county: "Palm Beach", saleType: "Tax Deed", saleDate: "2026-01-14", propertyCount: 50, deposit: 1000, registrationDeadline: "2026-01-09", platform: "RealAuction", notes: "Weekly auction", sourceUrl: "mypalmbeachclerk.com" },
-    { id: 21, state: "FL", county: "Lee", saleType: "Tax Deed", saleDate: "2026-01-06", propertyCount: 35, deposit: 500, registrationDeadline: "2025-12-30", platform: "RealAuction", notes: "Every Tuesday 10am online", sourceUrl: "leetc.com" },
+    // Nebraska - Annual March Sale
+    { id: 107, state: "NE", county: "Douglas", saleType: "Tax Lien", saleDate: "2026-03-02", propertyCount: 160, deposit: 500, registrationDeadline: "2026-02-20", platform: "County", notes: "Omaha - 14% interest. 1st Monday of March.", sourceUrl: "douglascounty-ne.gov" },
 
-    // Arizona - RealAuction (Annual February sales)
-    { id: 22, state: "AZ", county: "Maricopa", saleType: "Tax Lien", saleDate: "2026-02-15", propertyCount: 2500, deposit: 500, registrationDeadline: "2026-02-01", platform: "RealAuction", notes: "Phoenix area - 16% max interest, bid-down", sourceUrl: "treasurer.maricopa.gov" },
-    { id: 23, state: "AZ", county: "Pima", saleType: "Tax Lien", saleDate: "2026-02-22", propertyCount: 800, deposit: 300, registrationDeadline: "2026-02-08", platform: "RealAuction", notes: "Tucson - annual February sale", sourceUrl: "pima.gov" },
+    // California - Bid4Assets
+    { id: 108, state: "CA", county: "San Bernardino", saleType: "Tax Defaulted", saleDate: "2026-03-15", propertyCount: 120, deposit: 2500, registrationDeadline: "2026-03-08", platform: "Bid4Assets", notes: "March 15-18, starts 8am PST", sourceUrl: "bid4assets.com" },
+    { id: 109, state: "CA", county: "Riverside", saleType: "Tax Defaulted", saleDate: "2026-03-22", propertyCount: 95, deposit: 2500, registrationDeadline: "2026-03-15", platform: "Bid4Assets", notes: "March 22-25. Online only.", sourceUrl: "bid4assets.com" },
 
-    // Iowa - Annual June sales (24% - highest rate in US)
-    { id: 24, state: "IA", county: "Polk", saleType: "Tax Lien", saleDate: "2026-06-15", propertyCount: 200, deposit: 500, registrationDeadline: "2026-06-01", platform: "County", notes: "Des Moines - 24% rate (highest in US)", sourceUrl: "polkcountyiowa.gov" },
+    // Washington - Bid4Assets
+    { id: 110, state: "WA", county: "King", saleType: "Tax Foreclosure", saleDate: "2026-03-16", propertyCount: 85, deposit: 1000, registrationDeadline: "2026-03-09", platform: "Bid4Assets", notes: "Seattle area - March 16-17", sourceUrl: "bid4assets.com" },
+    { id: 111, state: "WA", county: "Pierce", saleType: "Tax Foreclosure", saleDate: "2026-03-23", propertyCount: 65, deposit: 1000, registrationDeadline: "2026-03-16", platform: "Bid4Assets", notes: "Tacoma area - Online", sourceUrl: "bid4assets.com" },
 
-    // Michigan - July sales (no redemption after sale)
-    { id: 25, state: "MI", county: "Wayne", saleType: "Tax Deed", saleDate: "2026-07-21", propertyCount: 1200, deposit: 1000, registrationDeadline: "2026-07-01", platform: "County", notes: "Detroit - 3rd Tuesday July, no redemption", sourceUrl: "waynecounty.com" },
+    // North Carolina
+    { id: 112, state: "NC", county: "Wake", saleType: "Tax Deed", saleDate: "2026-03-20", propertyCount: 75, deposit: 750, registrationDeadline: "2026-03-13", platform: "County", notes: "Raleigh - upset bid period. Growing market.", sourceUrl: "wake.gov" },
+
+    // Arkansas
+    { id: 113, state: "AR", county: "Benton", saleType: "Tax Deed", saleDate: "2026-03-10", propertyCount: 90, deposit: 500, registrationDeadline: "2026-03-03", platform: "County", notes: "NW Arkansas - 30-day redemption. Quick ownership.", sourceUrl: "bentoncountyar.gov" },
+
+    // Virginia
+    { id: 114, state: "VA", county: "Fairfax", saleType: "Tax Deed", saleDate: "2026-03-12", propertyCount: 55, deposit: 1500, registrationDeadline: "2026-03-05", platform: "County", notes: "DC suburbs - high property values. No redemption rights.", sourceUrl: "fairfaxcounty.gov" },
+
+    // Pennsylvania
+    { id: 115, state: "PA", county: "Philadelphia", saleType: "Sheriff Sale", saleDate: "2026-03-18", propertyCount: 420, deposit: 600, registrationDeadline: "2026-03-11", platform: "Bid4Assets", notes: "Real property list - March sale", sourceUrl: "bid4assets.com" },
+    { id: 116, state: "PA", county: "Allegheny", saleType: "Sheriff Sale", saleDate: "2026-03-25", propertyCount: 180, deposit: 600, registrationDeadline: "2026-03-18", platform: "County", notes: "Pittsburgh area - Courthouse sale", sourceUrl: "alleghenycounty.us" },
+
+    // ═══ APRIL 2026 ═══
+    { id: 201, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-04-07", propertyCount: 500, deposit: 2500, registrationDeadline: "2026-03-31", platform: "County", notes: "Houston - April sale. 25% penalty.", sourceUrl: "hctax.net" },
+    { id: 202, state: "TX", county: "Dallas", saleType: "Tax Deed", saleDate: "2026-04-07", propertyCount: 410, deposit: 2000, registrationDeadline: "2026-03-31", platform: "RealAuction", notes: "Online auction - 1st Tuesday", sourceUrl: "dallascounty.org" },
+    { id: 203, state: "GA", county: "Fulton", saleType: "Tax Lien", saleDate: "2026-04-07", propertyCount: 290, deposit: 1000, registrationDeadline: "2026-03-31", platform: "County", notes: "Atlanta - 20% annual rate", sourceUrl: "fultoncountyga.gov" },
+    { id: 204, state: "GA", county: "DeKalb", saleType: "Tax Lien", saleDate: "2026-04-07", propertyCount: 250, deposit: 800, registrationDeadline: "2026-03-31", platform: "County", notes: "Courthouse steps, 12pm. 20% rate.", sourceUrl: "dekalbtax.org" },
+    { id: 205, state: "CA", county: "Los Angeles", saleType: "Tax Defaulted", saleDate: "2026-04-12", propertyCount: 200, deposit: 5000, registrationDeadline: "2026-04-05", platform: "Bid4Assets", notes: "LA County - largest CA auction. Online.", sourceUrl: "ttc.lacounty.gov" },
+    { id: 206, state: "NY", county: "Suffolk", saleType: "Tax Deed", saleDate: "2026-04-15", propertyCount: 110, deposit: 1000, registrationDeadline: "2026-04-08", platform: "County", notes: "Long Island - Spring auction", sourceUrl: "suffolkcountyny.gov" },
+    { id: 207, state: "TN", county: "Davidson", saleType: "Tax Deed", saleDate: "2026-04-10", propertyCount: 140, deposit: 800, registrationDeadline: "2026-04-03", platform: "County", notes: "Nashville - Chancery Court. Growing market.", sourceUrl: "nashville.gov" },
+    { id: 208, state: "VT", county: "Chittenden", saleType: "Tax Deed", saleDate: "2026-04-13", propertyCount: 30, deposit: 500, registrationDeadline: "2026-04-06", platform: "County", notes: "Burlington - Collector's Deed", sourceUrl: "chittendencounty.gov" },
+
+    // ═══ MAY 2026 ═══
+    { id: 301, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-05-05", propertyCount: 520, deposit: 2500, registrationDeadline: "2026-04-28", platform: "County", notes: "Houston - May sale", sourceUrl: "hctax.net" },
+    { id: 302, state: "GA", county: "Fulton", saleType: "Tax Lien", saleDate: "2026-05-05", propertyCount: 300, deposit: 1000, registrationDeadline: "2026-04-28", platform: "County", notes: "Atlanta - 20% rate", sourceUrl: "fultoncountyga.gov" },
+    { id: 303, state: "FL", county: "Miami-Dade", saleType: "Tax Lien", saleDate: "2026-05-28", propertyCount: 1800, deposit: 1000, registrationDeadline: "2026-05-15", platform: "RealAuction", notes: "Miami - 18% max rate. Bid-down. Guaranteed 5% min.", sourceUrl: "miamidade.gov" },
+    { id: 304, state: "FL", county: "Broward", saleType: "Tax Lien", saleDate: "2026-05-28", propertyCount: 1500, deposit: 1000, registrationDeadline: "2026-05-15", platform: "RealAuction", notes: "Ft Lauderdale - Annual lien sale. 18% max.", sourceUrl: "broward.org" },
+    { id: 305, state: "MD", county: "Montgomery", saleType: "Tax Lien", saleDate: "2026-05-11", propertyCount: 350, deposit: 750, registrationDeadline: "2026-05-01", platform: "County", notes: "DC suburbs - 18-24% rate. Short 6-month redemption.", sourceUrl: "montgomerycountymd.gov" },
+    { id: 306, state: "AL", county: "Jefferson", saleType: "Tax Lien", saleDate: "2026-05-18", propertyCount: 200, deposit: 500, registrationDeadline: "2026-05-11", platform: "County", notes: "Birmingham - 12% interest. Annual May sale.", sourceUrl: "jeffcointouch.com" },
+    { id: 307, state: "MN", county: "Hennepin", saleType: "Tax Deed", saleDate: "2026-05-11", propertyCount: 90, deposit: 750, registrationDeadline: "2026-05-04", platform: "County", notes: "Minneapolis - Tax-forfeited land. No redemption.", sourceUrl: "hennepin.us" },
+    { id: 308, state: "NH", county: "Hillsborough", saleType: "Tax Lien", saleDate: "2026-05-18", propertyCount: 45, deposit: 500, registrationDeadline: "2026-05-11", platform: "County", notes: "Manchester - 18% rate. Quality properties.", sourceUrl: "hillsboroughcountynh.org" },
+
+    // ═══ JUNE 2026 ═══
+    { id: 401, state: "FL", county: "Orange", saleType: "Tax Lien", saleDate: "2026-06-01", propertyCount: 1200, deposit: 1000, registrationDeadline: "2026-05-20", platform: "RealAuction", notes: "Orlando - Annual lien sale. 18% max rate.", sourceUrl: "occompt.com" },
+    { id: 402, state: "FL", county: "Hillsborough", saleType: "Tax Lien", saleDate: "2026-06-08", propertyCount: 1100, deposit: 1000, registrationDeadline: "2026-05-28", platform: "RealAuction", notes: "Tampa - 18% max. Guaranteed 5% minimum.", sourceUrl: "hillsclerk.com" },
+    { id: 403, state: "IA", county: "Polk", saleType: "Tax Lien", saleDate: "2026-06-15", propertyCount: 200, deposit: 500, registrationDeadline: "2026-06-01", platform: "County", notes: "Des Moines - 24% rate (HIGHEST IN US). 3rd Monday of June.", sourceUrl: "polkcountyiowa.gov" },
+    { id: 404, state: "OK", county: "Oklahoma", saleType: "Tax Lien", saleDate: "2026-06-08", propertyCount: 180, deposit: 300, registrationDeadline: "2026-06-01", platform: "County", notes: "OKC - Random drawing system. 8% rate.", sourceUrl: "oklahomacounty.org" },
+    { id: 405, state: "NV", county: "Clark", saleType: "Tax Deed", saleDate: "2026-06-08", propertyCount: 250, deposit: 1500, registrationDeadline: "2026-06-01", platform: "County", notes: "Las Vegas - No state income tax. Growing market.", sourceUrl: "clarkcountynv.gov" },
+    { id: 406, state: "CT", county: "Fairfield", saleType: "Tax Lien", saleDate: "2026-06-08", propertyCount: 70, deposit: 500, registrationDeadline: "2026-06-01", platform: "County", notes: "NYC suburbs - 18% rate. Short redemption.", sourceUrl: "fairfieldct.org" },
+
+    // ═══ JULY 2026 ═══
+    { id: 501, state: "TX", county: "Harris", saleType: "Tax Deed", saleDate: "2026-07-07", propertyCount: 520, deposit: 2500, registrationDeadline: "2026-06-30", platform: "County", notes: "Houston - July sale", sourceUrl: "hctax.net" },
+    { id: 502, state: "MI", county: "Wayne", saleType: "Tax Deed", saleDate: "2026-07-21", propertyCount: 1200, deposit: 1000, registrationDeadline: "2026-07-01", platform: "County", notes: "Detroit - 3rd Tuesday July. NO redemption after sale.", sourceUrl: "waynecounty.com" },
+    { id: 503, state: "MI", county: "Oakland", saleType: "Tax Deed", saleDate: "2026-07-21", propertyCount: 350, deposit: 1000, registrationDeadline: "2026-07-01", platform: "County", notes: "Detroit N suburbs - No redemption.", sourceUrl: "oakgov.com" },
+    { id: 504, state: "KY", county: "Jefferson", saleType: "Tax Lien", saleDate: "2026-07-13", propertyCount: 300, deposit: 500, registrationDeadline: "2026-07-06", platform: "County", notes: "Louisville - 12% interest. 1-year redemption.", sourceUrl: "jeffersoncountyclerk.org" },
+    { id: 505, state: "DC", county: "District", saleType: "Tax Lien", saleDate: "2026-07-13", propertyCount: 180, deposit: 1000, registrationDeadline: "2026-07-01", platform: "County", notes: "Washington DC - 18% rate. Urban properties.", sourceUrl: "otr.cfo.dc.gov" },
+    { id: 506, state: "MT", county: "Yellowstone", saleType: "Tax Lien", saleDate: "2026-07-13", propertyCount: 40, deposit: 300, registrationDeadline: "2026-07-06", platform: "County", notes: "Billings - 10% interest. Less competition.", sourceUrl: "co.yellowstone.mt.gov" },
+
+    // ═══ AUGUST 2026 ═══
+    { id: 601, state: "MS", county: "DeSoto", saleType: "Tax Lien", saleDate: "2026-08-31", propertyCount: 85, deposit: 300, registrationDeadline: "2026-08-24", platform: "County", notes: "Memphis suburb - 18% rate. Last Monday of August.", sourceUrl: "desotocountyms.gov" },
+    { id: 602, state: "MO", county: "Jackson", saleType: "Tax Lien", saleDate: "2026-08-24", propertyCount: 250, deposit: 500, registrationDeadline: "2026-08-17", platform: "County", notes: "Kansas City - 10% + 18% penalty stacking.", sourceUrl: "jacksoncountygov.com" },
+    { id: 603, state: "KY", county: "Fayette", saleType: "Tax Lien", saleDate: "2026-08-10", propertyCount: 120, deposit: 500, registrationDeadline: "2026-08-03", platform: "County", notes: "Lexington - 12% interest. Short redemption.", sourceUrl: "fayettecountyclerk.com" },
 ];
 

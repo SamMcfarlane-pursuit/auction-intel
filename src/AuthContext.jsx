@@ -2,39 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
-// Mock user database (in production, this would be a backend API)
-const MOCK_USERS_KEY = 'auction_intel_users';
-const CURRENT_USER_KEY = 'auction_intel_current_user';
-
-function getStoredUsers() {
-    try {
-        const users = localStorage.getItem(MOCK_USERS_KEY);
-        return users ? JSON.parse(users) : [];
-    } catch {
-        return [];
-    }
-}
-
-function saveUsers(users) {
-    localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(users));
-}
-
-function getCurrentUser() {
-    try {
-        const user = localStorage.getItem(CURRENT_USER_KEY);
-        return user ? JSON.parse(user) : null;
-    } catch {
-        return null;
-    }
-}
-
-function saveCurrentUser(user) {
-    if (user) {
-        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-    } else {
-        localStorage.removeItem(CURRENT_USER_KEY);
-    }
-}
+// Point to the Rust backend
+const API_URL = 'http://127.0.0.1:8080/api/auth';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -43,118 +12,117 @@ export function AuthProvider({ children }) {
 
     // Check for existing session on mount
     useEffect(() => {
-        const storedUser = getCurrentUser();
-        if (storedUser) {
-            setUser(storedUser);
-        }
-        setLoading(false);
+        const checkAuth = async () => {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    const res = await fetch(`${API_URL}/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (res.ok) {
+                        const userData = await res.json();
+                        setUser(userData);
+                    } else {
+                        // Token invalid/expired
+                        localStorage.removeItem('auth_token');
+                        setUser(null);
+                    }
+                } catch (err) {
+                    console.error('Auth check failed:', err);
+                    localStorage.removeItem('auth_token');
+                    setUser(null);
+                }
+            }
+            setLoading(false);
+        };
+        checkAuth();
     }, []);
 
     const signIn = async (email, password, rememberMe = true) => {
         setError(null);
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        const users = getStoredUsers();
-        const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-        if (!foundUser) {
-            const err = 'No account found with this email';
-            setError(err);
-            throw new Error(err);
+        // Mock demo account for development/demo purposes
+        if (email === 'demo@auction-intel.com') {
+            const demoData = {
+                token: 'mcfarlane-demo-token-2026',
+                user: {
+                    id: 'demo-user',
+                    name: 'Demo Investor',
+                    email: 'demo@auction-intel.com',
+                    role: 'PRO'
+                }
+            };
+            setUser(demoData.user);
+            localStorage.setItem('auth_token', demoData.token);
+            return demoData.user;
         }
 
-        if (foundUser.password !== password) {
-            const err = 'Incorrect password';
-            setError(err);
-            throw new Error(err);
+        try {
+            const res = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || 'Login failed');
+            }
+
+            const data = await res.json(); // Expects { token, user }
+
+            setUser(data.user);
+            // We always store the token for now to maintain session state on refresh,
+            // regardless of 'rememberMe', as React state is ephemeral.
+            // 'rememberMe' could control long-term persistence (e.g., localStorage vs sessionStorage),
+            // but for this MVP, we use localStorage.
+            localStorage.setItem('auth_token', data.token);
+
+            return data.user;
+        } catch (err) {
+            console.error('Sign In Error:', err);
+            setError(err.message);
+            throw err;
         }
-
-        // Remove password from user object for security
-        const safeUser = {
-            id: foundUser.id,
-            name: foundUser.name,
-            email: foundUser.email,
-            createdAt: foundUser.createdAt
-        };
-
-        setUser(safeUser);
-        if (rememberMe) {
-            saveCurrentUser(safeUser);
-        }
-
-        return safeUser;
     };
 
     const signUp = async (name, email, password) => {
         setError(null);
+        try {
+            const res = await fetch(`${API_URL}/signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
 
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || 'Sign up failed');
+            }
 
-        const users = getStoredUsers();
-
-        // Check if user already exists
-        if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-            const err = 'An account with this email already exists';
-            setError(err);
-            throw new Error(err);
+            const data = await res.json();
+            setUser(data.user);
+            localStorage.setItem('auth_token', data.token);
+            return data.user;
+        } catch (err) {
+            console.error('Sign Up Error:', err);
+            setError(err.message);
+            throw err;
         }
-
-        // Create new user
-        const newUser = {
-            id: crypto.randomUUID(),
-            name: name.trim(),
-            email: email.toLowerCase().trim(),
-            password, // In production, this would be hashed
-            createdAt: new Date().toISOString()
-        };
-
-        users.push(newUser);
-        saveUsers(users);
-
-        // Auto sign in after registration
-        const safeUser = {
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-            createdAt: newUser.createdAt
-        };
-
-        setUser(safeUser);
-        saveCurrentUser(safeUser);
-
-        return safeUser;
     };
 
     const signOut = () => {
         setUser(null);
         setError(null);
-        saveCurrentUser(null);
+        localStorage.removeItem('auth_token');
     };
 
     const resetPassword = async (email) => {
         setError(null);
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        const users = getStoredUsers();
-        const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-        if (!foundUser) {
-            const err = 'No account found with this email';
-            setError(err);
-            throw new Error(err);
-        }
-
-        // Generate temporary password (in production, this would send an email)
-        const tempPassword = Math.random().toString(36).slice(-8);
-        foundUser.password = tempPassword;
-        saveUsers(users);
-
-        return { tempPassword, email: foundUser.email };
+        // Backend implementation not done yet.
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return { message: "Password reset not implemented yet" };
     };
 
     const clearError = () => setError(null);

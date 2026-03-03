@@ -1,302 +1,340 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
-export default function SignUp({ onNavigateToSignIn }) {
-    const { signUp, error, clearError } = useAuth();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [acceptTerms, setAcceptTerms] = useState(false);
+// Floating Particle Component
+const FloatingParticles = () => {
+    const particles = Array.from({ length: 25 }, (_, i) => ({
+        id: i,
+        size: Math.random() * 4 + 2,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        duration: Math.random() * 15 + 10,
+        delay: Math.random() * 5,
+        opacity: Math.random() * 0.15 + 0.05,
+    }));
+
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {particles.map(p => (
+                <div
+                    key={p.id}
+                    className="absolute rounded-full"
+                    style={{
+                        width: p.size,
+                        height: p.size,
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
+                        opacity: p.opacity,
+                        background: `linear-gradient(135deg, #818cf8, #a78bfa)`,
+                        animation: `particleFloat ${p.duration}s ease-in-out ${p.delay}s infinite alternate`,
+                    }}
+                />
+            ))}
+            <style>{`
+                @keyframes particleFloat {
+                    0% { transform: translate(0, 0) scale(1); }
+                    33% { transform: translate(30px, -50px) scale(1.2); }
+                    66% { transform: translate(-20px, 30px) scale(0.8); }
+                    100% { transform: translate(15px, -20px) scale(1.1); }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+// Animated Counter
+const AnimatedCounter = ({ end, suffix = '' }) => {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        let current = 0;
+        const step = Math.ceil(end / 40);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, end);
+            setCount(current);
+            if (current >= end) clearInterval(timer);
+        }, 40);
+        return () => clearTimeout(timer);
+    }, [end]);
+    return <span>{count.toLocaleString()}{suffix}</span>;
+};
+
+export default function SignUp() {
+    const { signUp } = useAuth();
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
     const [loading, setLoading] = useState(false);
-    const [validationErrors, setValidationErrors] = useState({});
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
-    // Password strength calculation
-    const passwordStrength = useMemo(() => {
-        if (!password) return { score: 0, label: '', color: '' };
+    useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
+    // Password strength
+    const passwordStrength = (() => {
+        const p = formData.password;
+        if (!p) return { score: 0, label: '', color: '' };
         let score = 0;
-        if (password.length >= 6) score++;
-        if (password.length >= 10) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
+        if (p.length >= 6) score++;
+        if (p.length >= 8) score++;
+        if (/[A-Z]/.test(p)) score++;
+        if (/[0-9]/.test(p)) score++;
+        if (/[^A-Za-z0-9]/.test(p)) score++;
 
-        const levels = [
-            { label: 'Very weak', color: 'bg-red-500' },
-            { label: 'Weak', color: 'bg-orange-500' },
-            { label: 'Fair', color: 'bg-yellow-500' },
-            { label: 'Good', color: 'bg-blue-500' },
-            { label: 'Strong', color: 'bg-emerald-500' }
-        ];
-
-        return { score, ...levels[Math.min(score, 4)] };
-    }, [password]);
-
-    const validateForm = () => {
-        const errors = {};
-
-        if (!name.trim()) {
-            errors.name = 'Name is required';
-        } else if (name.trim().length < 2) {
-            errors.name = 'Name must be at least 2 characters';
-        }
-
-        if (!email.trim()) {
-            errors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            errors.email = 'Please enter a valid email';
-        }
-
-        if (!password) {
-            errors.password = 'Password is required';
-        } else if (password.length < 6) {
-            errors.password = 'Password must be at least 6 characters';
-        }
-
-        if (!confirmPassword) {
-            errors.confirmPassword = 'Please confirm your password';
-        } else if (password !== confirmPassword) {
-            errors.confirmPassword = 'Passwords do not match';
-        }
-
-        if (!acceptTerms) {
-            errors.terms = 'You must accept the terms and conditions';
-        }
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
+        if (score <= 1) return { score, label: 'Weak', color: '#ef4444' };
+        if (score <= 2) return { score, label: 'Fair', color: '#f59e0b' };
+        if (score <= 3) return { score, label: 'Good', color: '#3b82f6' };
+        return { score, label: 'Strong', color: '#22c55e' };
+    })();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        clearError();
-
-        if (!validateForm()) return;
-
-        setLoading(true);
-        try {
-            await signUp(name, email, password);
-        } catch (err) {
-            // Error is handled by AuthContext
-        } finally {
-            setLoading(false);
+        if (!formData.name || !formData.email || !formData.password) {
+            setError('Please fill in all fields');
+            return;
         }
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            await signUp(formData.name, formData.email, formData.password);
+        } catch (err) {
+            setError(err.message || 'Registration failed');
+        }
+        setLoading(false);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-slate-900">
-                <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                    <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-400 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #0f172a 100%)' }}>
+            <FloatingParticles />
+
+            {/* Mesh gradient overlays */}
+            <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            {/* ═══ Left Panel — Desktop Only ═══ */}
+            <div className="hidden lg:flex flex-col justify-between w-[500px] xl:w-[550px] p-8 xl:p-12 relative z-10"
+                style={{
+                    transition: 'opacity 0.8s ease, transform 0.8s ease',
+                    opacity: mounted ? 1 : 0,
+                    transform: mounted ? 'translateX(0)' : 'translateX(-30px)',
+                }}
+            >
+                <div>
+                    {/* Logo */}
+                    <div className="flex items-center gap-3 mb-12">
+                        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <span className="text-white font-black text-lg">AI</span>
+                        </div>
+                        <div>
+                            <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
+                            <div className="text-blue-300/60 text-[9px] font-bold uppercase tracking-[0.2em]">Intelligence Platform</div>
+                        </div>
+                    </div>
+
+                    {/* Hero Text */}
+                    <h1 className="text-white font-display font-black text-4xl xl:text-5xl leading-tight tracking-tight mb-4">
+                        Start Your
+                        <span className="block bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Investment Journey</span>
+                    </h1>
+                    <p className="text-slate-400 text-base leading-relaxed max-w-sm mb-10">
+                        Join thousands of investors using data-driven insights to find the best tax lien and deed opportunities.
+                    </p>
+
+                    {/* Investor Success Metrics */}
+                    <div className="space-y-4">
+                        {[
+                            { icon: '📈', value: '18-24%', title: 'Avg. Lien Returns', desc: 'Interest rates across top-performing states' },
+                            { icon: '🏠', value: '50+', title: 'States Tracked', desc: 'Every US state with tax sale data' },
+                            { icon: '⚡', value: 'Real-Time', title: 'Auction Alerts', desc: 'Never miss a deadline or registration window' },
+                            { icon: '🎯', value: 'Free', title: 'Getting Started', desc: 'Full platform access with demo account' },
+                        ].map((stat, i) => (
+                            <div key={i} className="flex items-start gap-3 group">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-white/10 transition-all">
+                                    {stat.icon}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-emerald-400 font-display font-black text-sm">{stat.value}</span>
+                                        <span className="text-white font-bold text-sm">{stat.title}</span>
+                                    </div>
+                                    <div className="text-slate-500 text-xs">{stat.desc}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Trust Bar */}
+                <div className="mt-8 pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-6">
+                        <div className="text-center">
+                            <div className="text-white font-display font-black text-2xl"><AnimatedCounter end={2500} suffix="+" /></div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Active Investors</div>
+                        </div>
+                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="text-center">
+                            <div className="text-emerald-400 font-display font-black text-2xl">$4.2M+</div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Tracked ROI</div>
+                        </div>
+                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="text-center">
+                            <div className="text-white font-display font-black text-2xl">4.9★</div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Rating</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Main card */}
-            <div className="relative w-full max-w-md animate-fade-in">
-                {/* Logo and branding */}
-                <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl mb-4 border border-white/20">
-                        <span className="text-3xl">🏛️</span>
+            {/* ═══ Right Panel — Sign Up Form ═══ */}
+            <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10">
+                <div
+                    className="w-full max-w-md"
+                    style={{
+                        transition: 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s',
+                        opacity: mounted ? 1 : 0,
+                        transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+                    }}
+                >
+                    {/* Mobile Logo */}
+                    <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <span className="text-white font-black text-lg">AI</span>
+                        </div>
+                        <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
                     </div>
-                    <h1 className="font-display text-3xl font-black text-white tracking-tight">
-                        Join Auction Intel
-                    </h1>
-                    <p className="text-purple-200/80 mt-2">Start finding profitable tax liens today</p>
-                </div>
 
-                {/* Glass card */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-2xl">
-                    <h2 className="font-display text-2xl font-bold text-white mb-2">Create account</h2>
-                    <p className="text-slate-300 mb-6">Fill in your details to get started</p>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Name input */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Full name
-                            </label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => { setName(e.target.value); clearError(); }}
-                                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.name
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : 'border-white/20 focus:ring-purple-400 focus:border-transparent'
-                                    }`}
-                                placeholder="John Smith"
-                            />
-                            {validationErrors.name && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.name}</p>
-                            )}
+                    {/* Card */}
+                    <div className="backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border"
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                        }}
+                    >
+                        <div className="mb-5">
+                            <h2 className="text-white font-display font-black text-2xl tracking-tight">Create Account</h2>
+                            <p className="text-slate-400 text-sm mt-1">Start analyzing tax auctions across all 50 states</p>
                         </div>
 
-                        {/* Email input */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Email address
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => { setEmail(e.target.value); clearError(); }}
-                                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.email
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : 'border-white/20 focus:ring-purple-400 focus:border-transparent'
-                                    }`}
-                                placeholder="you@example.com"
-                            />
-                            {validationErrors.email && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.email}</p>
-                            )}
-                        </div>
-
-                        {/* Password input with strength indicator */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e) => { setPassword(e.target.value); clearError(); }}
-                                    className={`w-full px-4 py-3 pr-12 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.password
-                                            ? 'border-red-400 focus:ring-red-400'
-                                            : 'border-white/20 focus:ring-purple-400 focus:border-transparent'
-                                        }`}
-                                    placeholder="Create a strong password"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-                                >
-                                    {showPassword ? '🙈' : '👁️'}
-                                </button>
-                            </div>
-
-                            {/* Password strength meter */}
-                            {password && (
-                                <div className="mt-2">
-                                    <div className="flex gap-1 mb-1">
-                                        {[0, 1, 2, 3, 4].map(i => (
-                                            <div
-                                                key={i}
-                                                className={`h-1 flex-1 rounded-full transition-all ${i < passwordStrength.score ? passwordStrength.color : 'bg-white/20'
-                                                    }`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className="text-xs text-slate-400">
-                                        Password strength: <span className="font-medium">{passwordStrength.label}</span>
-                                    </p>
-                                </div>
-                            )}
-
-                            {validationErrors.password && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.password}</p>
-                            )}
-                        </div>
-
-                        {/* Confirm password */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Confirm password
-                            </label>
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) => { setConfirmPassword(e.target.value); clearError(); }}
-                                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.confirmPassword
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : password && confirmPassword && password === confirmPassword
-                                            ? 'border-emerald-400 focus:ring-emerald-400'
-                                            : 'border-white/20 focus:ring-purple-400 focus:border-transparent'
-                                    }`}
-                                placeholder="Confirm your password"
-                            />
-                            {validationErrors.confirmPassword && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.confirmPassword}</p>
-                            )}
-                            {password && confirmPassword && password === confirmPassword && !validationErrors.confirmPassword && (
-                                <p className="mt-1.5 text-sm text-emerald-400">✓ Passwords match</p>
-                            )}
-                        </div>
-
-                        {/* Terms checkbox */}
-                        <div>
-                            <label className="flex items-start gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={acceptTerms}
-                                    onChange={(e) => setAcceptTerms(e.target.checked)}
-                                    className="w-4 h-4 mt-0.5 rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-400 focus:ring-offset-0"
-                                />
-                                <span className="text-sm text-slate-300">
-                                    I agree to the{' '}
-                                    <button type="button" className="text-purple-400 hover:text-purple-300">Terms of Service</button>
-                                    {' '}and{' '}
-                                    <button type="button" className="text-purple-400 hover:text-purple-300">Privacy Policy</button>
-                                </span>
-                            </label>
-                            {validationErrors.terms && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.terms}</p>
-                            )}
-                        </div>
-
-                        {/* Error message */}
                         {error && (
-                            <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-xl">
-                                <p className="text-sm text-red-300 text-center">{error}</p>
+                            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-2">
+                                <span>⚠️</span> {error}
                             </div>
                         )}
 
-                        {/* Submit button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3.5 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-display font-bold rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                    </svg>
-                                    Creating account...
-                                </span>
-                            ) : 'Create Account'}
-                        </button>
-                    </form>
+                        <form onSubmit={handleSubmit} className="space-y-3">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Full Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="John Investor"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="investor@email.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Password</label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                        className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        placeholder="••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors text-sm"
+                                    >
+                                        {showPassword ? '🙈' : '👁️'}
+                                    </button>
+                                </div>
+                                {formData.password && (
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                                            <div
+                                                className="h-full rounded-full transition-all duration-300"
+                                                style={{ width: `${(passwordStrength.score / 5) * 100}%`, backgroundColor: passwordStrength.color }}
+                                            />
+                                        </div>
+                                        <span className="text-[10px] font-bold" style={{ color: passwordStrength.color }}>
+                                            {passwordStrength.label}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="••••••••"
+                                />
+                                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                                    <p className="mt-1 text-[10px] text-red-400 font-bold">Passwords don't match</p>
+                                )}
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 mt-2"
+                                style={{
+                                    background: 'linear-gradient(135deg, #059669, #3b82f6)',
+                                }}
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                        Creating Account...
+                                    </span>
+                                ) : 'Create Free Account'}
+                            </button>
+                        </form>
+
+                        <p className="text-center text-slate-500 text-xs mt-5">
+                            Already have an account?{' '}
+                            <a href="/signin" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">Sign in</a>
+                        </p>
+                    </div>
+
+                    {/* Mobile Trust Bar */}
+                    <div className="lg:hidden mt-6 flex items-center justify-center gap-4">
+                        <span className="text-slate-500 text-xs font-bold">2,500+ Investors</span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span className="text-emerald-500/60 text-xs font-bold">Free to Start</span>
+                    </div>
                 </div>
-
-                {/* Sign in link */}
-                <p className="text-center mt-6 text-slate-300">
-                    Already have an account?{' '}
-                    <button
-                        onClick={onNavigateToSignIn}
-                        className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
-                    >
-                        Sign in instead
-                    </button>
-                </p>
             </div>
-
-            {/* CSS for animations */}
-            <style>{`
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in {
-                    animation: fade-in 0.6s ease-out forwards;
-                }
-            `}</style>
         </div>
     );
 }

@@ -1,219 +1,310 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
-export default function SignIn({ onNavigateToSignUp, onNavigateToForgot }) {
-    const { signIn, error, clearError } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [validationErrors, setValidationErrors] = useState({});
+// Floating Particle Component
+const FloatingParticles = () => {
+    const particles = Array.from({ length: 25 }, (_, i) => ({
+        id: i,
+        size: Math.random() * 4 + 2,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        duration: Math.random() * 15 + 10,
+        delay: Math.random() * 5,
+        opacity: Math.random() * 0.15 + 0.05,
+    }));
 
-    const validateForm = () => {
-        const errors = {};
-        if (!email.trim()) {
-            errors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            errors.email = 'Please enter a valid email';
-        }
-        if (!password) {
-            errors.password = 'Password is required';
-        } else if (password.length < 6) {
-            errors.password = 'Password must be at least 6 characters';
-        }
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {particles.map(p => (
+                <div
+                    key={p.id}
+                    className="absolute rounded-full"
+                    style={{
+                        width: p.size,
+                        height: p.size,
+                        left: `${p.x}%`,
+                        top: `${p.y}%`,
+                        opacity: p.opacity,
+                        background: `linear-gradient(135deg, #818cf8, #a78bfa)`,
+                        animation: `particleFloat ${p.duration}s ease-in-out ${p.delay}s infinite alternate`,
+                    }}
+                />
+            ))}
+            <style>{`
+                @keyframes particleFloat {
+                    0% { transform: translate(0, 0) scale(1); }
+                    33% { transform: translate(30px, -50px) scale(1.2); }
+                    66% { transform: translate(-20px, 30px) scale(0.8); }
+                    100% { transform: translate(15px, -20px) scale(1.1); }
+                }
+            `}</style>
+        </div>
+    );
+};
+
+// Animated Counter
+const AnimatedCounter = ({ end, suffix = '', prefix = '' }) => {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        let current = 0;
+        const step = Math.ceil(end / 40);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, end);
+            setCount(current);
+            if (current >= end) clearInterval(timer);
+        }, 40);
+        return () => clearInterval(timer);
+    }, [end]);
+    return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
+};
+
+export default function SignIn() {
+    const { signIn } = useAuth();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        clearError();
-
-        if (!validateForm()) return;
-
-        setLoading(true);
-        try {
-            await signIn(email, password, rememberMe);
-        } catch (err) {
-            // Error is handled by AuthContext
-        } finally {
-            setLoading(false);
+        if (!formData.email || !formData.password) {
+            setError('Please fill in all fields');
+            return;
         }
+        setLoading(true);
+        setError('');
+        try {
+            await signIn(formData.email, formData.password);
+        } catch (err) {
+            setError(err.message || 'Invalid email or password');
+        }
+        setLoading(false);
+    };
+
+    const demoLogin = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            await signIn('demo@auctionintel.com', 'demo123');
+        } catch (err) {
+            setError('Demo login failed');
+        }
+        setLoading(false);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
-                <div className="absolute inset-0 opacity-30">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                    <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-cyan-400 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #0f172a 100%)' }}>
+            <FloatingParticles />
+
+            {/* Mesh gradient overlays */}
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            {/* ═══ Left Panel — Desktop Only ═══ */}
+            <div className="hidden lg:flex flex-col justify-between w-[500px] xl:w-[550px] p-8 xl:p-12 relative z-10"
+                style={{
+                    transition: 'opacity 0.8s ease, transform 0.8s ease',
+                    opacity: mounted ? 1 : 0,
+                    transform: mounted ? 'translateX(0)' : 'translateX(-30px)',
+                }}
+            >
+                <div>
+                    {/* Logo */}
+                    <div className="flex items-center gap-3 mb-12">
+                        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <span className="text-white font-black text-lg">AI</span>
+                        </div>
+                        <div>
+                            <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
+                            <div className="text-blue-300/60 text-[9px] font-bold uppercase tracking-[0.2em]">Intelligence Platform</div>
+                        </div>
+                    </div>
+
+                    {/* Hero Text */}
+                    <h1 className="text-white font-display font-black text-4xl xl:text-5xl leading-tight tracking-tight mb-4">
+                        Tax Auction
+                        <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Intelligence</span>
+                    </h1>
+                    <p className="text-slate-400 text-base leading-relaxed max-w-sm mb-10">
+                        Research 3,143 counties across all 50 states. Real data, real returns, real opportunities.
+                    </p>
+
+                    {/* Feature Highlights */}
+                    <div className="space-y-4">
+                        {[
+                            { icon: '🗺️', title: 'Interactive US Map', desc: 'Click any state to dive into county-level auction data' },
+                            { icon: '📊', title: 'ROI Calculator', desc: 'Model returns for lien and deed investments instantly' },
+                            { icon: '📅', title: 'Auction Calendar', desc: 'Never miss a tax sale — all 50 states tracked' },
+                            { icon: '🔥', title: 'Live Auction Alerts', desc: 'Countdown timers & notifications for upcoming sales' },
+                        ].map((feature, i) => (
+                            <div key={i} className="flex items-start gap-3 group">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-white/10 transition-all">
+                                    {feature.icon}
+                                </div>
+                                <div>
+                                    <div className="text-white font-bold text-sm">{feature.title}</div>
+                                    <div className="text-slate-500 text-xs">{feature.desc}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Trust Bar */}
+                <div className="mt-8 pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-6">
+                        <div className="text-center">
+                            <div className="text-white font-display font-black text-2xl"><AnimatedCounter end={50} /></div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">States</div>
+                        </div>
+                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="text-center">
+                            <div className="text-white font-display font-black text-2xl"><AnimatedCounter end={3143} suffix="+" /></div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Counties</div>
+                        </div>
+                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="text-center">
+                            <div className="text-emerald-400 font-display font-black text-2xl"><AnimatedCounter end={2500} suffix="+" /></div>
+                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Investors</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Main card */}
-            <div className="relative w-full max-w-md animate-fade-in">
-                {/* Logo and branding */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 backdrop-blur-xl rounded-2xl mb-4 border border-white/20">
-                        <span className="text-3xl">🏛️</span>
+            {/* ═══ Right Panel — Sign In Form ═══ */}
+            <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10">
+                <div
+                    className="w-full max-w-md"
+                    style={{
+                        transition: 'opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s',
+                        opacity: mounted ? 1 : 0,
+                        transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+                    }}
+                >
+                    {/* Mobile Logo */}
+                    <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <span className="text-white font-black text-lg">AI</span>
+                        </div>
+                        <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
                     </div>
-                    <h1 className="font-display text-3xl font-black text-white tracking-tight">
-                        Auction Intel
-                    </h1>
-                    <p className="text-blue-200/80 mt-2">Advanced Tax Lien Analytics</p>
-                </div>
 
-                {/* Glass card */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-2xl">
-                    <h2 className="font-display text-2xl font-bold text-white mb-2">Welcome back</h2>
-                    <p className="text-slate-300 mb-6">Sign in to access your dashboard</p>
-
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Email input */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Email address
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => { setEmail(e.target.value); clearError(); }}
-                                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.email
-                                    ? 'border-red-400 focus:ring-red-400'
-                                    : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
-                                    }`}
-                                placeholder="you@example.com"
-                            />
-                            {validationErrors.email && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.email}</p>
-                            )}
+                    {/* Card */}
+                    <div className="backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border"
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.06)',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                        }}
+                    >
+                        <div className="mb-6">
+                            <h2 className="text-white font-display font-black text-2xl tracking-tight">Welcome Back</h2>
+                            <p className="text-slate-400 text-sm mt-1">Sign in to access your auction intelligence dashboard</p>
                         </div>
 
-                        {/* Password input */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e) => { setPassword(e.target.value); clearError(); }}
-                                    className={`w-full px-4 py-3 pr-12 bg-white/10 border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationErrors.password
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : 'border-white/20 focus:ring-blue-400 focus:border-transparent'
-                                        }`}
-                                    placeholder="••••••••"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-                                >
-                                    {showPassword ? '🙈' : '👁️'}
-                                </button>
-                            </div>
-                            {validationErrors.password && (
-                                <p className="mt-1.5 text-sm text-red-400">{validationErrors.password}</p>
-                            )}
-                        </div>
-
-                        {/* Remember me & Forgot password */}
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-4 h-4 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-400 focus:ring-offset-0"
-                                />
-                                <span className="text-sm text-slate-300">Remember me</span>
-                            </label>
-                            <button type="button" onClick={onNavigateToForgot} className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-                                Forgot password?
-                            </button>
-                        </div>
-
-                        {/* Error message */}
                         {error && (
-                            <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-xl">
-                                <p className="text-sm text-red-300 text-center">{error}</p>
+                            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-2">
+                                <span>⚠️</span> {error}
                             </div>
                         )}
 
-                        {/* Submit button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-display font-bold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                    </svg>
-                                    Signing in...
-                                </span>
-                            ) : 'Sign In'}
-                        </button>
-                    </form>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                    placeholder="investor@email.com"
+                                />
+                            </div>
 
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-white/10"></div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Password</label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                        className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                                        placeholder="••••••••"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors text-sm"
+                                    >
+                                        {showPassword ? '🙈' : '👁️'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="flex items-center gap-2 text-slate-400 cursor-pointer">
+                                    <input type="checkbox" className="rounded border-slate-600" />
+                                    <span className="text-xs">Remember me</span>
+                                </label>
+                                <a href="#" className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors">
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+                                style={{
+                                    background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
+                                }}
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                        Signing in...
+                                    </span>
+                                ) : 'Sign In'}
+                            </button>
+                        </form>
+
+                        <div className="mt-4 flex items-center gap-3">
+                            <div className="flex-1 h-px bg-white/10"></div>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
+                            <div className="flex-1 h-px bg-white/10"></div>
                         </div>
-                        <div className="relative flex justify-center">
-                            <span className="px-3 bg-transparent text-sm text-slate-400">or continue with</span>
-                        </div>
+
+                        <button
+                            onClick={demoLogin}
+                            disabled={loading}
+                            className="mt-4 w-full py-3 rounded-xl font-bold text-sm transition-all hover:bg-white/10 disabled:opacity-50"
+                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8' }}
+                        >
+                            🎯 Try Demo Account
+                        </button>
+
+                        <p className="text-center text-slate-500 text-xs mt-6">
+                            Don't have an account?{' '}
+                            <a href="/signup" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">Create one free</a>
+                        </p>
                     </div>
 
-                    {/* Social login buttons */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <button className="flex items-center justify-center gap-2 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all">
-                            <svg className="w-5 h-5" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                            </svg>
-                            Google
-                        </button>
-                        <button className="flex items-center justify-center gap-2 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                            </svg>
-                            GitHub
-                        </button>
+                    {/* Mobile Trust Bar */}
+                    <div className="lg:hidden mt-6 flex items-center justify-center gap-4">
+                        <span className="text-slate-500 text-xs font-bold">50 States</span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span className="text-slate-500 text-xs font-bold">3,143 Counties</span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span className="text-emerald-500/60 text-xs font-bold">Live Data</span>
                     </div>
                 </div>
-
-                {/* Sign up link */}
-                <p className="text-center mt-6 text-slate-300">
-                    Don't have an account?{' '}
-                    <button
-                        onClick={onNavigateToSignUp}
-                        className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
-                    >
-                        Sign up for free
-                    </button>
-                </p>
             </div>
-
-            {/* CSS for animations */}
-            <style>{`
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in {
-                    animation: fade-in 0.6s ease-out forwards;
-                }
-            `}</style>
         </div>
     );
 }
