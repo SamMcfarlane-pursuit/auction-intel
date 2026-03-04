@@ -18,6 +18,7 @@ import PropertyDueDiligence from './components/PropertyDueDiligence';
 import MobileNav from './components/MobileNav';
 import WelcomeScreen from './components/WelcomeScreen';
 import UserSettings from './components/UserSettings';
+import GlobeVisualizer from './components/GlobeVisualizer';
 import 'leaflet/dist/leaflet.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
@@ -1638,19 +1639,27 @@ export default function AuctionPlatform() {
                                         </div>
                                     </div>
 
-                                    {/* Simple Stats Row */}
-                                    <div className="grid grid-cols-3 gap-2 md:gap-3 shrink-0">
-                                        <div className="bg-white rounded-xl p-4 border border-gray-100">
-                                            <div className="text-2xl font-bold text-gray-900">{allStates.length}</div>
-                                            <div className="text-xs text-gray-400">States</div>
+                                    {/* Globe + Stats Row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+                                        {/* 3D Globe Visualizer */}
+                                        <div className="md:col-span-2 bg-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden" style={{ minHeight: '220px' }}>
+                                            <GlobeVisualizer height="220px" />
                                         </div>
-                                        <div className="bg-white rounded-xl p-4 border border-gray-100">
-                                            <div className="text-2xl font-bold text-gray-900">{totalCounties}</div>
-                                            <div className="text-xs text-gray-400">Counties</div>
-                                        </div>
-                                        <div className="bg-blue-500 rounded-xl p-4 text-white">
-                                            <div className="text-2xl font-bold">{totalT123}</div>
-                                            <div className="text-xs text-blue-100">Prime (T1-T3)</div>
+
+                                        {/* Stats Column */}
+                                        <div className="flex flex-col gap-2">
+                                            <div className="bg-white rounded-xl p-4 border border-gray-100 flex-1 flex flex-col justify-center">
+                                                <div className="text-2xl font-bold text-gray-900">{allStates.length}</div>
+                                                <div className="text-xs text-gray-400">States</div>
+                                            </div>
+                                            <div className="bg-white rounded-xl p-4 border border-gray-100 flex-1 flex flex-col justify-center">
+                                                <div className="text-2xl font-bold text-gray-900">{totalCounties}</div>
+                                                <div className="text-xs text-gray-400">Counties</div>
+                                            </div>
+                                            <div className="bg-blue-500 rounded-xl p-4 text-white flex-1 flex flex-col justify-center">
+                                                <div className="text-2xl font-bold">{totalT123}</div>
+                                                <div className="text-xs text-blue-100">Prime (T1-T3)</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -15,6 +15,7 @@ mod census;
 mod db;
 mod foreclosure;
 mod fred_api;
+mod scoring;
 
 use std::sync::Arc;
 
@@ -1634,6 +1635,67 @@ async fn analyze_county(Json(input): Json<AnalysisInput>) -> Json<AnalysisOutput
     Json(calculate_score(&input))
 }
 
+// ============================================================================
+// INVESTMENT SCORING ENGINE (Letter Grades)
+// ============================================================================
+
+async fn score_county_grade(
+    Json(input): Json<scoring::AnalysisInput>,
+) -> Json<scoring::AnalysisOutput> {
+    Json(scoring::evaluate_county(&input))
+}
+
+#[derive(Debug, Serialize)]
+struct GradedCounty {
+    name: String,
+    state: String,
+    tier: u8,
+    pop: u32,
+    income: u32,
+    zhvi: u32,
+    growth: f32,
+    dom: u32,
+    notes: String,
+    grade: String,
+    recommendation: String,
+    score: f32,
+}
+
+async fn get_graded_counties(Path(state): Path<String>) -> Json<Vec<GradedCounty>> {
+    let abbr = state.to_uppercase();
+    let counties = COUNTY_DATABASE.get(&abbr).cloned().unwrap_or_default();
+
+    let graded: Vec<GradedCounty> = counties
+        .into_iter()
+        .map(|c| {
+            let analysis = scoring::evaluate_county(&scoring::AnalysisInput {
+                population: c.pop,
+                median_income: c.income,
+                growth_yoy: c.growth,
+                days_on_market: c.dom as u16,
+                transaction_volume: None,
+                employment_rate: None,
+            });
+            GradedCounty {
+                name: c.name,
+                state: c.state,
+                tier: c.tier,
+                pop: c.pop,
+                income: c.income,
+                zhvi: c.zhvi,
+                growth: c.growth,
+                dom: c.dom,
+                notes: c.notes,
+                grade: analysis.grade,
+                recommendation: analysis.recommendation,
+                score: analysis.score,
+            }
+        })
+        .collect();
+
+    Json(graded)
+}
+
 // Zillow ZHVI fetcher
 const ZILLOW_ZHVI_URL: &str = "https://files.zillowstatic.com/research/public_csvs/zhvi/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
 
@@ -2022,6 +2084,8 @@ async fn main() {
             get(get_state_schedule_handler),
         )
         .route("/api/analyze", post(analyze_county))
+        .route("/api/scoring/grade", post(score_county_grade))
+        .route("/api/scoring/counties/:state", get(get_graded_counties))
         .route("/api/zillow/zhvi", get(get_zillow_zhvi))
         .route("/api/redfin/market", get(get_redfin_market))
         .route("/api/rates", get(get_rates))
@@ -2039,6 +2103,8 @@ async fn main() {
     println!("   GET  /api/state-info/:abbr");
     println!("   GET  /api/counties?state=XX");
     println!("   POST /api/analyze");
+    println!("   POST /api/scoring/grade");
+    println!("   GET  /api/scoring/counties/:state");
     println!("   GET  /api/zillow/zhvi");
     println!("   GET  /api/redfin/market");
     println!("   GET  /api/rates");

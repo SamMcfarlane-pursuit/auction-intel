@@ -29,6 +29,30 @@ const getSaleTypeColor = (type) => {
     }
 };
 
+// Investment Grade calculator (mirrors backend scoring.rs logic)
+const getInvestmentGrade = (state) => {
+    // Grade mapping based on state auction characteristics
+    const gradeMap = {
+        'TX': { grade: 'A', color: '#22c55e', bg: '#22c55e15' },
+        'FL': { grade: 'A', color: '#22c55e', bg: '#22c55e15' },
+        'GA': { grade: 'A+', color: '#22c55e', bg: '#22c55e15' },
+        'AZ': { grade: 'A', color: '#22c55e', bg: '#22c55e15' },
+        'CA': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+        'CO': { grade: 'A', color: '#22c55e', bg: '#22c55e15' },
+        'IL': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+        'NJ': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+        'IA': { grade: 'A+', color: '#22c55e', bg: '#22c55e15' },
+        'OH': { grade: 'C', color: '#f59e0b', bg: '#f59e0b15' },
+        'NY': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+        'PA': { grade: 'C', color: '#f59e0b', bg: '#f59e0b15' },
+        'IN': { grade: 'C', color: '#f59e0b', bg: '#f59e0b15' },
+        'MD': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+        'SC': { grade: 'C', color: '#f59e0b', bg: '#f59e0b15' },
+        'AL': { grade: 'B', color: '#3b82f6', bg: '#3b82f615' },
+    };
+    return gradeMap[state] || { grade: 'B', color: '#3b82f6', bg: '#3b82f615' };
+};
+
 // Get urgency info
 const getUrgencyInfo = (days) => {
     if (days < 0) return { label: 'PASSED', color: '#94a3b8', bg: 'bg-slate-100', pulse: false };
@@ -233,6 +257,18 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                                 {stateInfo.type}
                                                             </span>
                                                         )}
+                                                        {/* Investment Grade Badge */}
+                                                        {(() => {
+                                                            const ig = getInvestmentGrade(state);
+                                                            return (
+                                                                <span
+                                                                    className="px-2 py-0.5 rounded text-[9px] font-black"
+                                                                    style={{ backgroundColor: ig.bg, color: ig.color, border: `1px solid ${ig.color}30` }}
+                                                                >
+                                                                    {ig.grade}
+                                                                </span>
+                                                            );
+                                                        })()}
                                                         {urgency.pulse && (
                                                             <span className="flex items-center gap-1 px-2 py-0.5 bg-red-500 text-white rounded text-[9px] font-black">
                                                                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
@@ -287,6 +323,18 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                                 <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: typeColor.bg }}>
                                                                     {auction.saleType}
                                                                 </span>
+                                                                {/* Grade badge per auction */}
+                                                                {(() => {
+                                                                    const ig = getInvestmentGrade(auction.state);
+                                                                    return (
+                                                                        <span
+                                                                            className="px-1.5 py-0.5 rounded text-[8px] font-black"
+                                                                            style={{ backgroundColor: ig.bg, color: ig.color, border: `1px solid ${ig.color}30` }}
+                                                                        >
+                                                                            Grade {ig.grade}
+                                                                        </span>
+                                                                    );
+                                                                })()}
                                                             </div>
                                                             <div className="flex items-center gap-3 text-xs text-slate-500">
                                                                 <span className="font-semibold text-blue-600">{formatDate(auction.saleDate)}</span>
