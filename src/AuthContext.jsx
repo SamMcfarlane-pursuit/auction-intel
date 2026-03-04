@@ -15,6 +15,18 @@ export function AuthProvider({ children }) {
         const checkAuth = async () => {
             const token = localStorage.getItem('auth_token');
             if (token) {
+                // Bypass backend validation for the demo token
+                if (token === 'mcfarlane-demo-token-2026') {
+                    setUser({
+                        id: 'demo-user',
+                        name: 'Demo Investor',
+                        email: 'demo@auction-intel.com',
+                        role: 'PRO'
+                    });
+                    setLoading(false);
+                    return;
+                }
+
                 try {
                     const res = await fetch(`${API_URL}/me`, {
                         headers: {
