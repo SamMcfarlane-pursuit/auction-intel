@@ -1,17 +1,17 @@
+use crate::db::AppState;
+use argon2::{
+    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    Argon2,
+};
 use axum::{
     extract::State,
     http::StatusCode,
     response::{IntoResponse, Json},
 };
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Argon2,
-};
 use jsonwebtoken::{encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use std::sync::Arc;
-use crate::db::AppState;
 
 const JWT_SECRET: &[u8] = b"secret"; // In prod, use env var
 
@@ -45,9 +45,35 @@ struct Claims {
 pub async fn signup(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<AuthPayload>,
-) ->  Result<impl IntoResponse, (StatusCode, String)> {
+) -> Result<impl IntoResponse, (StatusCode, String)> {
     let name = payload.name.unwrap_or_else(|| "User".to_string());
-    
+
+    // Password validation
+    if payload.password.len() < 8 {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Password must be at least 8 characters".to_string(),
+        ));
+    }
+    if !payload.password.chars().any(|c| c.is_uppercase()) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Password must contain at least one uppercase letter".to_string(),
+        ));
+    }
+    if !payload.password.chars().any(|c| c.is_numeric()) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Password must contain at least one number".to_string(),
+        ));
+    }
+    if !payload.password.chars().any(|c| !c.is_alphanumeric()) {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "Password must contain at least one special character".to_string(),
+        ));
+    }
+
     // Check if user exists
     let exists = sqlx::query("SELECT id FROM users WHERE email = ?")
         .bind(&payload.email)
@@ -83,7 +109,11 @@ pub async fn signup(
 
     Ok(Json(AuthResponse {
         token,
-        user: UserResponse { id, name, email: payload.email },
+        user: UserResponse {
+            id,
+            name,
+            email: payload.email,
+        },
     }))
 }
 
@@ -98,14 +128,22 @@ pub async fn login(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::UNAUTHORIZED, "Invalid credentials".to_string()))?;
 
-    let password_hash: String = row.try_get("password_hash").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    let id: String = row.try_get("id").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    let name: String = row.try_get("name").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    let email: String = row.try_get("email").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let password_hash: String = row
+        .try_get("password_hash")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let id: String = row
+        .try_get("id")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let name: String = row
+        .try_get("name")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let email: String = row
+        .try_get("email")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let parsed_hash = PasswordHash::new(&password_hash)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    
+
     Argon2::default()
         .verify_password(payload.password.as_bytes(), &parsed_hash)
         .map_err(|_| (StatusCode::UNAUTHORIZED, "Invalid credentials".to_string()))?;
@@ -114,11 +152,7 @@ pub async fn login(
 
     Ok(Json(AuthResponse {
         token,
-        user: UserResponse {
-            id,
-            name,
-            email,
-        },
+        user: UserResponse { id, name, email },
     }))
 }
 
@@ -151,15 +185,17 @@ pub async fn me(
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
         .ok_or((StatusCode::UNAUTHORIZED, "User not found".to_string()))?;
 
-    let id: String = row.try_get("id").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    let name: String = row.try_get("name").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-    let email: String = row.try_get("email").map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let id: String = row
+        .try_get("id")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let name: String = row
+        .try_get("name")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let email: String = row
+        .try_get("email")
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    Ok(Json(UserResponse {
-        id,
-        name,
-        email,
-    }))
+    Ok(Json(UserResponse { id, name, email }))
 }
 
 fn create_jwt(user_id: &str) -> Result<String, jsonwebtoken::errors::Error> {
