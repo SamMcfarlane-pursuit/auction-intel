@@ -1,5 +1,5 @@
 //! FRED API Client for Federal Reserve Economic Data
-//! 
+//!
 //! Fetches live economic indicators:
 //! - MORTGAGE30US - 30-Year Fixed Mortgage Rate
 //! - MORTGAGE15US - 15-Year Fixed Mortgage Rate  
@@ -9,7 +9,6 @@
 //! - HOUST - Housing Starts
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 // FRED API base URL
 const FRED_API_BASE: &str = "https://api.stlouisfed.org/fred/series/observations";
@@ -18,9 +17,7 @@ const FRED_API_BASE: &str = "https://api.stlouisfed.org/fred/series/observations
 pub const SERIES_MORTGAGE_30YR: &str = "MORTGAGE30US";
 pub const SERIES_MORTGAGE_15YR: &str = "MORTGAGE15US";
 pub const SERIES_FED_FUNDS: &str = "FEDFUNDS";
-pub const SERIES_CPI: &str = "CPIAUCSL";
 pub const SERIES_UNEMPLOYMENT: &str = "UNRATE";
-pub const SERIES_HOUSING_STARTS: &str = "HOUST";
 pub const SERIES_TREASURY_10YR: &str = "DGS10";
 
 #[derive(Debug, Deserialize)]
@@ -60,7 +57,7 @@ pub struct LiveRatesData {
 /// Fetch latest observation for a FRED series
 async fn fetch_series(series_id: &str, api_key: Option<&str>) -> Result<(f64, String), String> {
     let key = api_key.unwrap_or("DEMO_API_KEY"); // Use demo key if not provided
-    
+
     let url = format!(
         "{}?series_id={}&api_key={}&file_type=json&sort_order=desc&limit=1",
         FRED_API_BASE, series_id, key
@@ -81,9 +78,13 @@ async fn fetch_series(series_id: &str, api_key: Option<&str>) -> Result<(f64, St
 }
 
 /// Fetch historical data for a series (for calculating change)
-async fn fetch_series_history(series_id: &str, api_key: Option<&str>, limit: usize) -> Result<Vec<(String, f64)>, String> {
+async fn fetch_series_history(
+    series_id: &str,
+    api_key: Option<&str>,
+    limit: usize,
+) -> Result<Vec<(String, f64)>, String> {
     let key = api_key.unwrap_or("DEMO_API_KEY");
-    
+
     let url = format!(
         "{}?series_id={}&api_key={}&file_type=json&sort_order=desc&limit={}",
         FRED_API_BASE, series_id, key, limit
@@ -92,11 +93,10 @@ async fn fetch_series_history(series_id: &str, api_key: Option<&str>, limit: usi
     match reqwest::get(&url).await {
         Ok(response) => {
             if let Ok(data) = response.json::<FredResponse>().await {
-                let history: Vec<(String, f64)> = data.observations
+                let history: Vec<(String, f64)> = data
+                    .observations
                     .iter()
-                    .filter_map(|obs| {
-                        obs.value.parse::<f64>().ok().map(|v| (obs.date.clone(), v))
-                    })
+                    .filter_map(|obs| obs.value.parse::<f64>().ok().map(|v| (obs.date.clone(), v)))
                     .collect();
                 return Ok(history);
             }
@@ -113,9 +113,9 @@ pub async fn fetch_live_rates(api_key: Option<&str>) -> LiveRatesData {
     let mut mortgage_15yr = 5.92;
     let mut mortgage_30yr_change = 0.12;
     let mut fed_funds = 4.33;
-    let mut cpi_yoy = 2.9;
+    let cpi_yoy = 2.9;
     let mut unemployment = 4.1;
-    let mut housing_starts = 1.499;
+    let housing_starts = 1.499;
     let mut treasury_10yr = 4.68;
     let mut updated = chrono::Utc::now().to_rfc3339();
     let mut source = "Fallback Data".to_string();
@@ -124,7 +124,7 @@ pub async fn fetch_live_rates(api_key: Option<&str>) -> LiveRatesData {
     if let Some(key) = api_key {
         if !key.is_empty() && key != "DEMO_API_KEY" {
             source = "FRED API (Live)".to_string();
-            
+
             // Fetch 30-year mortgage with history for change calculation
             if let Ok(history) = fetch_series_history(SERIES_MORTGAGE_30YR, Some(key), 2).await {
                 if let Some((date, current)) = history.first() {
@@ -172,15 +172,4 @@ pub async fn fetch_live_rates(api_key: Option<&str>) -> LiveRatesData {
     }
 }
 
-/// Get indicator metadata
-pub fn get_indicator_metadata() -> HashMap<&'static str, (&'static str, &'static str)> {
-    let mut meta = HashMap::new();
-    meta.insert(SERIES_MORTGAGE_30YR, ("30-Year Fixed Mortgage", "%"));
-    meta.insert(SERIES_MORTGAGE_15YR, ("15-Year Fixed Mortgage", "%"));
-    meta.insert(SERIES_FED_FUNDS, ("Federal Funds Rate", "%"));
-    meta.insert(SERIES_CPI, ("Consumer Price Index", "%"));
-    meta.insert(SERIES_UNEMPLOYMENT, ("Unemployment Rate", "%"));
-    meta.insert(SERIES_HOUSING_STARTS, ("Housing Starts", "M units"));
-    meta.insert(SERIES_TREASURY_10YR, ("10-Year Treasury", "%"));
-    meta
-}
+// Metadata function removed as it was unused

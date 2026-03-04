@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, Query},
     http::{header, Method},
     routing::{get, post},
     Json, Router,
@@ -1782,7 +1782,7 @@ async fn get_zillow_zhvi() -> Json<ZhviResponse> {
 }
 
 // Redfin Market Data fetcher
-const REDFIN_MARKET_URL: &str = "https://redfin-public-data.s3.us-west-2.amazonaws.com/redfin_market_tracker/us_national_market_tracker.tsv000.gz";
+// (REDFIN_MARKET_URL constant removed)
 
 async fn get_redfin_market() -> Json<RedfResponse> {
     // For demo, return sample market data (Redfin uses gzipped TSV which needs decompression)

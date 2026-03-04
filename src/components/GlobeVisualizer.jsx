@@ -16,10 +16,15 @@ const US_HOTSPOTS = [
     { name: 'NJ', lat: 40.1, lng: -74.4, grade: 'B', color: '#3b82f6' },
     { name: 'IA', lat: 41.9, lng: -93.1, grade: 'A+', color: '#22c55e' },
     { name: 'CO', lat: 39.0, lng: -105.5, grade: 'A', color: '#22c55e' },
-    { name: 'IN', lat: 39.8, lng: -86.1, grade: 'C', color: '#f59e0b' },
+    { name: 'WA', lat: 47.7, lng: -120.7, grade: 'B', color: '#3b82f6' },
+    { name: 'NV', lat: 38.8, lng: -116.4, grade: 'A', color: '#22c55e' },
+    { name: 'NC', lat: 35.7, lng: -79.0, grade: 'B', color: '#3b82f6' },
     { name: 'MD', lat: 39.0, lng: -76.6, grade: 'B', color: '#3b82f6' },
     { name: 'PA', lat: 41.2, lng: -77.2, grade: 'C', color: '#f59e0b' },
     { name: 'SC', lat: 33.8, lng: -81.2, grade: 'C', color: '#f59e0b' },
+    { name: 'AL', lat: 32.3, lng: -86.9, grade: 'B', color: '#3b82f6' },
+    { name: 'MI', lat: 44.3, lng: -85.6, grade: 'B', color: '#3b82f6' },
+    { name: 'VA', lat: 37.4, lng: -78.6, grade: 'B', color: '#3b82f6' },
 ];
 
 function latLngToSphere(lat, lng, radius) {

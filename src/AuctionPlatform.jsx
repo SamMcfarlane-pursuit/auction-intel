@@ -592,13 +592,16 @@ export default function AuctionPlatform() {
                                 const diffDays = Math.ceil((saleDate - today) / (1000 * 60 * 60 * 24));
                                 return diffDays > 0 && diffDays <= 7; // Sales in next 7 days
                             })
-                            .map(a => ({
-                                id: `auction-${a.id}`,
-                                type: 'auction',
-                                message: `${a.county}, ${a.state} sale in ${Math.ceil((new Date(a.sale_date) - new Date()) / (1000 * 60 * 60 * 24))} days`,
-                                time: 'Just now',
-                                read: false
-                            }));
+                            .map(a => {
+                                const isHighGrade = ['TX', 'FL', 'GA', 'AZ', 'IA', 'CO'].includes(a.state);
+                                return {
+                                    id: `auction-${a.id}`,
+                                    type: isHighGrade ? 'high-priority' : 'auction',
+                                    message: `${isHighGrade ? '🔥 [HIGH GRADE] ' : ''}${a.county}, ${a.state} sale in ${Math.ceil((new Date(a.sale_date) - new Date()) / (1000 * 60 * 60 * 24))} days`,
+                                    time: 'Just now',
+                                    read: false
+                                };
+                            });
 
                         if (newAlerts.length > 0) {
                             const existing = JSON.parse(localStorage.getItem('auction_alerts') || '[]');
