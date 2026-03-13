@@ -20,6 +20,7 @@ mod price_tracker;
 mod realtime;
 mod scoring;
 mod underwriting;
+mod forecaster;
 
 use std::sync::Arc;
 
@@ -1600,6 +1601,28 @@ async fn analyze_county(Json(input): Json<AnalysisInput>) -> Json<AnalysisOutput
 }
 
 // ============================================================================
+// AI FORECASTER HANDLER
+// ============================================================================
+
+async fn predict_market_yield_handler(
+    Path(fips): Path<String>,
+) -> Json<forecaster::ForecastOutput> {
+    // In a real app, we'd look up the county by FIPS
+    // For now, we'll simulate inputs based on typical data for that FIPS
+    // or use stable averages if not found.
+    
+    let input = forecaster::ForecastInput {
+        current_zhvi: 350000.0,
+        historical_growth_yoy: 4.5,
+        mortgage_rate_30yr: 6.8, // Should pull from fred_api in real scenario
+        employment_rate: 96.2,
+        inventory_level: 420,
+    };
+
+    Json(forecaster::predict_market_yield(&input))
+}
+
+// ============================================================================
 // INVESTMENT SCORING ENGINE (Letter Grades)
 // ============================================================================
 
@@ -2048,6 +2071,7 @@ async fn main() {
         .route("/api/counties", get(get_counties))
         .route("/api/census/counties", get(get_census_counties))
         .route("/api/underwriting/calculate", post(calculate_underwriting))
+        .route("/api/forecaster/predict/:fips", get(predict_market_yield_handler))
         .route(
             "/api/census/counties/:state",
             get(get_census_state_counties),

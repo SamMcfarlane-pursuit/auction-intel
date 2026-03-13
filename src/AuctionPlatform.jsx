@@ -20,6 +20,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import UserSettings from './components/UserSettings';
 import GlobeVisualizer from './components/GlobeVisualizer';
 import Market3DMap from './components/Market3DMap';
+import MarketForecaster from './components/MarketForecaster';
 import 'leaflet/dist/leaflet.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
@@ -930,6 +931,7 @@ export default function AuctionPlatform() {
                                 { id: 'stateinfo', label: 'State Database', icon: '⚖️' },
                                 { id: 'calendar', label: 'Auction Calendar', icon: '📅' },
                                 { id: 'roi', label: 'ROI Calculator', icon: '💰' },
+                                { id: 'forecaster', label: 'AI Forecaster', icon: '🔮' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
                                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-emerald-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
@@ -1086,9 +1088,10 @@ export default function AuctionPlatform() {
                                                                 view === 'heatmap' ? 'Best Opportunities' :
                                                                     view === 'auctions' ? 'Upcoming Auctions' :
                                                                         view === 'calendar' ? '2026 Auction Calendar' :
-                                                                            selectedCounty ? `${selectedCounty[0]} Region` :
-                                                                                selectedState ? STATE_NAMES[selectedState] :
-                                                                                    'Auction Intel'}
+                                                                            view === 'forecaster' ? 'AI Market Forecaster' :
+                                                                                selectedCounty ? `${selectedCounty[0]} Region` :
+                                                                                    selectedState ? STATE_NAMES[selectedState] :
+                                                                                        'Auction Intel'}
                                 </div>
                             </div>
                         </div>
@@ -1194,13 +1197,20 @@ export default function AuctionPlatform() {
                                                 </div>
                                             );
                                         }
-                                        const [name, , , , , , tier] = r.county;
+                                        const [name, , , , growth, , tier] = r.county;
                                         const t = TIERS[tier];
+                                        const isAlpha = tier <= 2 && growth > 5;
                                         return (
                                             <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
-                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 cursor-pointer">
-                                                <div className="font-bold text-slate-800 text-sm">{name}, {r.abbr}</div>
-                                                <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ background: t.color }}>{t.label}</span>
+                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-50 last:border-0 group">
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-bold text-slate-800 text-sm truncate">{name}, {r.abbr}</span>
+                                                        {isAlpha && <span className="text-[7px] font-black bg-indigo-600 text-white px-1.2 py-0.5 rounded-full animate-pulse tracking-tighter">AI ALPHA</span>}
+                                                    </div>
+                                                    <div className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">Tier {tier} Opportunity</div>
+                                                </div>
+                                                <span className="px-2 py-0.5 rounded text-[9px] font-black text-white" style={{ background: t.color }}>{t.label}</span>
                                             </div>
                                         );
                                     })}
@@ -1733,6 +1743,14 @@ export default function AuctionPlatform() {
                             /* Market Intelligence Dashboard View */
                             <div className="h-full overflow-auto">
                                 <MarketDataDashboard />
+                            </div>
+                        ) : view === 'forecaster' ? (
+                            /* AI Market Forecaster View */
+                            <div className="p-4 md:p-8 overflow-auto h-full">
+                                <MarketForecaster 
+                                    county={selectedCounty ? { name: selectedCounty[0], zhvi: selectedCounty[3], fips: selectedCounty[7]?.split(' ')[1] } : null} 
+                                    onBack={() => setView('map')}
+                                />
                             </div>
                         ) : view === 'alerts' ? (
                             /* Alert Settings View */
@@ -2420,30 +2438,38 @@ export default function AuctionPlatform() {
                                                             <div className="max-h-[300px] overflow-auto">
                                                                 {(COUNTIES[selectedStateInfo.abbr] || []).length > 0 ? (
                                                                     <div className="divide-y divide-slate-50">
-                                                                        {COUNTIES[selectedStateInfo.abbr].slice(0, 15).map((county, idx) => (
-                                                                            <div key={idx} className="px-4 py-3 hover:bg-slate-50 transition-colors flex items-center justify-between">
-                                                                                <div className="flex items-center gap-3">
-                                                                                    <div
-                                                                                        className="w-2 h-8 rounded-full"
-                                                                                        style={{ backgroundColor: TIERS[county[6]]?.color || '#94a3b8' }}
-                                                                                    ></div>
-                                                                                    <div>
-                                                                                        <div className="font-bold text-slate-900 text-sm">{county[0]}</div>
-                                                                                        <div className="text-[10px] text-slate-400">
-                                                                                            Pop: {(county[1] || 0).toLocaleString()} • Income: ${(county[2] || 0).toLocaleString()}
+                                                                        {COUNTIES[selectedStateInfo.abbr].slice(0, 15).map((county, idx) => {
+                                                                            const tier = TIERS[county[6]] || TIERS[5];
+                                                                            const isAlpha = county[6] <= 2 && (county[4] > 5 || county[3] > 400000); // AI Alpha logic
+                                                                            return (
+                                                                                <button
+                                                                                    key={idx}
+                                                                                    onClick={async () => {
+                                                                                        setSelectedState(selectedStateInfo.abbr);
+                                                                                        setSelectedCounty(county);
+                                                                                        setView('detection');
+                                                                                        setSelectedStateInfo(null);
+                                                                                    }}
+                                                                                    className="w-full flex items-center justify-between p-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-all text-left group"
+                                                                                >
+                                                                                    <div className="min-w-0">
+                                                                                        <div className="flex items-center gap-2">
+                                                                                            <span className="font-bold text-slate-900 truncate">{county[0]}</span>
+                                                                                            {isAlpha && <span className="text-[8px] font-black bg-indigo-600 text-white px-1.5 py-0.5 rounded-full animate-pulse">AI ALPHA</span>}
                                                                                         </div>
+                                                                                        <div className="text-[10px] text-slate-400 font-bold">{selectedStateInfo.abbr} • Tier {county[6]}</div>
                                                                                     </div>
-                                                                                </div>
-                                                                                <div className="flex items-center gap-2">
-                                                                                    <span
-                                                                                        className="px-2 py-1 rounded-lg text-[9px] font-black text-white"
-                                                                                        style={{ backgroundColor: TIERS[county[6]]?.color || '#94a3b8' }}
-                                                                                    >
-                                                                                        T{county[6]}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <span
+                                                                                            className="px-2 py-1 rounded-lg text-[9px] font-black text-white"
+                                                                                            style={{ backgroundColor: tier.color }}
+                                                                                        >
+                                                                                            T{county[6]}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </button>
+                                                                            );
+                                                                        })}
                                                                         {(COUNTIES[selectedStateInfo.abbr] || []).length > 15 && (
                                                                             <div className="px-4 py-3 text-center text-xs text-slate-400 font-bold">
                                                                                 + {(COUNTIES[selectedStateInfo.abbr] || []).length - 15} more counties
