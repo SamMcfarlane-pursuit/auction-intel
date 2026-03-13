@@ -13,9 +13,13 @@ mod auctions;
 mod auth;
 mod census;
 mod db;
+mod deal_finder;
 mod foreclosure;
 mod fred_api;
+mod price_tracker;
+mod realtime;
 mod scoring;
+mod underwriting;
 
 use std::sync::Arc;
 
@@ -53,8 +57,8 @@ pub struct AnalysisInput {
     pub median_income: u32,
     pub growth_yoy: f32,
     pub days_on_market: u16,
-    pub transaction_volume: u32,
-    pub employment_rate: f32,
+    pub momentum_score: Option<f32>,
+    pub list_to_sale_ratio: Option<f32>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -64,6 +68,9 @@ pub struct AnalysisOutput {
     pub name: String,
     pub action: String,
     pub recommendation: String,
+    pub grade: String,
+    pub volatility_index: f32,
+    pub stability_grade: String,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -1555,79 +1562,36 @@ async fn get_counties(Query(params): Query<CountyParams>) -> Json<Vec<CountyData
 }
 
 fn calculate_score(input: &AnalysisInput) -> AnalysisOutput {
-    let mut score: f32 = 0.0;
-
-    // Population (15%) - Target 500k+
-    score += (input.population as f32 / 500_000.0).min(1.0) * 15.0;
-
-    // Median Income (15%) - Target $80k+
-    score += (input.median_income as f32 / 80_000.0).min(1.0) * 15.0;
-
-    // Growth YoY (20%) - Target 5%+
-    score += (input.growth_yoy / 5.0).max(0.0).min(1.0) * 20.0;
-
-    // Days on Market (20%) - Target < 30 (Inverse)
-    let dom_score = if input.days_on_market < 30 {
-        20.0
-    } else if input.days_on_market > 90 {
-        0.0
-    } else {
-        (90.0 - input.days_on_market as f32) / 60.0 * 20.0
-    };
-    score += dom_score;
-
-    // Transaction Volume (15%) - Target 10k+
-    score += (input.transaction_volume as f32 / 10_000.0).min(1.0) * 15.0;
-
-    // Employment Rate (15%) - Target 96%+
-    score += ((input.employment_rate - 90.0) / 6.0).max(0.0).min(1.0) * 15.0;
-
-    let tier = if score >= 85.0 {
-        1
-    } else if score >= 70.0 {
-        2
-    } else if score >= 50.0 {
-        3
-    } else if score >= 30.0 {
-        4
-    } else {
-        5
+    let scoring_input = scoring::AnalysisInput {
+        population: input.population,
+        median_income: input.median_income,
+        growth_yoy: input.growth_yoy,
+        days_on_market: input.days_on_market,
+        momentum_score: input.momentum_score,
+        list_to_sale_ratio: input.list_to_sale_ratio,
     };
 
-    let (name, action, recommendation) = match tier {
-        1 => (
-            "Prime Investor",
-            "✓ PURSUE",
-            "Exceptional liquidity and growth fundamentals.",
-        ),
-        2 => (
-            "Strong/Selective",
-            "✓ PURSUE",
-            "Solid market; focus on specific neighborhood due diligence.",
-        ),
-        3 => (
-            "Opportunistic",
-            "✓ PURSUE",
-            "Stable regional hub; steady cash flow potential.",
-        ),
-        4 => (
-            "Speculative",
-            "⚠ CAUTION",
-            "Limited liquidity; higher exit risk.",
-        ),
-        _ => (
-            "Capital Trap",
-            "✗ AVOID",
-            "Weak fundamentals; significant risk of illiquidity.",
-        ),
+    let result = scoring::evaluate_county(&scoring_input);
+
+    let tier = match result.grade.as_str() {
+        "A+" | "A" => 1,
+        "B" => 2,
+        "C" => 3,
+        "D" => 4,
+        _ => 5,
     };
+
+    let action = if tier <= 3 { "✓ PURSUE" } else { "✗ AVOID" };
 
     AnalysisOutput {
-        score,
+        score: result.score,
         tier,
-        name: name.to_string(),
+        name: "Investment Core".to_string(),
         action: action.to_string(),
-        recommendation: recommendation.to_string(),
+        recommendation: result.recommendation,
+        grade: result.grade,
+        volatility_index: result.volatility_index,
+        stability_grade: result.stability_grade,
     }
 }
 
@@ -1645,6 +1609,12 @@ async fn score_county_grade(
     Json(scoring::evaluate_county(&input))
 }
 
+async fn calculate_underwriting(
+    Json(input): Json<underwriting::UnderwritingInput>,
+) -> Json<underwriting::UnderwritingResult> {
+    Json(underwriting::calculate_deal(&input))
+}
+
 #[derive(Debug, Serialize)]
 struct GradedCounty {
     name: String,
@@ -1659,6 +1629,8 @@ struct GradedCounty {
     grade: String,
     recommendation: String,
     score: f32,
+    volatility: f32,
+    stability: String,
 }
 
 async fn get_graded_counties(Path(state): Path<String>) -> Json<Vec<GradedCounty>> {
@@ -1673,8 +1645,8 @@ async fn get_graded_counties(Path(state): Path<String>) -> Json<Vec<GradedCounty
                 median_income: c.income,
                 growth_yoy: c.growth,
                 days_on_market: c.dom as u16,
-                transaction_volume: None,
-                employment_rate: None,
+                momentum_score: None,
+                list_to_sale_ratio: None,
             });
             GradedCounty {
                 name: c.name,
@@ -1689,6 +1661,8 @@ async fn get_graded_counties(Path(state): Path<String>) -> Json<Vec<GradedCounty
                 grade: analysis.grade,
                 recommendation: analysis.recommendation,
                 score: analysis.score,
+                volatility: analysis.volatility_index,
+                stability: analysis.stability_grade,
             }
         })
         .collect();
@@ -2042,7 +2016,9 @@ async fn main() {
         "http://localhost:5173".parse().unwrap(), // Vite dev server
         "http://localhost:5180".parse().unwrap(), // My dev port
         "http://localhost:3000".parse().unwrap(), // Alt dev port
+        "http://localhost:3005".parse().unwrap(), // Current dev port
         "http://127.0.0.1:5173".parse().unwrap(),
+        "http://127.0.0.1:3005".parse().unwrap(),
     ];
 
     let cors = CorsLayer::new()
@@ -2053,7 +2029,16 @@ async fn main() {
 
     println!("🔐 Initializing Database...");
     let pool = db::init_db().await.expect("Failed to initialize database");
+
+    println!("📈 Initializing Price Tracker...");
+    price_tracker::init_price_tracker(&pool)
+        .await
+        .expect("Failed to initialize price tracker");
+
     let app_state = Arc::new(db::AppState { db: pool });
+
+    // Start background monitor
+    tokio::spawn(realtime::start_realtime_monitor());
 
     let app = Router::new()
         .route("/api/health", get(health))
@@ -2062,6 +2047,7 @@ async fn main() {
         .route("/api/state-info/:abbr", get(get_state_info))
         .route("/api/counties", get(get_counties))
         .route("/api/census/counties", get(get_census_counties))
+        .route("/api/underwriting/calculate", post(calculate_underwriting))
         .route(
             "/api/census/counties/:state",
             get(get_census_state_counties),
@@ -2092,6 +2078,10 @@ async fn main() {
         .route("/api/auth/signup", post(auth::signup))
         .route("/api/auth/login", post(auth::login))
         .route("/api/auth/me", get(auth::me))
+        .route("/api/sse/feed", get(realtime::sse_handler))
+        .route("/api/trends/:fips", get(price_tracker::get_trends_handler))
+        .route("/api/deals/top", get(deal_finder::get_top_deals))
+        .route("/api/deals/search", get(deal_finder::search_deals))
         .with_state(app_state)
         .layer(cors);
 
@@ -2108,6 +2098,10 @@ async fn main() {
     println!("   GET  /api/zillow/zhvi");
     println!("   GET  /api/redfin/market");
     println!("   GET  /api/rates");
+    println!("   GET  /api/sse/feed");
+    println!("   GET  /api/trends/:fips");
+    println!("   GET  /api/deals/top");
+    println!("   GET  /api/deals/search");
 
     // Use PORT env var (Railway sets this) or default to 8080
     let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());

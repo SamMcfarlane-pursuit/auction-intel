@@ -19,6 +19,7 @@ import MobileNav from './components/MobileNav';
 import WelcomeScreen from './components/WelcomeScreen';
 import UserSettings from './components/UserSettings';
 import GlobeVisualizer from './components/GlobeVisualizer';
+import Market3DMap from './components/Market3DMap';
 import 'leaflet/dist/leaflet.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
@@ -233,174 +234,174 @@ const COUNTY_PLATFORMS = {
     'Manatee': { state: 'FL', platform: 'RealAuction', url: 'https://www.realauction.com/manatee-fl', taxCollector: 'https://www.taxcollector.com' },
 
     // ARIZONA (15 counties - all)
-    'Maricopa': { state: 'AZ', platform: 'RealAuction', url: 'https://www.realauction.com/maricopa-az', taxCollector: 'https://treasurer.maricopa.gov' },
-    'Pima': { state: 'AZ', platform: 'County', url: 'https://www.pima.gov/tax-lien-sale', taxCollector: 'https://www.pima.gov/treasurer' },
-    'Pinal': { state: 'AZ', platform: 'County', url: 'https://www.pinalcountyaz.gov/treasurer', taxCollector: 'https://www.pinalcountyaz.gov/treasurer' },
-    'Yavapai': { state: 'AZ', platform: 'County', url: 'https://www.yavapai.us/treasurer', taxCollector: 'https://www.yavapai.us/treasurer' },
-    'Mohave': { state: 'AZ', platform: 'County', url: 'https://www.mohavecounty.us/treasurer', taxCollector: 'https://www.mohavecounty.us/treasurer' },
-    'Yuma': { state: 'AZ', platform: 'County', url: 'https://www.yumacountyaz.gov/treasurer', taxCollector: 'https://www.yumacountyaz.gov/treasurer' },
-    'Cochise': { state: 'AZ', platform: 'County', url: 'https://www.cochise.az.gov/treasurer', taxCollector: 'https://www.cochise.az.gov/treasurer' },
-    'Coconino': { state: 'AZ', platform: 'County', url: 'https://www.coconino.az.gov/treasurer', taxCollector: 'https://www.coconino.az.gov/treasurer' },
+    'AZ-Maricopa': { state: 'AZ', platform: 'RealAuction', url: 'https://www.realauction.com/maricopa-az', taxCollector: 'https://treasurer.maricopa.gov' },
+    'AZ-Pima': { state: 'AZ', platform: 'County', url: 'https://www.pima.gov/tax-lien-sale', taxCollector: 'https://www.pima.gov/treasurer' },
+    'AZ-Pinal': { state: 'AZ', platform: 'County', url: 'https://www.pinalcountyaz.gov/treasurer', taxCollector: 'https://www.pinalcountyaz.gov/treasurer' },
+    'AZ-Yavapai': { state: 'AZ', platform: 'County', url: 'https://www.yavapai.us/treasurer', taxCollector: 'https://www.yavapai.us/treasurer' },
+    'AZ-Mohave': { state: 'AZ', platform: 'County', url: 'https://www.mohavecounty.us/treasurer', taxCollector: 'https://www.mohavecounty.us/treasurer' },
+    'AZ-Yuma': { state: 'AZ', platform: 'County', url: 'https://www.yumacountyaz.gov/treasurer', taxCollector: 'https://www.yumacountyaz.gov/treasurer' },
+    'AZ-Cochise': { state: 'AZ', platform: 'County', url: 'https://www.cochise.az.gov/treasurer', taxCollector: 'https://www.cochise.az.gov/treasurer' },
+    'AZ-Coconino': { state: 'AZ', platform: 'County', url: 'https://www.coconino.az.gov/treasurer', taxCollector: 'https://www.coconino.az.gov/treasurer' },
 
     // GEORGIA (159 counties - top 15)
-    'Fulton': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fulton-ga', taxCollector: 'https://www.fultoncountytaxes.org' },
-    'DeKalb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/dekalb-ga', taxCollector: 'https://www.dekalbcountyga.gov/tax' },
-    'Gwinnett': { state: 'GA', platform: 'County', url: 'https://www.gwinnettcounty.com/taxsale', taxCollector: 'https://www.gwinnettcounty.com/tax' },
-    'Cobb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cobb-ga', taxCollector: 'https://www.cobbcounty.org/tax' },
-    'Clayton': { state: 'GA', platform: 'County', url: 'https://www.claytoncountyga.gov/tax', taxCollector: 'https://www.claytoncountyga.gov/tax' },
-    'Cherokee': { state: 'GA', platform: 'County', url: 'https://www.cherokeega.com/tax', taxCollector: 'https://www.cherokeega.com/tax' },
-    'Forsyth': { state: 'GA', platform: 'County', url: 'https://www.forsythco.com/tax', taxCollector: 'https://www.forsythco.com/tax' },
-    'Henry': { state: 'GA', platform: 'County', url: 'https://www.co.henry.ga.us/tax', taxCollector: 'https://www.co.henry.ga.us/tax' },
-    'Richmond': { state: 'GA', platform: 'County', url: 'https://www.augustaga.gov/tax', taxCollector: 'https://www.augustaga.gov/tax' },
-    'Chatham': { state: 'GA', platform: 'County', url: 'https://www.chathamcounty.org/tax', taxCollector: 'https://www.chathamcounty.org/tax' },
+    'GA-Fulton': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fulton-ga', taxCollector: 'https://www.fultoncountytaxes.org' },
+    'GA-DeKalb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/dekalb-ga', taxCollector: 'https://www.dekalbcountyga.gov/tax' },
+    'GA-Gwinnett': { state: 'GA', platform: 'County', url: 'https://www.gwinnettcounty.com/taxsale', taxCollector: 'https://www.gwinnettcounty.com/tax' },
+    'GA-Cobb': { state: 'GA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cobb-ga', taxCollector: 'https://www.cobbcounty.org/tax' },
+    'GA-Clayton': { state: 'GA', platform: 'County', url: 'https://www.claytoncountyga.gov/tax', taxCollector: 'https://www.claytoncountyga.gov/tax' },
+    'GA-Cherokee': { state: 'GA', platform: 'County', url: 'https://www.cherokeega.com/tax', taxCollector: 'https://www.cherokeega.com/tax' },
+    'GA-Forsyth': { state: 'GA', platform: 'County', url: 'https://www.forsythco.com/tax', taxCollector: 'https://www.forsythco.com/tax' },
+    'GA-Henry': { state: 'GA', platform: 'County', url: 'https://www.co.henry.ga.us/tax', taxCollector: 'https://www.co.henry.ga.us/tax' },
+    'GA-Augusta': { state: 'GA', platform: 'County', url: 'https://www.augustaga.gov/tax', taxCollector: 'https://www.augustaga.gov/tax' },
+    'GA-Chatham': { state: 'GA', platform: 'County', url: 'https://www.chathamcounty.org/tax', taxCollector: 'https://www.chathamcounty.org/tax' },
 
     // CALIFORNIA (58 counties - top 15)
-    'Los Angeles': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/la-county', taxCollector: 'https://ttc.lacounty.gov' },
-    'San Diego': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/san-diego', taxCollector: 'https://www.sdttc.com' },
-    'Riverside': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/riverside-ca', taxCollector: 'https://www.countytreasurer.org' },
-    'San Bernardino': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanbernardino', taxCollector: 'https://www.sbcounty.gov/atc' },
-    'Santa Clara': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/santaclara', taxCollector: 'https://www.sccgov.org/tax' },
-    'Alameda': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/alameda-ca', taxCollector: 'https://www.acgov.org/treasurer' },
-    'Sacramento': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sacramento', taxCollector: 'https://www.finance.saccounty.net' },
-    'Contra Costa': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/contracosta', taxCollector: 'https://www.cctax.us' },
-    'Fresno': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fresno', taxCollector: 'https://www.co.fresno.ca.us/ttc' },
-    'Kern': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/kern', taxCollector: 'https://www.kcttc.co.kern.ca.us' },
-    'Ventura': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/ventura', taxCollector: 'https://www.ventura.org/ttc' },
-    'San Mateo': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanmateo', taxCollector: 'https://www.smcacre.org' },
+    'CA-Los Angeles': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/la-county', taxCollector: 'https://ttc.lacounty.gov' },
+    'CA-San Diego': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/san-diego', taxCollector: 'https://www.sdttc.com' },
+    'CA-Riverside': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/riverside-ca', taxCollector: 'https://www.countytreasurer.org' },
+    'CA-San Bernardino': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanbernardino', taxCollector: 'https://www.sbcounty.gov/atc' },
+    'CA-Santa Clara': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/santaclara', taxCollector: 'https://www.sccgov.org/tax' },
+    'CA-Alameda': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/alameda-ca', taxCollector: 'https://www.acgov.org/treasurer' },
+    'CA-Sacramento': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sacramento', taxCollector: 'https://www.finance.saccounty.net' },
+    'CA-Contra Costa': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/contracosta', taxCollector: 'https://www.cctax.us' },
+    'CA-Fresno': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fresno', taxCollector: 'https://www.co.fresno.ca.us/ttc' },
+    'CA-Kern': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/kern', taxCollector: 'https://www.kcttc.co.kern.ca.us' },
+    'CA-Ventura': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/ventura', taxCollector: 'https://www.ventura.org/ttc' },
+    'CA-San Mateo': { state: 'CA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/sanmateo', taxCollector: 'https://www.smcacre.org' },
 
     // PENNSYLVANIA (67 counties - top 10)
-    'Philadelphia': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/philadelphia', taxCollector: 'https://www.phila.gov/revenue' },
-    'Allegheny': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/allegheny', taxCollector: 'https://www.alleghenycounty.us/real-estate' },
-    'Montgomery': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-pa', taxCollector: 'https://www.montcopa.org/tax' },
-    'Bucks': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/bucks-pa', taxCollector: 'https://www.buckscounty.gov/tax' },
-    'Delaware': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/delaware-pa', taxCollector: 'https://www.delcopa.gov/tax' },
-    'Chester': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chester-pa', taxCollector: 'https://www.chesco.org/tax' },
-    'Lancaster': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/lancaster-pa', taxCollector: 'https://www.co.lancaster.pa.us/tax' },
-    'York': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/york-pa', taxCollector: 'https://www.yorkcountypa.gov/tax' },
+    'PA-Philadelphia': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/philadelphia', taxCollector: 'https://www.phila.gov/revenue' },
+    'PA-Allegheny': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/allegheny', taxCollector: 'https://www.alleghenycounty.us/real-estate' },
+    'PA-Montgomery': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-pa', taxCollector: 'https://www.montcopa.org/tax' },
+    'PA-Bucks': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/bucks-pa', taxCollector: 'https://www.buckscounty.gov/tax' },
+    'PA-Delaware': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/delaware-pa', taxCollector: 'https://www.delcopa.gov/tax' },
+    'PA-Chester': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chester-pa', taxCollector: 'https://www.chesco.org/tax' },
+    'PA-Lancaster': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/lancaster-pa', taxCollector: 'https://www.co.lancaster.pa.us/tax' },
+    'PA-York': { state: 'PA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/york-pa', taxCollector: 'https://www.yorkcountypa.gov/tax' },
 
     // NEW JERSEY (21 counties - all major)
-    'Essex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/essex-nj', taxCollector: 'https://www.essexcountynj.org' },
-    'Hudson': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/hudson-nj', taxCollector: 'https://www.hudsoncountynj.org' },
-    'Bergen': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bergen-nj', taxCollector: 'https://www.bergencountynj.gov' },
-    'Middlesex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/middlesex-nj', taxCollector: 'https://www.middlesexcountynj.gov' },
-    'Union': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/union-nj', taxCollector: 'https://ucnj.org' },
-    'Passaic': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/passaic-nj', taxCollector: 'https://www.passaiccountynj.org' },
-    'Monmouth': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/monmouth-nj', taxCollector: 'https://www.visitmonmouth.com' },
-    'Ocean': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/ocean-nj', taxCollector: 'https://www.co.ocean.nj.us' },
-    'Camden': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/camden-nj', taxCollector: 'https://www.camdencounty.com' },
-    'Morris': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/morris-nj', taxCollector: 'https://www.morriscountynj.gov' },
+    'NJ-Essex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/essex-nj', taxCollector: 'https://www.essexcountynj.org' },
+    'NJ-Hudson': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/hudson-nj', taxCollector: 'https://www.hudsoncountynj.org' },
+    'NJ-Bergen': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bergen-nj', taxCollector: 'https://www.bergencountynj.gov' },
+    'NJ-Middlesex': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.middlesexcountynj.gov', taxCollector: 'https://www.middlesexcountynj.gov' },
+    'NJ-Union': { state: 'NJ', platform: 'Zeusauction', url: 'https://ucnj.org', taxCollector: 'https://ucnj.org' },
+    'NJ-Passaic': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.passaiccountynj.org', taxCollector: 'https://www.passaiccountynj.org' },
+    'NJ-Monmouth': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.visitmonmouth.com', taxCollector: 'https://www.visitmonmouth.com' },
+    'NJ-Ocean': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.co.ocean.nj.us', taxCollector: 'https://www.co.ocean.nj.us' },
+    'NJ-Camden': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.camdencounty.com', taxCollector: 'https://www.camdencounty.com' },
+    'NJ-Morris': { state: 'NJ', platform: 'Zeusauction', url: 'https://www.morriscountynj.gov', taxCollector: 'https://www.morriscountynj.gov' },
 
     // ILLINOIS (102 counties - top 10)
-    'Cook': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/cook-il', taxCollector: 'https://www.cookcountytreasurer.com' },
-    'DuPage': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/dupage-il', taxCollector: 'https://www.dupageco.org/tax' },
-    'Lake': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/lake-il', taxCollector: 'https://www.lakecountyil.gov/tax' },
-    'Will': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/will-il', taxCollector: 'https://www.willcountyillinois.com/tax' },
-    'Kane': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/kane-il', taxCollector: 'https://www.countyofkane.org/tax' },
-    'McHenry': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/mchenry-il', taxCollector: 'https://www.mchenrycountyil.gov' },
-    'Winnebago': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/winnebago-il', taxCollector: 'https://www.wincoil.us' },
-    'Madison': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/madison-il', taxCollector: 'https://www.co.madison.il.us' },
+    'IL-Cook': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/cook-il', taxCollector: 'https://www.cookcountytreasurer.com' },
+    'IL-DuPage': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/dupage-il', taxCollector: 'https://www.dupageco.org/tax' },
+    'IL-Lake': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/lake-il', taxCollector: 'https://www.lakecountyil.gov/tax' },
+    'IL-Will': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/will-il', taxCollector: 'https://www.willcountyillinois.com/tax' },
+    'IL-Kane': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/kane-il', taxCollector: 'https://www.countyofkane.org/tax' },
+    'IL-McHenry': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/mchenry-il', taxCollector: 'https://www.mchenrycountyil.gov' },
+    'IL-Winnebago': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/winnebago-il', taxCollector: 'https://www.wincoil.us' },
+    'IL-Madison': { state: 'IL', platform: 'GovEase', url: 'https://www.govease.com/madison-il', taxCollector: 'https://www.co.madison.il.us' },
 
     // OHIO (88 counties - top 10)
-    'Cuyahoga': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/cuyahoga', taxCollector: 'https://fiscalofficer.cuyahogacounty.us' },
-    'Franklin': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/franklin-oh', taxCollector: 'https://treasurer.franklincountyohio.gov' },
-    'Hamilton': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/hamilton-oh', taxCollector: 'https://www.hamiltoncountytreasurer.org' },
-    'Summit': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/summit-oh', taxCollector: 'https://fiscaloffice.summitoh.net' },
-    'Montgomery': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/montgomery-oh', taxCollector: 'https://www.mctreasurer.org' },
-    'Lucas': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/lucas-oh', taxCollector: 'https://www.co.lucas.oh.us/treasurer' },
-    'Stark': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/stark-oh', taxCollector: 'https://starkcountyohio.gov/treasurer' },
-    'Butler': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/butler-oh', taxCollector: 'https://www.butlercountyohio.org/treasurer' },
+    'OH-Cuyahoga': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/cuyahoga', taxCollector: 'https://fiscalofficer.cuyahogacounty.us' },
+    'OH-Franklin': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/franklin-oh', taxCollector: 'https://treasurer.franklincountyohio.gov' },
+    'OH-Hamilton': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/hamilton-oh', taxCollector: 'https://www.hamiltoncountytreasurer.org' },
+    'OH-Summit': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/summit-oh', taxCollector: 'https://fiscaloffice.summitoh.net' },
+    'OH-Montgomery': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/montgomery-oh', taxCollector: 'https://www.mctreasurer.org' },
+    'OH-Lucas': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/lucas-oh', taxCollector: 'https://www.co.lucas.oh.us/treasurer' },
+    'OH-Stark': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/stark-oh', taxCollector: 'https://starkcountyohio.gov/treasurer' },
+    'OH-Butler': { state: 'OH', platform: 'GovEase', url: 'https://www.govease.com/butler-oh', taxCollector: 'https://www.butlercountyohio.org/treasurer' },
 
     // MICHIGAN (83 counties - top 10)
-    'Wayne': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/wayne-mi', taxCollector: 'https://www.waynecounty.com/treasurer' },
-    'Oakland': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/oakland-mi', taxCollector: 'https://www.oakgov.com/treasurer' },
-    'Macomb': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/macomb-mi', taxCollector: 'https://treasurer.macombgov.org' },
-    'Kent': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kent-mi', taxCollector: 'https://www.accesskent.com/Treasurer' },
-    'Genesee': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/genesee-mi', taxCollector: 'https://www.gc4me.com/treasurer' },
-    'Washtenaw': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/washtenaw-mi', taxCollector: 'https://www.washtenaw.org/treasurer' },
-    'Ingham': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/ingham-mi', taxCollector: 'https://tr.ingham.org' },
-    'Kalamazoo': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kalamazoo-mi', taxCollector: 'https://www.kalcounty.com/treasurer' },
+    'MI-Wayne': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/wayne-mi', taxCollector: 'https://www.waynecounty.com/treasurer' },
+    'MI-Oakland': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/oakland-mi', taxCollector: 'https://www.oakgov.com/treasurer' },
+    'MI-Macomb': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/macomb-mi', taxCollector: 'https://treasurer.macombgov.org' },
+    'MI-Kent': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kent-mi', taxCollector: 'https://www.accesskent.com/Treasurer' },
+    'MI-Genesee': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/genesee-mi', taxCollector: 'https://www.gc4me.com/treasurer' },
+    'MI-Washtenaw': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/washtenaw-mi', taxCollector: 'https://www.washtenaw.org/treasurer' },
+    'MI-Ingham': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/ingham-mi', taxCollector: 'https://tr.ingham.org' },
+    'MI-Kalamazoo': { state: 'MI', platform: 'GovEase', url: 'https://www.govease.com/kalamazoo-mi', taxCollector: 'https://www.kalcounty.com/treasurer' },
 
     // INDIANA (92 counties - top 8)
-    'Marion': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/marion-in', taxCollector: 'https://www.indy.gov/treasurer' },
-    'Lake': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/lake-in', taxCollector: 'https://www.lakecountyin.org/treasurer' },
-    'Allen': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/allen-in', taxCollector: 'https://www.allencounty.us/treasurer' },
-    'Hamilton': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/hamilton-in', taxCollector: 'https://www.hamiltoncounty.in.gov/treasurer' },
-    'St. Joseph': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/stjoseph-in', taxCollector: 'https://www.sjcindiana.com/treasurer' },
-    'Elkhart': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/elkhart-in', taxCollector: 'https://www.elkhartcounty.com/treasurer' },
+    'IN-Marion': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/marion-in', taxCollector: 'https://www.indy.gov/treasurer' },
+    'IN-Lake': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/lake-in', taxCollector: 'https://www.lakecountyin.org/treasurer' },
+    'IN-Allen': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/allen-in', taxCollector: 'https://www.allencounty.us/treasurer' },
+    'IN-Hamilton': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/hamilton-in', taxCollector: 'https://www.hamiltoncounty.in.gov/treasurer' },
+    'IN-St. Joseph': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/stjoseph-in', taxCollector: 'https://www.sjcindiana.com/treasurer' },
+    'IN-Elkhart': { state: 'IN', platform: 'GovEase', url: 'https://www.govease.com/elkhart-in', taxCollector: 'https://www.elkhartcounty.com/treasurer' },
 
     // NEW YORK (62 counties - top 10)
-    'Kings': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/kings-ny', taxCollector: 'https://www.nyc.gov/finance' },
-    'Queens': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/queens-ny', taxCollector: 'https://www.nyc.gov/finance' },
-    'New York': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/manhattan-ny', taxCollector: 'https://www.nyc.gov/finance' },
-    'Suffolk': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/suffolk-ny', taxCollector: 'https://www.suffolkcountyny.gov/tax' },
-    'Nassau': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/nassau-ny', taxCollector: 'https://www.nassaucountyny.gov/treasurer' },
-    'Bronx': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bronx-ny', taxCollector: 'https://www.nyc.gov/finance' },
-    'Erie': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/erie-ny', taxCollector: 'https://www2.erie.gov/comptroller' },
-    'Westchester': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/westchester-ny', taxCollector: 'https://www.westchestergov.com/finance' },
+    'NY-Kings': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/kings-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'NY-Queens': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/queens-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'NY-Manhattan': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/manhattan-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'NY-Suffolk': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/suffolk-ny', taxCollector: 'https://www.suffolkcountyny.gov/tax' },
+    'NY-Nassau': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/nassau-ny', taxCollector: 'https://www.nassaucountyny.gov/treasurer' },
+    'NY-Bronx': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/bronx-ny', taxCollector: 'https://www.nyc.gov/finance' },
+    'NY-Erie': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/erie-ny', taxCollector: 'https://www2.erie.gov/comptroller' },
+    'NY-Westchester': { state: 'NY', platform: 'Zeusauction', url: 'https://www.zeusauction.com/westchester-ny', taxCollector: 'https://www.westchestergov.com/finance' },
 
     // NORTH CAROLINA (100 counties - top 10)
-    'Mecklenburg': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/mecklenburg-nc', taxCollector: 'https://www.mecknc.gov/tax' },
-    'Wake': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/wake-nc', taxCollector: 'https://www.wakegov.com/tax' },
-    'Guilford': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/guilford-nc', taxCollector: 'https://www.guilfordcountync.gov/tax' },
-    'Forsyth': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/forsyth-nc', taxCollector: 'https://www.forsyth.cc/tax' },
-    'Cumberland': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cumberland-nc', taxCollector: 'https://www.cumberlandcountync.gov/tax' },
-    'Durham': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/durham-nc', taxCollector: 'https://www.dconc.gov/tax' },
+    'NC-Mecklenburg': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/mecklenburg-nc', taxCollector: 'https://www.mecknc.gov/tax' },
+    'NC-Wake': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/wake-nc', taxCollector: 'https://www.wakegov.com/tax' },
+    'NC-Guilford': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/guilford-nc', taxCollector: 'https://www.guilfordcountync.gov/tax' },
+    'NC-Forsyth': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/forsyth-nc', taxCollector: 'https://www.forsyth.cc/tax' },
+    'NC-Cumberland': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/cumberland-nc', taxCollector: 'https://www.cumberlandcountync.gov/tax' },
+    'NC-Durham': { state: 'NC', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/durham-nc', taxCollector: 'https://www.dconc.gov/tax' },
 
     // VIRGINIA (133 counties - top 8)
-    'Fairfax': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fairfax-va', taxCollector: 'https://www.fairfaxcounty.gov/taxes' },
-    'Prince William': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princewilliam-va', taxCollector: 'https://www.pwcgov.org/tax' },
-    'Loudoun': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/loudoun-va', taxCollector: 'https://www.loudoun.gov/tax' },
-    'Chesterfield': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chesterfield-va', taxCollector: 'https://www.chesterfield.gov/tax' },
-    'Henrico': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/henrico-va', taxCollector: 'https://henrico.us/finance' },
-    'Virginia Beach': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/virginiabeach', taxCollector: 'https://www.vbgov.com/finance' },
+    'VA-Fairfax': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/fairfax-va', taxCollector: 'https://www.fairfaxcounty.gov/taxes' },
+    'VA-Prince William': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princewilliam-va', taxCollector: 'https://www.pwcgov.org/tax' },
+    'VA-Loudoun': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/loudoun-va', taxCollector: 'https://www.loudoun.gov/tax' },
+    'VA-Chesterfield': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/chesterfield-va', taxCollector: 'https://www.chesterfield.gov/tax' },
+    'VA-Henrico': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/henrico-va', taxCollector: 'https://henrico.us/finance' },
+    'VA-Virginia Beach': { state: 'VA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/virginiabeach', taxCollector: 'https://www.vbgov.com/finance' },
 
     // MARYLAND (24 counties - top 8)
-    'Montgomery': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-md', taxCollector: 'https://www.montgomerycountymd.gov/finance' },
-    'Prince George\'s': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princegeorges-md', taxCollector: 'https://www.princegeorgescountymd.gov/tax' },
-    'Baltimore County': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-county', taxCollector: 'https://www.baltimorecountymd.gov/finance' },
-    'Baltimore City': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-city', taxCollector: 'https://finance.baltimorecity.gov' },
-    'Anne Arundel': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/annearundel-md', taxCollector: 'https://www.aacounty.org/finance' },
-    'Howard': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/howard-md', taxCollector: 'https://www.howardcountymd.gov/finance' },
+    'MD-Montgomery': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/montgomery-md', taxCollector: 'https://www.montgomerycountymd.gov/finance' },
+    'MD-Prince George\'s': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/princegeorges-md', taxCollector: 'https://www.princegeorgescountymd.gov/tax' },
+    'MD-Baltimore County': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-county', taxCollector: 'https://www.baltimorecountymd.gov/finance' },
+    'MD-Baltimore City': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/baltimore-city', taxCollector: 'https://finance.baltimorecity.gov' },
+    'MD-Anne Arundel': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/annearundel-md', taxCollector: 'https://www.aacounty.org/finance' },
+    'MD-Howard': { state: 'MD', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/howard-md', taxCollector: 'https://www.howardcountymd.gov/finance' },
 
     // COLORADO (64 counties - top 8)
-    'Denver': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/denver-co', taxCollector: 'https://www.denvergov.org/treasury' },
-    'El Paso': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/elpaso-co', taxCollector: 'https://treasurer.elpasoco.com' },
-    'Arapahoe': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/arapahoe-co', taxCollector: 'https://www.arapahoegov.com/treasurer' },
-    'Jefferson': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/jefferson-co', taxCollector: 'https://www.jeffco.us/treasurer' },
-    'Adams': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/adams-co', taxCollector: 'https://www.adcogov.org/treasurer' },
-    'Douglas': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/douglas-co', taxCollector: 'https://www.douglas.co.us/treasurer' },
-    'Larimer': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/larimer-co', taxCollector: 'https://www.larimer.org/treasurer' },
-    'Boulder': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/boulder-co', taxCollector: 'https://www.bouldercounty.org/treasurer' },
+    'CO-Denver': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/denver-co', taxCollector: 'https://www.denvergov.org/treasury' },
+    'CO-El Paso': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/elpaso-co', taxCollector: 'https://treasurer.elpasoco.com' },
+    'CO-Arapahoe': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/arapahoe-co', taxCollector: 'https://www.arapahoegov.com/treasurer' },
+    'CO-Jefferson': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/jefferson-co', taxCollector: 'https://www.jeffco.us/treasurer' },
+    'CO-Adams': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/adams-co', taxCollector: 'https://www.adcogov.org/treasurer' },
+    'CO-Douglas': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/douglas-co', taxCollector: 'https://www.douglas.co.us/treasurer' },
+    'CO-Larimer': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/larimer-co', taxCollector: 'https://www.larimer.org/treasurer' },
+    'CO-Boulder': { state: 'CO', platform: 'RealAuction', url: 'https://www.realauction.com/boulder-co', taxCollector: 'https://www.bouldercounty.org/treasurer' },
 
     // IOWA (99 counties - top 6)
-    'Polk': { state: 'IA', platform: 'County', url: 'https://www.polkcountyiowa.gov/treasurer', taxCollector: 'https://www.polkcountyiowa.gov/treasurer' },
-    'Linn': { state: 'IA', platform: 'County', url: 'https://www.linncounty.org/treasurer', taxCollector: 'https://www.linncounty.org/treasurer' },
-    'Scott': { state: 'IA', platform: 'County', url: 'https://www.scottcountyiowa.gov/treasurer', taxCollector: 'https://www.scottcountyiowa.gov/treasurer' },
-    'Johnson': { state: 'IA', platform: 'County', url: 'https://www.johnson-county.com/treasurer', taxCollector: 'https://www.johnson-county.com/treasurer' },
-    'Black Hawk': { state: 'IA', platform: 'County', url: 'https://www.blackhawkcounty.iowa.gov/treasurer', taxCollector: 'https://www.blackhawkcounty.iowa.gov/treasurer' },
-    'Woodbury': { state: 'IA', platform: 'County', url: 'https://www.woodburycountyiowa.gov/treasurer', taxCollector: 'https://www.woodburycountyiowa.gov/treasurer' },
+    'IA-Polk': { state: 'IA', platform: 'County', url: 'https://www.polkcountyiowa.gov/treasurer', taxCollector: 'https://www.polkcountyiowa.gov/treasurer' },
+    'IA-Linn': { state: 'IA', platform: 'County', url: 'https://www.linncounty.org/treasurer', taxCollector: 'https://www.linncounty.org/treasurer' },
+    'IA-Scott': { state: 'IA', platform: 'County', url: 'https://www.scottcountyiowa.gov/treasurer', taxCollector: 'https://www.scottcountyiowa.gov/treasurer' },
+    'IA-Johnson': { state: 'IA', platform: 'County', url: 'https://www.johnson-county.com/treasurer', taxCollector: 'https://www.johnson-county.com/treasurer' },
+    'IA-Black Hawk': { state: 'IA', platform: 'County', url: 'https://www.blackhawkcounty.iowa.gov/treasurer', taxCollector: 'https://www.blackhawkcounty.iowa.gov/treasurer' },
+    'IA-Woodbury': { state: 'IA', platform: 'County', url: 'https://www.woodburycountyiowa.gov/treasurer', taxCollector: 'https://www.woodburycountyiowa.gov/treasurer' },
 
     // WASHINGTON (39 counties - top 6)
-    'King': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/king-wa', taxCollector: 'https://kingcounty.gov/depts/finance' },
-    'Pierce': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/pierce-wa', taxCollector: 'https://www.piercecountywa.gov/tax' },
-    'Snohomish': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/snohomish-wa', taxCollector: 'https://www.snohomishcountywa.gov/treasurer' },
-    'Spokane': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/spokane-wa', taxCollector: 'https://www.spokanecounty.org/treasurer' },
-    'Clark': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/clark-wa', taxCollector: 'https://www.clark.wa.gov/treasurer' },
-    'Thurston': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/thurston-wa', taxCollector: 'https://www.thurstoncountywa.gov/treasurer' },
+    'WA-King': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/king-wa', taxCollector: 'https://kingcounty.gov/depts/finance' },
+    'WA-Pierce': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/pierce-wa', taxCollector: 'https://www.piercecountywa.gov/tax' },
+    'WA-Snohomish': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/snohomish-wa', taxCollector: 'https://www.snohomishcountywa.gov/treasurer' },
+    'WA-Spokane': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/spokane-wa', taxCollector: 'https://www.spokanecounty.org/treasurer' },
+    'WA-Clark': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/clark-wa', taxCollector: 'https://www.clark.wa.gov/treasurer' },
+    'WA-Thurston': { state: 'WA', platform: 'Bid4Assets', url: 'https://www.bid4assets.com/thurston-wa', taxCollector: 'https://www.thurstoncountywa.gov/treasurer' },
 
     // MINNESOTA (87 counties - top 6)
-    'Hennepin': { state: 'MN', platform: 'County', url: 'https://www.hennepin.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.hennepin.us/property-taxes' },
-    'Ramsey': { state: 'MN', platform: 'County', url: 'https://www.ramseycounty.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.ramseycounty.us/property-taxes' },
-    'Dakota': { state: 'MN', platform: 'County', url: 'https://www.co.dakota.mn.us/Government/PropertyTaxes', taxCollector: 'https://www.co.dakota.mn.us/Government/PropertyTaxes' },
-    'Anoka': { state: 'MN', platform: 'County', url: 'https://www.anokacounty.us/tax', taxCollector: 'https://www.anokacounty.us/tax' },
-    'Washington': { state: 'MN', platform: 'County', url: 'https://www.co.washington.mn.us/property-taxes', taxCollector: 'https://www.co.washington.mn.us/property-taxes' },
-    'Scott': { state: 'MN', platform: 'County', url: 'https://www.scottcountymn.gov/tax', taxCollector: 'https://www.scottcountymn.gov/tax' },
+    'MN-Hennepin': { state: 'MN', platform: 'County', url: 'https://www.hennepin.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.hennepin.us/property-taxes' },
+    'MN-Ramsey': { state: 'MN', platform: 'County', url: 'https://www.ramseycounty.us/residents/property/tax-forfeited-land', taxCollector: 'https://www.ramseycounty.us/property-taxes' },
+    'MN-Dakota': { state: 'MN', platform: 'County', url: 'https://www.co.dakota.mn.us/Government/PropertyTaxes', taxCollector: 'https://www.co.dakota.mn.us/Government/PropertyTaxes' },
+    'MN-Anoka': { state: 'MN', platform: 'County', url: 'https://www.anokacounty.us/tax', taxCollector: 'https://www.anokacounty.us/tax' },
+    'MN-Washington': { state: 'MN', platform: 'County', url: 'https://www.co.washington.mn.us/property-taxes', taxCollector: 'https://www.co.washington.mn.us/property-taxes' },
+    'MN-Scott': { state: 'MN', platform: 'County', url: 'https://www.scottcountymn.gov/tax', taxCollector: 'https://www.scottcountymn.gov/tax' },
 
     // NEVADA (17 counties - top 4)
-    'Clark': { state: 'NV', platform: 'County', url: 'https://www.clarkcountynv.gov/tax-sale', taxCollector: 'https://www.clarkcountynv.gov/treasurer' },
-    'Washoe': { state: 'NV', platform: 'County', url: 'https://www.washoecounty.us/treasurer', taxCollector: 'https://www.washoecounty.us/treasurer' },
-    'Nye': { state: 'NV', platform: 'County', url: 'https://www.nyecounty.net/treasurer', taxCollector: 'https://www.nyecounty.net/treasurer' },
-    'Elko': { state: 'NV', platform: 'County', url: 'https://www.elkocountynv.net/treasurer', taxCollector: 'https://www.elkocountynv.net/treasurer' },
+    'NV-Clark': { state: 'NV', platform: 'County', url: 'https://www.clarkcountynv.gov/tax-sale', taxCollector: 'https://www.clarkcountynv.gov/treasurer' },
+    'NV-Washoe': { state: 'NV', platform: 'County', url: 'https://www.washoecounty.us/treasurer', taxCollector: 'https://www.washoecounty.us/treasurer' },
+    'NV-Nye': { state: 'NV', platform: 'County', url: 'https://www.nyecounty.net/treasurer', taxCollector: 'https://www.nyecounty.net/treasurer' },
+    'NV-Elko': { state: 'NV', platform: 'County', url: 'https://www.elkocountynv.net/treasurer', taxCollector: 'https://www.elkocountynv.net/treasurer' },
 };
 
 // State-level auction info - ALL 51 JURISDICTIONS
@@ -501,6 +502,7 @@ export default function AuctionPlatform() {
     const [isMapExpanded, setIsMapExpanded] = useState(false); // Map expansion state
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // User dropdown menu state
+    const [proMode, setProMode] = useState(false); // Toggle for advanced 3D visuals
 
     // API-driven data with fallbacks to static data
     const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
@@ -1693,13 +1695,39 @@ export default function AuctionPlatform() {
                             </div>
                         ) : view === 'heatmap' ? (
                             /* Investment Heat Map View */
-                            <div className="h-full overflow-auto">
-                                <InvestmentHeatMap
-                                    onStateSelect={(abbr) => {
-                                        setSelectedState(abbr);
-                                        setView('list');
-                                    }}
-                                />
+                            <div className="h-full overflow-hidden flex flex-col">
+                                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">📊</div>
+                                        <h2 className="text-xl font-black text-slate-900 tracking-tight">National Market Intelligence</h2>
+                                    </div>
+                                    <div className="flex bg-slate-100 p-1 rounded-xl">
+                                        <button 
+                                            onClick={() => setProMode(false)}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!proMode ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            2D Heatmap
+                                        </button>
+                                        <button 
+                                            onClick={() => setProMode(true)}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${proMode ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            Pro 3D Map
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 min-h-0 bg-slate-50">
+                                    {proMode ? (
+                                        <Market3DMap height="100%" />
+                                    ) : (
+                                        <InvestmentHeatMap
+                                            onStateSelect={(abbr) => {
+                                                setSelectedState(abbr);
+                                                setView('list');
+                                            }}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         ) : view === 'market' ? (
                             /* Market Intelligence Dashboard View */

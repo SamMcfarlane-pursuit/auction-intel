@@ -1,31 +1,34 @@
-import React, { useRef, useMemo, Suspense } from 'react';
+import React, { useRef, useMemo, Suspense, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
-// US state coordinates (lat/lng) mapped to 3D sphere positions
+// US state coordinates (lat/lng) for baseline visibility
 const US_HOTSPOTS = [
     { name: 'TX', lat: 31.0, lng: -100.0, grade: 'A', color: '#22c55e' },
     { name: 'FL', lat: 27.6, lng: -81.5, grade: 'A', color: '#22c55e' },
     { name: 'CA', lat: 36.8, lng: -119.4, grade: 'B', color: '#3b82f6' },
     { name: 'GA', lat: 32.2, lng: -83.4, grade: 'A+', color: '#22c55e' },
     { name: 'AZ', lat: 34.0, lng: -111.1, grade: 'A', color: '#22c55e' },
-    { name: 'IL', lat: 40.6, lng: -89.0, grade: 'B', color: '#3b82f6' },
-    { name: 'OH', lat: 40.4, lng: -82.7, grade: 'C', color: '#f59e0b' },
     { name: 'NY', lat: 42.2, lng: -74.9, grade: 'B', color: '#3b82f6' },
-    { name: 'NJ', lat: 40.1, lng: -74.4, grade: 'B', color: '#3b82f6' },
-    { name: 'IA', lat: 41.9, lng: -93.1, grade: 'A+', color: '#22c55e' },
-    { name: 'CO', lat: 39.0, lng: -105.5, grade: 'A', color: '#22c55e' },
-    { name: 'WA', lat: 47.7, lng: -120.7, grade: 'B', color: '#3b82f6' },
-    { name: 'NV', lat: 38.8, lng: -116.4, grade: 'A', color: '#22c55e' },
-    { name: 'NC', lat: 35.7, lng: -79.0, grade: 'B', color: '#3b82f6' },
-    { name: 'MD', lat: 39.0, lng: -76.6, grade: 'B', color: '#3b82f6' },
-    { name: 'PA', lat: 41.2, lng: -77.2, grade: 'C', color: '#f59e0b' },
-    { name: 'SC', lat: 33.8, lng: -81.2, grade: 'C', color: '#f59e0b' },
-    { name: 'AL', lat: 32.3, lng: -86.9, grade: 'B', color: '#3b82f6' },
-    { name: 'MI', lat: 44.3, lng: -85.6, grade: 'B', color: '#3b82f6' },
-    { name: 'VA', lat: 37.4, lng: -78.6, grade: 'B', color: '#3b82f6' },
+    { name: 'IL', lat: 40.6, lng: -89.0, grade: 'B', color: '#3b82f6' },
 ];
+
+// Mapper for state centroids (approximate) to fetch deal coordinates
+const STATE_COORDS = {
+    'NV': { lat: 38.8, lng: -116.4 },
+    'WA': { lat: 47.7, lng: -120.7 },
+    'IA': { lat: 41.9, lng: -93.1 },
+    'CO': { lat: 39.0, lng: -105.5 },
+    'NC': { lat: 35.7, lng: -79.0 },
+    'OH': { lat: 40.4, lng: -82.7 },
+    'AL': { lat: 32.3, lng: -86.9 },
+    'MI': { lat: 44.3, lng: -85.6 },
+    'PA': { lat: 41.2, lng: -77.2 },
+    'MD': { lat: 39.0, lng: -76.6 },
+    'SC': { lat: 33.8, lng: -81.2 },
+    'VA': { lat: 37.4, lng: -78.6 },
+};
 
 function latLngToSphere(lat, lng, radius) {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -75,14 +78,16 @@ function ParticleField({ count = 2000 }) {
 }
 
 // Glowing data points on the globe
-function DataPoints({ radius = 2.02 }) {
+function DealPins({ radius = 2.02, deals = [] }) {
     const groupRef = useRef();
 
     useFrame((state) => {
         if (groupRef.current) {
             groupRef.current.children.forEach((child, i) => {
                 if (child.material) {
-                    child.material.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 2 + i) * 0.3;
+                    const pulse = 0.5 + Math.sin(state.clock.elapsedTime * 4 + i) * 0.5;
+                    child.material.opacity = 0.4 + pulse * 0.6;
+                    child.scale.setScalar(1 + pulse * 0.5);
                 }
             });
         }
@@ -90,12 +95,18 @@ function DataPoints({ radius = 2.02 }) {
 
     return (
         <group ref={groupRef}>
-            {US_HOTSPOTS.map((spot, i) => {
-                const pos = latLngToSphere(spot.lat, spot.lng, radius);
+            {deals.slice(0, 30).map((deal, i) => {
+                // Approximate coordinate if exact not available
+                const coords = STATE_COORDS[deal.state] || { lat: 39 + Math.random() * 5, lng: -98 + Math.random() * 5 };
+                // Jitter slightly to separate multiple deals in same state
+                const lat = coords.lat + (Math.random() - 0.5) * 2;
+                const lng = coords.lng + (Math.random() - 0.5) * 2;
+                const pos = latLngToSphere(lat, lng, radius);
+                
                 return (
                     <mesh key={i} position={pos}>
-                        <sphereGeometry args={[0.035, 8, 8]} />
-                        <meshBasicMaterial color={spot.color} transparent opacity={0.8} />
+                        <sphereGeometry args={[0.04, 12, 12]} />
+                        <meshBasicMaterial color="#fbbf24" transparent opacity={0.8} />
                     </mesh>
                 );
             })}
@@ -104,7 +115,7 @@ function DataPoints({ radius = 2.02 }) {
 }
 
 // The main globe mesh
-function GlobeMesh() {
+function GlobeMesh({ deals = [] }) {
     const meshRef = useRef();
 
     useFrame((state) => {
@@ -140,22 +151,44 @@ function GlobeMesh() {
                 <meshBasicMaterial color="#6366f1" transparent opacity={0.2} side={THREE.DoubleSide} />
             </mesh>
 
-            <DataPoints />
+            <DealPins deals={deals} />
+            
+            {/* Baseline States */}
+            {US_HOTSPOTS.map((spot, i) => {
+                const pos = latLngToSphere(spot.lat, spot.lng, 2.01);
+                return (
+                    <mesh key={`state-${i}`} position={pos}>
+                        <sphereGeometry args={[0.02, 8, 8]} />
+                        <meshBasicMaterial color={spot.color} transparent opacity={0.4} />
+                    </mesh>
+                );
+            })}
         </group>
     );
 }
 
 // Main exported component
-export default function GlobeVisualizer({ height = '400px' }) {
+export default function GlobeVisualizer({ height = '450px' }) {
+    const [deals, setDeals] = useState([]);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/deals/top?limit=40')
+            .then(res => res.json())
+            .then(data => setDeals(data))
+            .catch(err => console.error("Globe deals fetch failed", err));
+    }, []);
+
     return (
         <div
             style={{
                 width: '100%',
                 height,
                 position: 'relative',
-                borderRadius: '1.5rem',
+                borderRadius: '2rem',
                 overflow: 'hidden',
-                background: 'radial-gradient(ellipse at center, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
+                background: 'radial-gradient(circle at center, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
             }}
         >
             <Canvas
@@ -163,12 +196,12 @@ export default function GlobeVisualizer({ height = '400px' }) {
                 gl={{ antialias: true, alpha: true }}
                 style={{ background: 'transparent' }}
             >
-                <ambientLight intensity={0.3} />
-                <pointLight position={[10, 10, 10]} intensity={0.8} />
-                <pointLight position={[-10, -10, -5]} intensity={0.3} color="#818cf8" />
+                <ambientLight intensity={0.4} />
+                <pointLight position={[10, 10, 10]} intensity={1.2} />
+                <pointLight position={[-10, -10, -5]} intensity={0.5} color="#818cf8" />
 
                 <Suspense fallback={null}>
-                    <GlobeMesh />
+                    <GlobeMesh deals={deals} />
                     <ParticleField />
                 </Suspense>
 
@@ -176,44 +209,43 @@ export default function GlobeVisualizer({ height = '400px' }) {
                     enableZoom={false}
                     enablePan={false}
                     autoRotate
-                    autoRotateSpeed={0.3}
+                    autoRotateSpeed={0.5}
                     minPolarAngle={Math.PI / 3}
                     maxPolarAngle={Math.PI / 1.5}
                 />
             </Canvas>
 
             {/* Overlay info */}
-            <div
-                style={{
-                    position: 'absolute',
-                    bottom: '1rem',
-                    left: '1rem',
-                    right: '1rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-end',
-                    pointerEvents: 'none',
-                }}
-            >
-                <div>
-                    <div style={{ color: '#94a3b8', fontSize: '9px', fontWeight: 800, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
-                        Live Market Intelligence
+            <div className="absolute inset-0 pointer-events-none p-8 flex flex-col justify-between">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <div className="text-amber-400 text-[10px] font-black uppercase tracking-[0.3em] mb-1">
+                            Live Deal Feed
+                        </div>
+                        <h2 className="text-2xl font-black text-white">Global Command Center</h2>
                     </div>
-                    <div style={{ color: '#e2e8f0', fontSize: '18px', fontWeight: 900, marginTop: '2px' }}>
-                        US Tax Auction Globe
+                    <div className="bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                        <span className="text-white text-[10px] font-black uppercase tracking-wider">{deals.length} active deals mapped</span>
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    {[
-                        { color: '#22c55e', label: 'A/A+ Grade' },
-                        { color: '#3b82f6', label: 'B Grade' },
-                        { color: '#f59e0b', label: 'C Grade' },
-                    ].map((item, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.color }} />
-                            <span style={{ color: '#64748b', fontSize: '10px', fontWeight: 700 }}>{item.label}</span>
+
+                <div className="flex justify-between items-end">
+                    <div className="space-y-1">
+                        <div className="text-slate-500 text-[9px] font-bold uppercase tracking-widest">Projection Model</div>
+                        <div className="text-slate-300 text-xs font-mono">GRID::PHI_PHI_ALPHA_V2</div>
+                    </div>
+                    
+                    <div className="flex gap-6">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                            <span className="text-slate-400 text-[10px] font-bold">Top Deals</span>
                         </div>
-                    ))}
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 opacity-50" />
+                            <span className="text-slate-400 text-[10px] font-bold">Stable Markets</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
