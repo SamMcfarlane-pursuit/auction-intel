@@ -23,7 +23,7 @@ import Market3DMap from './components/Market3DMap';
 import MarketForecaster from './components/MarketForecaster';
 import 'leaflet/dist/leaflet.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api';
 
 // Watchlist View Component
 function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
