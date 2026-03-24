@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, Suspense, useState, useEffect } from 'react';
+import React, { useRef, useMemo, Suspense, useState, useEffect, Component } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Sphere, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -167,12 +167,13 @@ function GlobeMesh({ deals = [] }) {
     );
 }
 
-// Main exported component
-export default function GlobeVisualizer({ height = '450px' }) {
+// Main component (not exported directly — use the safe default export below)
+function GlobeVisualizer({ height = '450px' }) {
     const [deals, setDeals] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/deals/top?limit=40')
+        const apiBase = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api';
+        fetch(`${apiBase}/deals/top?limit=40`)
             .then(res => res.json())
             .then(data => setDeals(data))
             .catch(err => console.error("Globe deals fetch failed", err));
@@ -251,3 +252,39 @@ export default function GlobeVisualizer({ height = '450px' }) {
         </div>
     );
 }
+
+// ErrorBoundary to safely catch WebGL/Three.js crashes in headless / low-GPU environments
+class GlobeErrorBoundary extends Component {
+    constructor(props) { super(props); this.state = { hasError: false }; }
+    static getDerivedStateFromError() { return { hasError: true }; }
+    componentDidCatch(error) { console.warn('[Globe] WebGL Error caught:', error.message); }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{
+                    width: '100%', height: this.props.height || '450px',
+                    borderRadius: '2rem',
+                    background: 'radial-gradient(circle at center, #1e293b, #0f172a)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '12px'
+                }}>
+                    <div style={{ fontSize: '2.5rem' }}>🌐</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                        3D Globe Unavailable
+                    </div>
+                    <div style={{ color: '#475569', fontSize: '0.65rem' }}>WebGL context not supported in this environment</div>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+// Safe default export — wraps Globe in an error boundary
+const GlobeVisualizerSafe = (props) => (
+    <GlobeErrorBoundary height={props.height}>
+        <GlobeVisualizer {...props} />
+    </GlobeErrorBoundary>
+);
+
+export { GlobeVisualizerSafe as default };

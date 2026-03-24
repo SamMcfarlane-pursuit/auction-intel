@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, Component } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, Float } from '@react-three/drei';
 import * as THREE from 'three';
@@ -74,7 +74,7 @@ function Bar({ position, height, score, label }) {
     );
 }
 
-export default function Market3DMap({ height = "500px" }) {
+function Market3DMap({ height = "500px" }) {
     return (
         <div style={{ width: '100%', height, background: '#020617', borderRadius: '1.5rem', overflow: 'hidden', position: 'relative', border: '1px solid rgba(255,255,255,0.05)' }}>
             <Canvas camera={{ position: [5, 5, 5], fov: 45 }}>
@@ -143,3 +143,37 @@ function LegendItem({ color, label }) {
         </div>
     );
 }
+
+// ErrorBoundary for Three.js WebGL in Market3DMap
+class Map3DErrorBoundary extends Component {
+    constructor(props) { super(props); this.state = { hasError: false }; }
+    static getDerivedStateFromError() { return { hasError: true }; }
+    componentDidCatch(error) { console.warn('[Map3D] WebGL Error:', error.message); }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{
+                    width: '100%', height: this.props.height || '500px',
+                    background: '#020617', borderRadius: '1.5rem',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '12px'
+                }}>
+                    <div style={{ fontSize: '2.5rem' }}>📊</div>
+                    <div style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                        3D Market Map Unavailable
+                    </div>
+                    <div style={{ color: '#475569', fontSize: '0.65rem' }}>WebGL context not supported in this environment</div>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+const Market3DMapSafe = (props) => (
+    <Map3DErrorBoundary height={props.height}>
+        <Market3DMap {...props} />
+    </Map3DErrorBoundary>
+);
+
+export { Market3DMapSafe as default };
