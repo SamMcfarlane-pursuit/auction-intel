@@ -27,7 +27,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.f
 
 // Watchlist View Component
 function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
-    const { watchlist, removeFromWatchlist, clearWatchlist, updateWatchlistItem, getWatchlistStats } = useWatchlist();
+    const { watchlist, removeFromWatchlist, clearWatchlist, updateWatchlistItem, getWatchlistStats, togglePredictiveAlert } = useWatchlist();
     const [sortBy, setSortBy] = useState('addedAt');
     const [sortAsc, setSortAsc] = useState(false);
     const [expandedId, setExpandedId] = useState(null);
@@ -99,6 +99,13 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
                 </div>
                 <div className="flex gap-2 flex-wrap">
                     <button onClick={handleExportWatchlist} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2"><span>📥</span> Export CSV</button>
+                    <button onClick={() => {
+                        const url = window.prompt("Enter your CRM/Sheets Webhook URL (Zapier, Make.com):", localStorage.getItem('auction_portfolio_webhook') || "");
+                        if (url !== null) {
+                            localStorage.setItem('auction_portfolio_webhook', url);
+                            alert(url ? "Webhook Sync Enabled! Your portfolio will auto-sync on changes." : "Webhook Sync Disabled.");
+                        }
+                    }} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-emerald-700 transition-all flex items-center gap-2"><span>🔄</span> Auto-Sync CRM</button>
                     <button onClick={clearWatchlist} className="bg-white text-red-600 border border-red-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-red-50 transition-all flex items-center gap-2"><span>🗑️</span> Clear All</button>
                 </div>
             </div>
@@ -144,6 +151,18 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
                                         <button key={p} onClick={() => updateWatchlistItem && updateWatchlistItem(item.id, { priority: p })}
                                             className={`flex-1 py-1 rounded text-[10px] font-bold capitalize transition-all ${item.priority === p ? (p === 'high' ? 'bg-red-500 text-white' : p === 'low' ? 'bg-slate-300 text-slate-700' : 'bg-amber-500 text-white') : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{p}</button>
                                     ))}
+                                </div>
+                                {/* Predictive Alert Toggle */}
+                                <div className="mb-3 flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-slate-800">Predictive Bidding Alerts</span>
+                                        <span className="text-[9px] text-slate-500 mt-0.5">MAB Threshold: <span className="font-black text-amber-600">${item.mabThreshold ? parseInt(item.mabThreshold).toLocaleString() : (item.targetPrice || (item.zhvi * 0.7).toFixed(0)).toLocaleString()}</span></span>
+                                    </div>
+                                    <button 
+                                        onClick={() => togglePredictiveAlert(item.id, item.mabThreshold || item.targetPrice || (item.zhvi * 0.7))}
+                                        className={`px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-black transition-all ${item.alertEnabled ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300 shadow-inner' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-400 hover:text-slate-700 shadow-sm'}`}>
+                                        {item.alertEnabled ? '🔔 ACTIVE' : '🔕 OFF'}
+                                    </button>
                                 </div>
                                 <div className="grid grid-cols-3 gap-3 mb-3">
                                     <div><div className="text-[9px] font-bold text-slate-400 uppercase">Pop</div><div className="font-bold text-slate-900">{(item.population / 1000).toFixed(0)}K</div></div>

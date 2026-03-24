@@ -216,3 +216,15 @@ fn create_jwt(user_id: &str) -> Result<String, jsonwebtoken::errors::Error> {
         &EncodingKey::from_secret(JWT_SECRET),
     )
 }
+
+pub fn verify_token(auth_header: &str) -> Result<String, String> {
+    let token = auth_header.strip_prefix("Bearer ").unwrap_or(auth_header);
+    let token_data = jsonwebtoken::decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(JWT_SECRET),
+        &Validation::default(),
+    )
+    .map_err(|_| "Invalid token".to_string())?;
+
+    Ok(token_data.claims.sub)
+}

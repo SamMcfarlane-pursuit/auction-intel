@@ -30,7 +30,9 @@ export function WatchlistProvider({ children }) {
                     dueDiligence: item.dueDiligence || { ...DEFAULT_DUE_DILIGENCE },
                     investmentAmount: item.investmentAmount || null,
                     targetPrice: item.targetPrice || null,
-                    priority: item.priority || 'medium' // low, medium, high
+                    priority: item.priority || 'medium', // low, medium, high
+                    alertEnabled: item.alertEnabled || false,
+                    mabThreshold: item.mabThreshold || null
                 }));
                 setWatchlist(migrated);
             }
@@ -43,6 +45,20 @@ export function WatchlistProvider({ children }) {
     useEffect(() => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlist));
+            
+            // Auto Webhook Sync Feature (CRM / Sheets)
+            const webhookUrl = localStorage.getItem('auction_portfolio_webhook');
+            if (webhookUrl && webhookUrl.startsWith('http') && watchlist.length > 0) {
+                // Debounce sync slightly to avoid rapid firing
+                const syncTimeout = setTimeout(() => {
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: "auto_sync", count: watchlist.length, portfolio: watchlist })
+                    }).catch(e => console.warn("Webhook Sync Failed:", e));
+                }, 3000);
+                return () => clearTimeout(syncTimeout);
+            }
         } catch (err) {
             console.warn('Failed to save watchlist:', err);
         }
@@ -72,6 +88,8 @@ export function WatchlistProvider({ children }) {
             investmentAmount: null,
             targetPrice: null,
             priority: 'medium',
+            alertEnabled: false,
+            mabThreshold: null,
             addedAt: new Date().toISOString()
         };
         setWatchlist(prev => [...prev, newItem]);
@@ -108,6 +126,49 @@ export function WatchlistProvider({ children }) {
         return { total, completed, highPriority };
     };
 
+    const togglePredictiveAlert = async (id, mabThreshold, contactMethod = 'email') => {
+        const item = watchlist.find(i => i.id === id);
+        if (!item) return false;
+
+        const isCurrentlyEnabled = item.alertEnabled;
+
+        if (!isCurrentlyEnabled) {
+            try {
+                const token = localStorage.getItem('auction_intel_token');
+                const API_BASE = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api';
+                const settingsStr = localStorage.getItem('auction_alert_settings');
+                const userEmail = settingsStr ? JSON.parse(settingsStr).email : contactMethod;
+                
+                const response = await fetch(`${API_BASE}/alerts/subscribe`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({
+                        property_fips: id,
+                        mab_threshold: parseInt(mabThreshold, 10) || 0,
+                        contact_method: userEmail || 'guest@example.com'
+                    })
+                });
+
+                if (response.ok) {
+                    updateWatchlistItem(id, { alertEnabled: true, mabThreshold });
+                    return true;
+                }
+                console.error("Alert server error");
+                return false;
+            } catch (err) {
+                console.error("Failed to enable predictive alert:", err);
+                return false;
+            }
+        } else {
+            // Disable locally
+            updateWatchlistItem(id, { alertEnabled: false, mabThreshold: null });
+            return true;
+        }
+    };
+
     const value = {
         watchlist,
         addToWatchlist,
@@ -115,7 +176,8 @@ export function WatchlistProvider({ children }) {
         removeFromWatchlist,
         clearWatchlist,
         isInWatchlist,
-        getWatchlistStats
+        getWatchlistStats,
+        togglePredictiveAlert
     };
 
     return (

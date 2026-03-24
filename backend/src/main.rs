@@ -21,6 +21,7 @@ mod realtime;
 mod scoring;
 mod underwriting;
 mod forecaster;
+mod alerts;
 
 use std::sync::Arc;
 
@@ -1605,7 +1606,7 @@ async fn analyze_county(Json(input): Json<AnalysisInput>) -> Json<AnalysisOutput
 // ============================================================================
 
 async fn predict_market_yield_handler(
-    Path(fips): Path<String>,
+    Path(_fips): Path<String>,
 ) -> Json<forecaster::ForecastOutput> {
     // In a real app, we'd look up the county by FIPS
     // For now, we'll simulate inputs based on typical data for that FIPS
@@ -2058,10 +2059,11 @@ async fn main() {
         .await
         .expect("Failed to initialize price tracker");
 
-    let app_state = Arc::new(db::AppState { db: pool });
+    let app_state = Arc::new(db::AppState { db: pool.clone() });
 
     // Start background monitor
     tokio::spawn(realtime::start_realtime_monitor());
+    tokio::spawn(alerts::start_alert_engine(pool.clone()));
 
     let app = Router::new()
         .route("/api/health", get(health))
@@ -2106,6 +2108,7 @@ async fn main() {
         .route("/api/trends/:fips", get(price_tracker::get_trends_handler))
         .route("/api/deals/top", get(deal_finder::get_top_deals))
         .route("/api/deals/search", get(deal_finder::search_deals))
+        .nest("/api/alerts", alerts::router())
         .with_state(app_state)
         .layer(cors);
 

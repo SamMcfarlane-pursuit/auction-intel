@@ -30,5 +30,24 @@ pub async fn init_db() -> Result<Pool<Sqlite>, sqlx::Error> {
     .execute(&pool)
     .await?;
 
+    // Create alerts table for Phase 10 Predictive Bidding Alerts
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS alerts (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            property_fips TEXT NOT NULL,
+            mab_threshold INTEGER NOT NULL,
+            contact_method TEXT NOT NULL,
+            is_active BOOLEAN NOT NULL DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_triggered_at DATETIME,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+        "#,
+    )
+    .execute(&pool)
+    .await?;
+
     Ok(pool)
 }

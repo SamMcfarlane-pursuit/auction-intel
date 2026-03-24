@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine
+    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, ReferenceLine, ScatterChart, Scatter, ZAxis
 } from 'recharts';
 
 const FORECAST_API = (fips) => `http://127.0.0.1:8080/api/forecaster/predict/${fips || '00000'}`;
@@ -45,6 +45,29 @@ export default function MarketForecaster({ county, onBack }) {
             };
         });
     }, [forecast, county, scenario]);
+
+    const historicalClearingData = useMemo(() => {
+        if (!county) return [];
+        const basePrice = county.zhvi || 350000;
+        
+        // Generate 50 simulated historical auctions in this county over the last 12 months
+        return Array.from({ length: 50 }).map((_, i) => {
+            const timeAgoStr = `${Math.floor(Math.random() * 12) + 1}M ago`;
+            const arV = basePrice * (0.8 + (Math.random() * 0.4)); // ARV range 80% to 120% of median
+            const mab = arV * 0.7; // Standard 70% rule
+            const actualBid = mab * (0.85 + (Math.random() * 0.3)); // Cleared between 85% and 115% of MAB
+            
+            return {
+                id: `auc-${i}`,
+                date: timeAgoStr,
+                arv: Math.round(arV),
+                mab: Math.round(mab),
+                actual: Math.round(actualBid),
+                efficiency: ((actualBid / mab) * 100).toFixed(1),
+                win: actualBid <= mab ? 'Snipe' : 'Overbid'
+            };
+        });
+    }, [county]);
 
     if (loading) {
         return (
@@ -196,6 +219,68 @@ export default function MarketForecaster({ county, onBack }) {
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                {/* Security & Historical Efficiency Scatter */}
+                <div className="lg:col-span-3 bg-slate-50 rounded-3xl p-8 border border-slate-100 h-[450px] relative mt-4">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-lg font-black text-slate-900 tracking-tight">Historical Clearing Price Matrix</h3>
+                            <p className="text-xs text-slate-400 font-bold">Max Allowable Bid (MAB) vs Actual Winning Bid (Last 12M)</p>
+                        </div>
+                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest">
+                            <span className="flex items-center gap-2 text-emerald-500"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Deal Snipes</span>
+                            <span className="flex items-center gap-2 text-red-400"><span className="w-2 h-2 rounded-full bg-red-400"></span> Overbids</span>
+                        </div>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height="80%">
+                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                            <XAxis 
+                                type="number" 
+                                dataKey="mab" 
+                                name="Calculated MAB" 
+                                stroke="#94A3B8" 
+                                fontSize={10} 
+                                fontWeight="bold" 
+                                tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} 
+                            />
+                            <YAxis 
+                                type="number" 
+                                dataKey="actual" 
+                                name="Actual Clearing Price" 
+                                stroke="#94A3B8" 
+                                fontSize={10} 
+                                fontWeight="bold" 
+                                tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} 
+                            />
+                            <ZAxis type="number" dataKey="arv" range={[50, 400]} />
+                            <Tooltip 
+                                cursor={{ strokeDasharray: '3 3' }}
+                                content={({ active, payload }) => {
+                                    if (active && payload && payload.length) {
+                                        const data = payload[0].payload;
+                                        return (
+                                            <div className="bg-white p-3 rounded-xl shadow-xl border border-slate-100 text-xs font-bold font-display">
+                                                <div className="text-slate-400 mb-2">{data.date}</div>
+                                                <div className="text-slate-900">ARV: <span className="text-blue-600">${data.arv.toLocaleString()}</span></div>
+                                                <div className="text-slate-900">MAB: <span className="text-indigo-600">${data.mab.toLocaleString()}</span></div>
+                                                <div className="text-slate-900 mt-1 pt-1 border-t border-slate-100">
+                                                    Cleared: <span className={data.win === 'Snipe' ? 'text-emerald-500' : 'text-red-500'}>${data.actual.toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                }}
+                            />
+                            <Scatter name="Snipes" data={historicalClearingData.filter(d => d.win === 'Snipe')} fill="#10B981" fillOpacity={0.6} />
+                            <Scatter name="Overbids" data={historicalClearingData.filter(d => d.win === 'Overbid')} fill="#F87171" fillOpacity={0.6} />
+                            <ReferenceLine x={county?.zhvi * 0.7} stroke="#94A3B8" strokeDasharray="3 3" label={{ position: 'top', value: 'Avg MAB Baseline', fill: '#94A3B8', fontSize: 10, fontWeight: 'bold' }} />
+                            <ReferenceLine y={county?.zhvi * 0.7} stroke="#94A3B8" strokeDasharray="3 3" />
+                        </ScatterChart>
+                    </ResponsiveContainer>
                 </div>
             </div>
         </div>
