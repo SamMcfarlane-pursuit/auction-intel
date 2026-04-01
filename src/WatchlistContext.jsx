@@ -135,7 +135,7 @@ export function WatchlistProvider({ children }) {
         if (!isCurrentlyEnabled) {
             try {
                 const token = localStorage.getItem('auction_intel_token');
-                const API_BASE = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api';
+                const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
                 const settingsStr = localStorage.getItem('auction_alert_settings');
                 const userEmail = settingsStr ? JSON.parse(settingsStr).email : contactMethod;
                 

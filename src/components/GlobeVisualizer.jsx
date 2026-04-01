@@ -172,7 +172,7 @@ function GlobeVisualizer({ height = '450px' }) {
     const [deals, setDeals] = useState([]);
 
     useEffect(() => {
-        const apiBase = import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api';
+        const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
         fetch(`${apiBase}/deals/top?limit=40`)
             .then(res => res.json())
             .then(data => setDeals(data))
