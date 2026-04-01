@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const AuthContext = createContext(null);
 
 // Point to the Rust backend
-const API_URL = 'http://127.0.0.1:8080/api/auth';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://auction-intel-api-sm.fly.dev/api') + '/auth';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);

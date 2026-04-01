@@ -1,89 +1,33 @@
-// Auction Intel Service Worker
-// Provides offline caching and PWA functionality
-
+// DEVELOPMENT Service Worker - Bypasses Cache
 const CACHE_NAME = 'auction-intel-v1';
-const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-];
 
-// Install - cache static assets
+// Install - do nothing
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('[SW] Caching static assets');
-            return cache.addAll(STATIC_ASSETS);
-        })
-    );
     self.skipWaiting();
 });
 
-// Activate - clean up old caches
+// Activate - clean up ALL old caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames
-                    .filter((name) => name !== CACHE_NAME)
-                    .map((name) => {
-                        console.log('[SW] Deleting old cache:', name);
-                        return caches.delete(name);
-                    })
+                cacheNames.map((name) => {
+                    console.log('[SW] Deleting old cache:', name);
+                    return caches.delete(name);
+                })
             );
         })
     );
     self.clients.claim();
 });
 
-// Fetch - network first, fallback to cache
+// Fetch - ALWAYS network first
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests
-    if (event.request.method !== 'GET') return;
-
-    // Skip API calls - always go to network
-    if (event.request.url.includes('/api/')) {
-        event.respondWith(
-            fetch(event.request).catch(() => {
-                return new Response(JSON.stringify({ error: 'Offline' }), {
-                    headers: { 'Content-Type': 'application/json' },
-                    status: 503,
-                });
-            })
-        );
-        return;
-    }
-
-    // For other requests, try network first, fallback to cache
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Clone and cache successful responses
-                if (response.status === 200) {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return response;
-            })
-            .catch(() => {
-                // Network failed, try cache
-                return caches.match(event.request).then((cached) => {
-                    if (cached) {
-                        return cached;
-                    }
-                    // Return offline page for navigation requests
-                    if (event.request.mode === 'navigate') {
-                        return caches.match('/');
-                    }
-                    return new Response('Offline', { status: 503 });
-                });
-            })
-    );
+    // Force network only for all requests in development to prevent blank screens
+    event.respondWith(fetch(event.request));
 });
 
-// Handle push notifications (future feature)
+// Handle push notifications
 self.addEventListener('push', (event) => {
     if (event.data) {
         const data = event.data.json();
@@ -92,9 +36,7 @@ self.addEventListener('push', (event) => {
             icon: '/icon-192.png',
             badge: '/icon-192.png',
             vibrate: [200, 100, 200],
-            data: {
-                url: data.url || '/',
-            },
+            data: { url: data.url || '/' },
         };
         event.waitUntil(
             self.registration.showNotification(data.title || 'Auction Intel', options)
@@ -102,10 +44,7 @@ self.addEventListener('push', (event) => {
     }
 });
 
-// Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    event.waitUntil(
-        clients.openWindow(event.notification.data.url || '/')
-    );
+    event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
 });

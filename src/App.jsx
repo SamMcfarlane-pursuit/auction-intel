@@ -1,4 +1,4 @@
-import { useState, Component } from 'react';
+import React, { useState, Component } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
 import { WatchlistProvider } from './WatchlistContext';
 import { ToastProvider } from './ToastContext';
