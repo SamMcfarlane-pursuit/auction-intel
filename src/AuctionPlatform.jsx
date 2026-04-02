@@ -21,6 +21,7 @@ import UserSettings from './components/UserSettings';
 import GlobeVisualizer from './components/GlobeVisualizer';
 import Market3DMap from './components/Market3DMap';
 import MarketForecaster from './components/MarketForecaster';
+import PortfolioManager from './components/PortfolioManager';
 import 'leaflet/dist/leaflet.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
@@ -1086,6 +1087,7 @@ export default function AuctionPlatform() {
                                         {view === 'properties' ? 'Property Intelligence' :
                                             view === 'alerts' ? 'Alert Management' :
                                                 view === 'watchlist' ? 'My Watchlist' :
+                                                    view === 'portfolio' ? 'Fund Manager' :
                                                     view === 'market' ? 'Market Analytics' :
                                                         view === 'roi' ? 'ROI Calculator' :
                                                             view === 'stateinfo' ? 'State Database' :
@@ -1811,7 +1813,10 @@ export default function AuctionPlatform() {
                         ) : view === 'watchlist' ? (
                             /* Watchlist View - Saved Counties */
                             <WatchlistView
-                                onSelectState={(abbr) => { setSelectedState(abbr); setView('list'); }}
+                                onSelectState={(abbr) => {
+                                    if (!abbr) setView('stateinfo');
+                                    else { setSelectedState(abbr); setView('list'); }
+                                }}
                                 onSelectCounty={(item) => {
                                     setSelectedState(item.stateAbbr);
                                     const county = (COUNTIES[item.stateAbbr] || []).find(c => c[0] === item.county);
@@ -1822,6 +1827,9 @@ export default function AuctionPlatform() {
                                 }}
                                 TIERS={TIERS}
                             />
+                        ) : view === 'portfolio' ? (
+                            /* Portfolio "Fund Manager" Engine */
+                            <PortfolioManager onBack={() => setView('watchlist')} />
                         ) : view === 'alerts' ? (
                             /* Alerts View - Notifications Center */
                             <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 h-full overflow-auto">

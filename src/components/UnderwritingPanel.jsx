@@ -14,6 +14,7 @@ export default function UnderwritingPanel({ property, onCalculate }) {
     });
 
     const [results, setResults] = useState(null);
+    const [clearingBounds, setClearingBounds] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const fetchUnderwriting = async (currentInputs) => {
@@ -26,7 +27,16 @@ export default function UnderwritingPanel({ property, onCalculate }) {
             });
             const data = await response.json();
             setResults(data);
-            if (onCalculate) onCalculate(data);
+
+            // Fetch AI Clearing bounds
+            const fips = property?.fips || '12345';
+            const clearingRes = await fetch(`http://localhost:8080/api/forecaster/clearing/${fips}?arv=${currentInputs.arv}`);
+            if (clearingRes.ok) {
+                const clearingData = await clearingRes.json();
+                setClearingBounds(clearingData);
+            }
+
+            if (onCalculate) onCalculate({ ...data, clearingBounds });
         } catch (error) {
             console.error("Calculation failed:", error);
         } finally {
@@ -101,6 +111,38 @@ export default function UnderwritingPanel({ property, onCalculate }) {
                                 />
                             </div>
                         </div>
+
+                        {clearingBounds && (
+                            <div className="bg-slate-800/60 rounded-2xl p-5 border border-slate-700">
+                                <div className="flex justify-between items-center mb-3">
+                                    <div className="text-[10px] text-indigo-400 font-black uppercase tracking-widest flex items-center gap-2">
+                                        <span>🔮</span> AI Clearing Prediction
+                                    </div>
+                                    <div className={`text-[9px] font-black uppercase px-2 py-1 rounded-md ${
+                                        clearingBounds.safety_sentiment === 'Favorable Buyer Market' ? 'bg-emerald-500/20 text-emerald-400' :
+                                        clearingBounds.safety_sentiment === 'Aggressive Market' ? 'bg-amber-500/20 text-amber-400' :
+                                        'bg-blue-500/20 text-blue-400'
+                                    }`}>
+                                        {clearingBounds.safety_sentiment}
+                                    </div>
+                                </div>
+                                
+                                <div className="text-xl font-black text-white mb-1">
+                                    ${Math.round(clearingBounds.estimated_clearing_price).toLocaleString()} <span className="text-xs font-bold text-slate-500 line-through">Est.</span>
+                                </div>
+                                <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2">
+                                    <span>Safe Bid Range: Up to ${Math.round(clearingBounds.safe_bid_max).toLocaleString()}</span>
+                                    <span className="text-red-400">Danger: {'>'}$ {Math.round(clearingBounds.danger_zone_threshold).toLocaleString()}</span>
+                                </div>
+                                
+                                {/* Trinary Range Slider Bar */}
+                                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div className="bg-emerald-500 h-full transition-all" style={{ width: `${(clearingBounds.safe_bid_max / inputs.arv) * 100}%` }} />
+                                    <div className="bg-amber-400 h-full transition-all" style={{ width: `${((clearingBounds.danger_zone_threshold - clearingBounds.safe_bid_max) / inputs.arv) * 100}%` }} />
+                                    <div className="bg-red-500 h-full transition-all" style={{ flex: 1 }} />
+                                </div>
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-2 gap-3">
                             <StatBox 

@@ -1623,6 +1623,19 @@ async fn predict_market_yield_handler(
     Json(forecaster::predict_market_yield(&input))
 }
 
+#[derive(serde::Deserialize)]
+pub struct ClearingQuery {
+    pub arv: Option<f32>,
+}
+
+pub async fn predict_clearing_margin_handler(
+    Path(fips): Path<String>,
+    Query(query): Query<ClearingQuery>,
+) -> Json<forecaster::ClearingPredictionOutput> {
+    let arv = query.arv.unwrap_or(300000.0);
+    Json(forecaster::predict_clearing_margin(&fips, arv))
+}
+
 // ============================================================================
 // INVESTMENT SCORING ENGINE (Letter Grades)
 // ============================================================================
@@ -2074,6 +2087,7 @@ async fn main() {
         .route("/api/census/counties", get(get_census_counties))
         .route("/api/underwriting/calculate", post(calculate_underwriting))
         .route("/api/forecaster/predict/:fips", get(predict_market_yield_handler))
+        .route("/api/forecaster/clearing/:fips", get(predict_clearing_margin_handler))
         .route(
             "/api/census/counties/:state",
             get(get_census_state_counties),
