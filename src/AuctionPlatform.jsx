@@ -1102,7 +1102,8 @@ export default function AuctionPlatform() {
                                     {view === 'properties' ? 'Live Property Feed' :
                                         view === 'alerts' ? 'Alert Settings' :
                                             view === 'watchlist' ? 'Saved Counties' :
-                                                view === 'market' ? 'Market Data Dashboard' :
+                                                view === 'portfolio' ? 'Portfolio Fund Manager' :
+                                                    view === 'market' ? 'Market Data Dashboard' :
                                                     view === 'roi' ? 'Investment Calculator' :
                                                         view === 'stateinfo' ? 'State Rules & Info' :
                                                             view === 'detection' ? 'County Tier Detection' :

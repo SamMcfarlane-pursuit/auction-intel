@@ -46,7 +46,7 @@ const SparklineChart = ({ fips, height = 32, width = 120, color = '#10b981', api
                 </linearGradient>
             </defs>
             <path
-                d={`M ${points[0]} L ${points} L ${width},${height} L 0,${height} Z`}
+                d={`M 0,${height} L ${points} L ${width},${height} Z`}
                 fill={`url(#grad-${fips})`}
                 className="opacity-50"
             />

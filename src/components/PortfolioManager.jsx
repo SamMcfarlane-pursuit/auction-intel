@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useWatchlist } from '../WatchlistContext';
 import { 
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
-    BarChart, Bar
+    ComposedChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
+    BarChart, Bar, Line
 } from 'recharts';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { useToast } from '../ToastContext';
 
 export default function PortfolioManager({ onBack }) {
@@ -89,7 +89,7 @@ export default function PortfolioManager({ onBack }) {
                 item.priority.toUpperCase()
             ]);
 
-            doc.autoTable({
+            autoTable(doc, {
                 startY: 85,
                 head: [['Target County', 'State', 'Risk Tier', 'Est. ARV', 'Allocated MAB Threshold', 'Priority']],
                 body: tableData,
@@ -202,7 +202,7 @@ export default function PortfolioManager({ onBack }) {
                             
                             <div className="flex-1 min-h-0">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={growthData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
+                                    <ComposedChart data={growthData} margin={{ top: 10, right: 10, left: 20, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorYield" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15}/>
@@ -225,7 +225,7 @@ export default function PortfolioManager({ onBack }) {
                                         />
                                         <Area type="monotone" dataKey="projectedReturns" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorYield)" />
                                         <Line type="monotone" dataKey="capital" stroke="#CBD5E1" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                                    </AreaChart>
+                                    </ComposedChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
