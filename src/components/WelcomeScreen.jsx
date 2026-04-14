@@ -36,16 +36,16 @@ export default function WelcomeScreen({ user, onDismiss }) {
             <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" onClick={handleDismiss} />
 
             {/* Card */}
-            <div className="relative z-10 w-full max-w-2xl bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl border border-slate-700/50 shadow-2xl overflow-hidden animate-scale-in">
+            <div className="relative z-10 w-full max-w-2xl bg-slate-900 rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden animate-scale-in">
                 {/* Decorative gradient orbs */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full filter blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl translate-y-1/2 -translate-x-1/2" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full filter blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full filter blur-3xl translate-y-1/2 -translate-x-1/2" />
 
                 <div className="relative p-8 md:p-12">
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-purple-500/25">
-                            <span className="text-4xl">🏛️</span>
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-800 border border-slate-700 rounded-xl mb-4 shadow-lg">
+                            <span className="text-4xl text-white">🏛️</span>
                         </div>
                         <h1 className="font-display text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
                             Welcome, {user?.name?.split(' ')[0] || 'Investor'}!
@@ -57,8 +57,8 @@ export default function WelcomeScreen({ user, onDismiss }) {
 
                     {/* Feature cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-5 text-center hover:bg-blue-500/20 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                            <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center border border-blue-500/20">
                                 <span className="text-2xl">🗺️</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-1">Step 1</div>
@@ -66,8 +66,8 @@ export default function WelcomeScreen({ user, onDismiss }) {
                             <p className="text-xs text-slate-400">Explore tax lien opportunities across all 50 states</p>
                         </div>
 
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 text-center hover:bg-emerald-500/20 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                            <div className="w-12 h-12 mx-auto mb-3 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center border border-emerald-500/20">
                                 <span className="text-2xl">📊</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Step 2</div>
@@ -75,8 +75,8 @@ export default function WelcomeScreen({ user, onDismiss }) {
                             <p className="text-xs text-slate-400">Research interest rates, redemption periods & ROI</p>
                         </div>
 
-                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 text-center hover:bg-amber-500/20 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                            <div className="w-12 h-12 mx-auto mb-3 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center border border-amber-500/20">
                                 <span className="text-2xl">⭐</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-1">Step 3</div>
@@ -101,9 +101,9 @@ export default function WelcomeScreen({ user, onDismiss }) {
                     {/* CTA Button */}
                     <button
                         onClick={handleDismiss}
-                        className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-display font-bold text-lg rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="w-full py-4 bg-blue-600 text-white font-display font-bold text-lg rounded-xl shadow-lg hover:bg-blue-700 transition-all"
                     >
-                        Get Started 🚀
+                        Access Command Center
                     </button>
                 </div>
             </div>

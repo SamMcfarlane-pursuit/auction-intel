@@ -189,7 +189,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                     key={type}
                                     onClick={() => setTypeFilter(type)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all capitalize ${typeFilter === type
-                                        ? (type === 'lien' ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : type === 'deed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-900 text-white shadow-lg')
+                                        ? (type === 'lien' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : type === 'deed' ? 'bg-slate-600 text-white shadow-lg shadow-slate-200' : 'bg-slate-900 text-white shadow-lg')
                                         : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                         }`}
                                 >
@@ -202,12 +202,12 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 {monthStats.totalAuctions} auctions
                             </span>
                             {monthStats.lienCount > 0 && (
-                                <span className="px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-[10px] font-black">
+                                <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-black">
                                     {monthStats.lienCount} Lien
                                 </span>
                             )}
                             {monthStats.deedCount > 0 && (
-                                <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black">
+                                <span className="px-2.5 py-1 bg-slate-50 text-slate-700 rounded-lg text-[10px] font-black">
                                     {monthStats.deedCount} Deed
                                 </span>
                             )}
@@ -260,14 +260,14 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                     <div className="flex flex-wrap gap-0.5 mt-0.5">
                                         {lienEvents.slice(0, 3).map((e, j) => (
                                             <div key={`l${j}`} className="flex items-center gap-0.5">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
-                                                <span className="text-[8px] font-black text-purple-600 hidden md:inline">{e.state}</span>
+                                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+                                                <span className="text-[8px] font-black text-blue-600 hidden md:inline">{e.state}</span>
                                             </div>
                                         ))}
                                         {deedEvents.slice(0, 3).map((e, j) => (
                                             <div key={`d${j}`} className="flex items-center gap-0.5">
-                                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
-                                                <span className="text-[8px] font-black text-indigo-600 hidden md:inline">{e.state}</span>
+                                                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0"></span>
+                                                <span className="text-[8px] font-black text-slate-600 hidden md:inline">{e.state}</span>
                                             </div>
                                         ))}
                                         {cell.events.length > 6 && (
@@ -290,11 +290,11 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                 {/* Legend */}
                 <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-100 bg-slate-50/50">
                     <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                         <span className="text-[10px] font-bold text-slate-500">Lien State</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
                         <span className="text-[10px] font-bold text-slate-500">Deed State</span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -352,7 +352,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-2">
                                                     <span className="font-display font-black text-lg text-slate-900">{e.state}</span>
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${isLien ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${isLien ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                         {e.type}
                                                     </span>
                                                     {isHighRate && <span className="text-amber-500">🔥</span>}
@@ -388,13 +388,13 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 <div className="font-display font-black text-xl text-blue-700">{monthStats.totalAuctions}</div>
                                 <div className="text-[9px] font-bold text-blue-500 uppercase">Total</div>
                             </div>
-                            <div className="bg-purple-50 rounded-xl p-3 text-center">
-                                <div className="font-display font-black text-xl text-purple-700">{monthStats.lienCount}</div>
-                                <div className="text-[9px] font-bold text-purple-500 uppercase">Lien</div>
+                            <div className="bg-blue-50/50 rounded-xl p-3 text-center">
+                                <div className="font-display font-black text-xl text-blue-600">{monthStats.lienCount}</div>
+                                <div className="text-[9px] font-bold text-blue-500 uppercase">Lien</div>
                             </div>
-                            <div className="bg-indigo-50 rounded-xl p-3 text-center">
-                                <div className="font-display font-black text-xl text-indigo-700">{monthStats.deedCount}</div>
-                                <div className="text-[9px] font-bold text-indigo-500 uppercase">Deed</div>
+                            <div className="bg-slate-100 rounded-xl p-3 text-center">
+                                <div className="font-display font-black text-xl text-slate-700">{monthStats.deedCount}</div>
+                                <div className="text-[9px] font-bold text-slate-500 uppercase">Deed</div>
                             </div>
                         </div>
 

@@ -4,7 +4,7 @@ import { useWatchlist } from './WatchlistContext';
 import { useToast } from './ToastContext';
 import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip, UPCOMING_AUCTIONS } from './data';
 import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
-import USMap from './USMap';
+import USChoropleth from './components/USChoropleth';
 import UpcomingAuctions from './UpcomingAuctions';
 import ROICalculator from './components/ROICalculator';
 import AuctionCalendar from './components/AuctionCalendar';
@@ -18,8 +18,6 @@ import PropertyDueDiligence from './components/PropertyDueDiligence';
 import MobileNav from './components/MobileNav';
 import WelcomeScreen from './components/WelcomeScreen';
 import UserSettings from './components/UserSettings';
-import GlobeVisualizer from './components/GlobeVisualizer';
-import Market3DMap from './components/Market3DMap';
 import MarketForecaster from './components/MarketForecaster';
 import PortfolioManager from './components/PortfolioManager';
 import 'leaflet/dist/leaflet.css';
@@ -523,7 +521,7 @@ export default function AuctionPlatform() {
     const [isMapExpanded, setIsMapExpanded] = useState(false); // Map expansion state
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // User dropdown menu state
-    const [proMode, setProMode] = useState(false); // Toggle for advanced 3D visuals
+    const [proMode, setProMode] = useState(false); // Toggle for advanced visuals
 
     // API-driven data with fallbacks to static data
     const [COUNTIES, setCOUNTIES] = useState(STATIC_COUNTIES);
@@ -1402,7 +1400,7 @@ export default function AuctionPlatform() {
                                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                                             <div className="flex items-baseline gap-3">
                                                 <h3 className="font-display font-black text-lg text-slate-900">Tax Sale Inventory</h3>
-                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${auctionInfo?.saleType === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${auctionInfo?.saleType === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                     {auctionInfo?.saleType || 'Deed'} State
                                                 </span>
                                                 <span className="text-xs font-bold text-emerald-600">{parcels.length} HUD/REO Listings</span>
@@ -1412,7 +1410,7 @@ export default function AuctionPlatform() {
                                                     href={auctionInfo.platformUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-bold text-xs hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-600/20"
+                                                    className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg font-bold text-xs hover:bg-slate-800 transition-all shadow-md"
                                                 >
                                                     🔗 View Live Auctions on {auctionInfo.platform}
                                                 </a>
@@ -1517,185 +1515,85 @@ export default function AuctionPlatform() {
                                 </div>
                             </div>
                         ) : view === 'map' ? (
-                            /* Map View - Clean Minimal Design */
+                            /* Map View - Command Center Transformation */
                             <>
-                                {/* Expanded Map Overlay - Premium Design */}
-                                {isMapExpanded && (
-                                    <div
-                                        className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
-                                        onClick={() => setIsMapExpanded(false)}
-                                    >
-                                        <div
-                                            className="w-full h-full max-w-7xl max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
-                                            onClick={e => e.stopPropagation()}
-                                        >
-                                            {/* Premium Header */}
-                                            <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-slate-50 to-white border-b border-gray-100">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
-                                                        🗺️
-                                                    </div>
-                                                    <div>
-                                                        <h2 className="text-2xl font-bold text-gray-900">US Market Map</h2>
-                                                        <p className="text-sm text-gray-500">Click any state to explore county data</p>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-3">
-                                                    {/* Hovered State Info */}
-                                                    {hoveredState && (
-                                                        <div className="bg-slate-900 text-white px-5 py-2.5 rounded-xl flex items-center gap-3 shadow-lg">
-                                                            <span className="font-bold text-lg">{STATE_NAMES[hoveredState]}</span>
-                                                            {STATE_AUCTION_INFO[hoveredState] && (
-                                                                <>
-                                                                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${STATE_AUCTION_INFO[hoveredState].type === 'Lien' ? 'bg-violet-500' : 'bg-blue-500'}`}>
-                                                                        {STATE_AUCTION_INFO[hoveredState].type}
-                                                                    </span>
-                                                                    <span className="text-gray-300">{STATE_AUCTION_INFO[hoveredState].interestRate}</span>
-                                                                </>
-                                                            )}
-                                                            <span className="text-gray-400 text-sm">{getStateSummary(hoveredState).count} counties</span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Close Button */}
-                                                    <button
-                                                        onClick={() => setIsMapExpanded(false)}
-                                                        className="w-11 h-11 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-red-100 hover:text-red-600 transition-all text-gray-500 text-lg font-bold"
-                                                        title="Close (Esc)"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </div>
+                                {/* 4K Cinematic Edge-to-Edge Container */}
+                                <div className={isMapExpanded ? "fixed inset-0 z-50 bg-slate-950 animate-in fade-in duration-300" : "flex-1 w-full h-full min-h-[60vh] md:min-h-[700px] relative rounded-3xl overflow-hidden bg-slate-950 border border-slate-900 shadow-2xl transition-all duration-300"}>
+                                    {/* Base UI layer (Map) */}
+                                    <div className="absolute inset-0" style={{ zIndex: 1 }}>
+                                        <USChoropleth
+                                            onStateClick={(abbr) => { setSelectedState(abbr); setView('list'); if (isMapExpanded) setIsMapExpanded(false); }}
+                                            selectedState={selectedState}
+                                            height="100%"
+                                        />
+                                    </div>
+                                    
+                                    {/* Glass Overlay Layer: Top HUD */}
+                                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start pointer-events-none" style={{ zIndex: 10 }}>
+                                        {/* Top Left Title Glass */}
+                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-xl p-5 shadow-2xl">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                                                <h2 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">State Liquidity :: Neural Projection</h2>
                                             </div>
+                                            <h1 className="text-2xl font-black text-white/90 tracking-tighter">Market Intelligence Hub</h1>
+                                        </div>
 
-                                            {/* Main Content - Map + Stats */}
-                                            <div className="flex-1 flex min-h-0">
-                                                {/* Map Area */}
-                                                <div className="flex-1 min-h-0 relative">
-                                                    <USMap
-                                                        onStateClick={(abbr) => { setSelectedState(abbr); setView('list'); setIsMapExpanded(false); }}
-                                                        selectedState={selectedState}
-                                                        hoveredState={hoveredState}
-                                                        onHoverState={setHoveredState}
-                                                    />
-                                                </div>
-
-                                                {/* Stats Sidebar */}
-                                                <div className="w-64 bg-slate-50 border-l border-gray-100 p-4 flex flex-col gap-4 overflow-auto">
-                                                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">Quick Stats</div>
-
-                                                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                                                        <div className="text-3xl font-black text-gray-900">{allStates.length}</div>
-                                                        <div className="text-xs text-gray-500 font-medium">States Covered</div>
-                                                    </div>
-
-                                                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                                                        <div className="text-3xl font-black text-gray-900">{totalCounties.toLocaleString()}</div>
-                                                        <div className="text-xs text-gray-500 font-medium">Total Counties</div>
-                                                    </div>
-
-                                                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg">
-                                                        <div className="text-3xl font-black">{totalT123}</div>
-                                                        <div className="text-xs text-blue-100 font-medium">Prime Tier (T1-T3)</div>
-                                                    </div>
-
-                                                    <div className="mt-auto">
-                                                        <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Legend</div>
-                                                        <div className="space-y-2">
-                                                            <div className="flex items-center gap-3 bg-white rounded-lg px-3 py-2 border border-gray-100">
-                                                                <div className="w-4 h-4 rounded bg-violet-500 shadow-sm"></div>
-                                                                <span className="text-sm text-gray-700 font-medium">Lien States</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-3 bg-white rounded-lg px-3 py-2 border border-gray-100">
-                                                                <div className="w-4 h-4 rounded bg-blue-500 shadow-sm"></div>
-                                                                <span className="text-sm text-gray-700 font-medium">Deed States</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Bottom Bar */}
-                                            <div className="px-6 py-3 bg-slate-50 border-t border-gray-100 flex items-center justify-between text-sm">
-                                                <span className="text-gray-400">Press <kbd className="px-2 py-0.5 bg-gray-200 rounded text-xs font-mono">Esc</kbd> or click outside to close</span>
-                                                <span className="text-gray-500 font-medium">Hover over states to see auction details</span>
-                                            </div>
+                                        {/* Top Right Fullscreen Toggle */}
+                                        <div className="flex items-center gap-3 pointer-events-auto">
+                                            <button
+                                                onClick={() => setIsMapExpanded(!isMapExpanded)}
+                                                className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900/40 backdrop-blur-2xl border border-white/10 text-white/60 hover:text-white hover:bg-slate-800 transition-all shadow-2xl"
+                                                title={isMapExpanded ? "Exit Fullscreen" : "Fullscreen Mode"}
+                                            >
+                                                <span className="text-xl leading-none">{isMapExpanded ? '×' : '⤢'}</span>
+                                            </button>
                                         </div>
                                     </div>
-                                )}
-                                <div className="h-full flex flex-col gap-4">
-                                    {/* Map Container - lower z-index to not overlap header elements */}
-                                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex-1 flex flex-col min-h-0 relative overflow-hidden z-10">
-                                        {/* Simple Header - Clickable to Expand */}
-                                        <div
-                                            className="flex items-center justify-between mb-3 cursor-pointer group"
-                                            onClick={() => setIsMapExpanded(true)}
-                                        >
+
+                                    {/* Glass Overlay Layer: Bottom Status HUD */}
+                                    <div className="absolute bottom-6 left-6 right-6 flex flex-col-reverse md:flex-row items-center md:items-end justify-between pointer-events-none gap-4" style={{ zIndex: 10 }}>
+                                        {/* Left Spacer (Desktop Only) */}
+                                        <div className="hidden md:block w-[140px] invisible"></div>
+
+                                        {/* Bottom Center Intelligence Bar */}
+                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-xl px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-2xl pointer-events-auto filter drop-shadow-2xl max-w-full">
                                             <div>
-                                                <div className="flex items-center gap-2">
-                                                    <h2 className="text-xl font-semibold text-gray-900">US Market Map</h2>
-                                                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">⤢ Click to expand</span>
+                                                <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Global Coverage</div>
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-xl md:text-2xl font-black text-white/90">50</span>
+                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">States</span>
                                                 </div>
-                                                <p className="text-xs text-gray-400">Click a state to view counties</p>
                                             </div>
-                                            {/* Hover Info */}
-                                            {hoveredState && (
-                                                <div className="bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center gap-3">
-                                                    <span className="font-semibold">{STATE_NAMES[hoveredState]}</span>
-                                                    {STATE_AUCTION_INFO[hoveredState] && (
-                                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATE_AUCTION_INFO[hoveredState].type === 'Lien' ? 'bg-violet-500' : 'bg-blue-500'}`}>
-                                                            {STATE_AUCTION_INFO[hoveredState].type}
-                                                        </span>
-                                                    )}
-                                                    <span className="text-gray-300 text-sm">{getStateSummary(hoveredState).count} counties</span>
+                                            <div className="w-px h-6 bg-white/10 hidden md:block" />
+                                            <div>
+                                                <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Active Pipeline</div>
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-xl md:text-2xl font-black text-white/90">14.2K</span>
+                                                    <span className="text-[9px] font-bold text-blue-400 uppercase tracking-wider">Deals</span>
                                                 </div>
-                                            )}
+                                            </div>
+                                            <div className="w-px h-6 bg-white/10 hidden md:block" />
+                                            <div className="flex items-center gap-3">
+                                                <div className="text-right">
+                                                    <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-0.5">Network Status</div>
+                                                    <div className="text-[9px] font-mono text-emerald-400 font-bold">TERMINUS_SYNC_OK</div>
+                                                </div>
+                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]" />
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        {/* Map */}
-                                        <div className="flex-1 min-h-0 rounded-xl overflow-hidden relative" style={{ minHeight: '350px' }}>
-                                            <USMap
-                                                onStateClick={(abbr) => { setSelectedState(abbr); setView('list'); }}
-                                                selectedState={selectedState}
-                                                hoveredState={hoveredState}
-                                                onHoverState={setHoveredState}
-                                            />
-                                        </div>
-
-                                        {/* Simple Legend */}
-                                        <div className="flex justify-center gap-6 mt-3">
+                                        {/* Bottom Right Legend */}
+                                        <div className="bg-slate-900/90 backdrop-blur-md shadow-2xl border border-slate-700/50 rounded-xl p-3 flex flex-row items-center gap-4 min-w-[140px] pointer-events-auto md:w-[140px] md:flex-col md:items-start md:gap-3 justify-center md:justify-self-end text-left w-auto z-50">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded bg-violet-500"></div>
-                                                <span className="text-xs text-gray-500">Lien States</span>
+                                                <div className="w-2.5 h-2.5 rounded border border-blue-500 bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.4)]" />
+                                                <span className="text-[9px] text-slate-300 font-bold uppercase tracking-wider">Lien States</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <div className="w-3 h-3 rounded bg-blue-500"></div>
-                                                <span className="text-xs text-gray-500">Deed States</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Globe + Stats Row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
-                                        {/* 3D Globe Visualizer */}
-                                        <div className="md:col-span-2 bg-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden" style={{ minHeight: '220px' }}>
-                                            <GlobeVisualizer height="220px" />
-                                        </div>
-
-                                        {/* Stats Column */}
-                                        <div className="flex flex-col gap-2">
-                                            <div className="bg-white rounded-xl p-4 border border-gray-100 flex-1 flex flex-col justify-center">
-                                                <div className="text-2xl font-bold text-gray-900">{allStates.length}</div>
-                                                <div className="text-xs text-gray-400">States</div>
-                                            </div>
-                                            <div className="bg-white rounded-xl p-4 border border-gray-100 flex-1 flex flex-col justify-center">
-                                                <div className="text-2xl font-bold text-gray-900">{totalCounties}</div>
-                                                <div className="text-xs text-gray-400">Counties</div>
-                                            </div>
-                                            <div className="bg-blue-500 rounded-xl p-4 text-white flex-1 flex flex-col justify-center">
-                                                <div className="text-2xl font-bold">{totalT123}</div>
-                                                <div className="text-xs text-blue-100">Prime (T1-T3)</div>
+                                                <div className="w-2.5 h-2.5 rounded border border-slate-500 bg-slate-600 shadow-[0_0_8px_rgba(71,85,105,0.4)]" />
+                                                <span className="text-[9px] text-slate-300 font-bold uppercase tracking-wider">Deed States</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1715,6 +1613,7 @@ export default function AuctionPlatform() {
                         ) : view === 'calendar' ? (
                             /* 2026 Auction Calendar View */
                             <AuctionCalendar
+                                auctions={realAuctions.length > 0 ? realAuctions : []}
                                 onSelectState={(abbr) => {
                                     setSelectedState(abbr);
                                     setView('list');
@@ -1750,7 +1649,7 @@ export default function AuctionPlatform() {
                                 </div>
                                 <div className="flex-1 min-h-0 bg-slate-50">
                                     {proMode ? (
-                                        <Market3DMap height="100%" />
+                                        <MarketGlobe height="100%" />
                                     ) : (
                                         <InvestmentHeatMap
                                             onStateSelect={(abbr) => {

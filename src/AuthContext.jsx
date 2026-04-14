@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
                     setUser({
                         id: 'demo-user',
                         name: 'Demo Investor',
-                        email: 'demo@auction-intel.com',
+                        email: 'demo@auctionintel.com',
                         role: 'PRO'
                     });
                     setLoading(false);
@@ -55,13 +55,13 @@ export function AuthProvider({ children }) {
     const signIn = async (email, password, rememberMe = true) => {
         setError(null);
         // Mock demo account for development/demo purposes
-        if (email === 'demo@auction-intel.com') {
+        if (email === 'demo@auctionintel.com') {
             const demoData = {
                 token: 'mcfarlane-demo-token-2026',
                 user: {
                     id: 'demo-user',
                     name: 'Demo Investor',
-                    email: 'demo@auction-intel.com',
+                    email: 'demo@auctionintel.com',
                     role: 'PRO'
                 }
             };

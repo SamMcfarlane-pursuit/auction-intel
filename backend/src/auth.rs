@@ -121,6 +121,20 @@ pub async fn login(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<AuthPayload>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
+    // Demo account bypass for rapid preview
+    if payload.email == "demo@auctionintel.com" {
+        let demo_id = "demo-user-123";
+        let token = create_jwt(demo_id).map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        return Ok(Json(AuthResponse {
+            token,
+            user: UserResponse {
+                id: demo_id.to_string(),
+                name: "Demo Investor".to_string(),
+                email: "demo@auctionintel.com".to_string(),
+            },
+        }));
+    }
+
     let row = sqlx::query("SELECT id, name, email, password_hash FROM users WHERE email = ?")
         .bind(&payload.email)
         .fetch_optional(&state.db)

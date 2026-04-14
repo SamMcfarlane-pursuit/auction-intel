@@ -19,10 +19,10 @@ const formatDate = (dateStr) => {
 // Get badge color based on sale type
 const getSaleTypeColor = (type) => {
     switch (type) {
-        case 'Tax Lien': return { bg: '#7c3aed', text: 'white' };
-        case 'Tax Deed': return { bg: '#2563eb', text: 'white' };
-        case 'Tax Sale': return { bg: '#059669', text: 'white' };
-        case 'Tax Defaulted': return { bg: '#0891b2', text: 'white' };
+        case 'Tax Lien': return { bg: '#2563eb', text: 'white' }; // blue-600
+        case 'Tax Deed': return { bg: '#475569', text: 'white' }; // slate-600
+        case 'Tax Sale': return { bg: '#059669', text: 'white' }; // emerald-600
+        case 'Tax Defaulted': return { bg: '#0f172a', text: 'white' }; // slate-900
         case 'Tax Foreclosure': return { bg: '#dc2626', text: 'white' };
         case 'Sheriff Sale': return { bg: '#ea580c', text: 'white' };
         default: return { bg: '#6b7280', text: 'white' };
@@ -159,7 +159,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
     return (
         <div className="h-full flex flex-col gap-4">
             {/* Header */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-5">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-5">
                 <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
                     <div>
                         <h2 className="text-xl md:text-2xl font-display font-black text-gray-900 tracking-tight">Upcoming Auctions</h2>
@@ -238,7 +238,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                             const totalProps = auctions.reduce((s, a) => s + a.propertyCount, 0);
 
                             return (
-                                <div key={state} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                <div key={state} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                                     {/* State Header */}
                                     <div
                                         onClick={() => toggleState(state)}
@@ -253,7 +253,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-display font-black text-slate-900">{STATE_NAMES[state]}</span>
                                                         {stateInfo && (
-                                                            <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${stateInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                            <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${stateInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                                 {stateInfo.type}
                                                             </span>
                                                         )}
@@ -378,7 +378,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                             return (
                                 <div
                                     key={auction.id}
-                                    className={`bg-white rounded-2xl border-2 shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden group ${urgency.pulse ? 'border-red-300' : 'border-gray-100 hover:border-blue-200'
+                                    className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden group ${urgency.pulse ? 'border-red-300 hover:border-red-400' : 'border-slate-200 hover:border-slate-300'
                                         }`}
                                     onClick={() => {
                                         onSelectState?.(auction.state);

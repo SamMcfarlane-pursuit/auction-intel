@@ -15,7 +15,7 @@ function AuthenticatedApp() {
   // Show loading state while checking for existing session
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-white/70 font-medium">Loading...</p>

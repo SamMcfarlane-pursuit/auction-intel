@@ -12,13 +12,17 @@
   "dependencies": {
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.10",
+    "d3-geo": "^3.1.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.577.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-globe.gl": "^2.37.0",
     "react-leaflet": "^4.2.1",
+    "react-simple-maps": "^3.0.0",
+    "react-tooltip": "^5.30.0",
     "recharts": "^3.6.0",
     "three": "^0.183.2"
   },

@@ -79,15 +79,15 @@ export default function MarketForecaster({ county, onBack }) {
     }
 
     return (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
             {/* Header */}
-            <div className="p-8 bg-gradient-to-r from-slate-900 to-indigo-900 text-white flex justify-between items-center">
+            <div className="p-8 bg-slate-900 text-white flex justify-between items-center border-b border-slate-800">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-2xl">🔮</span>
                         <h2 className="text-3xl font-display font-black tracking-tighter">AI Alpha Forecaster</h2>
                     </div>
-                    <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
                         Predictive Analysis for {county?.name || "Target Market"}
                     </p>
                 </div>
@@ -127,13 +127,13 @@ export default function MarketForecaster({ county, onBack }) {
                                     onClick={() => setScenario(s)}
                                     className={`p-4 rounded-xl text-left transition-all border-2 ${
                                         scenario === s 
-                                        ? 'bg-indigo-50 border-indigo-500 shadow-sm' 
-                                        : 'bg-white border-slate-100 hover:border-slate-200 text-slate-500'
+                                        ? 'bg-blue-50 border-blue-600 shadow-sm' 
+                                        : 'bg-white border-slate-200 hover:border-slate-300 text-slate-500'
                                     }`}
                                 >
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-black uppercase tracking-tighter">{s}</span>
-                                        {scenario === s && <span className="text-indigo-600">●</span>}
+                                        {scenario === s && <span className="text-blue-600">●</span>}
                                     </div>
                                     <div className="text-[10px] opacity-70 mt-1">
                                         {s === 'aggressive' ? 'Optimistic growth & low interest rates' : 
@@ -145,10 +145,10 @@ export default function MarketForecaster({ county, onBack }) {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200">
-                        <div className="text-[9px] font-black text-indigo-200 uppercase mb-1">Projected 12M Yield</div>
-                        <div className="text-3xl font-display font-black">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
-                        <div className="text-[10px] text-indigo-100 mt-2">
+                    <div className="bg-slate-900 rounded-xl p-6 text-white shadow-lg border border-slate-800">
+                        <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Projected 12M Yield</div>
+                        <div className="text-3xl font-display font-black text-emerald-400">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
+                        <div className="text-[10px] text-slate-400 mt-2">
                            Forecasted equity gain based on {county?.name} momentum and current economic cooling factors.
                         </div>
                     </div>
@@ -156,15 +156,15 @@ export default function MarketForecaster({ county, onBack }) {
 
                 {/* Main Forecast Chart */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 h-[450px] relative">
+                    <div className="bg-slate-50 rounded-xl p-8 border border-slate-200 h-[450px] relative">
                         <div className="flex items-center justify-between mb-8">
                             <div>
                                 <h3 className="text-lg font-black text-slate-900 tracking-tight">Price Appreciation Forecast</h3>
                                 <p className="text-xs text-slate-400 font-bold">Projected ZHVI Value (24 Month Window)</p>
                             </div>
                             <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest">
-                                <span className="flex items-center gap-2 text-indigo-600"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> Current Target</span>
-                                <span className="flex items-center gap-2 text-slate-300"><span className="w-2 h-2 rounded-full bg-slate-300"></span> Baseline Average</span>
+                                <span className="flex items-center gap-2 text-blue-600"><span className="w-2 h-2 rounded-full bg-blue-600"></span> Current Target</span>
+                                <span className="flex items-center gap-2 text-slate-400"><span className="w-2 h-2 rounded-full bg-slate-400"></span> Baseline Average</span>
                             </div>
                         </div>
 
@@ -197,22 +197,22 @@ export default function MarketForecaster({ county, onBack }) {
                                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     formatter={(value) => [`$${value.toLocaleString()}`, 'Projected ZHVI']}
                                 />
-                                <Area type="monotone" dataKey="value" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
-                                <Line type="monotone" dataKey="baseline" stroke="#CBD5E1" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                                <Area type="monotone" dataKey="value" stroke="#2563eb" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
+                                <Line type="monotone" dataKey="baseline" stroke="#94A3B8" strokeWidth={2} strokeDasharray="5 5" dot={false} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="border border-slate-100 rounded-2xl p-4 flex items-center gap-4">
+                        <div className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white">
                             <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 text-lg">📈</div>
                             <div>
                                 <div className="text-[9px] font-black text-slate-400 uppercase">12M Projection</div>
                                 <div className="text-sm font-black text-slate-900">${Math.round(forecast?.projected_zhvi_12m || 0).toLocaleString()}</div>
                             </div>
                         </div>
-                        <div className="border border-slate-100 rounded-2xl p-4 flex items-center gap-4">
-                            <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 text-lg">🚀</div>
+                        <div className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-lg">🚀</div>
                             <div>
                                 <div className="text-[9px] font-black text-slate-400 uppercase">24M Target</div>
                                 <div className="text-sm font-black text-slate-900">${Math.round(forecast?.projected_zhvi_24m || 0).toLocaleString()}</div>
@@ -222,7 +222,7 @@ export default function MarketForecaster({ county, onBack }) {
                 </div>
                 
                 {/* Security & Historical Efficiency Scatter */}
-                <div className="lg:col-span-3 bg-slate-50 rounded-3xl p-8 border border-slate-100 h-[450px] relative mt-4">
+                <div className="lg:col-span-3 bg-slate-50 rounded-xl p-8 border border-slate-200 h-[450px] relative mt-4">
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h3 className="text-lg font-black text-slate-900 tracking-tight">Historical Clearing Price Matrix</h3>

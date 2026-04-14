@@ -1,20 +1,19 @@
 import React, { useRef, useMemo, Suspense, useState, useEffect, Component } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, Html } from '@react-three/drei';
+import { OrbitControls, Sphere, Html, Float, Stars, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
 // US state coordinates (lat/lng) for baseline visibility
 const US_HOTSPOTS = [
-    { name: 'TX', lat: 31.0, lng: -100.0, grade: 'A', color: '#22c55e' },
-    { name: 'FL', lat: 27.6, lng: -81.5, grade: 'A', color: '#22c55e' },
+    { name: 'TX', lat: 31.0, lng: -100.0, grade: 'A', color: '#10b981' },
+    { name: 'FL', lat: 27.6, lng: -81.5, grade: 'A', color: '#10b981' },
     { name: 'CA', lat: 36.8, lng: -119.4, grade: 'B', color: '#3b82f6' },
-    { name: 'GA', lat: 32.2, lng: -83.4, grade: 'A+', color: '#22c55e' },
-    { name: 'AZ', lat: 34.0, lng: -111.1, grade: 'A', color: '#22c55e' },
+    { name: 'GA', lat: 32.2, lng: -83.4, grade: 'A+', color: '#10b981' },
+    { name: 'AZ', lat: 34.0, lng: -111.1, grade: 'A', color: '#10b981' },
     { name: 'NY', lat: 42.2, lng: -74.9, grade: 'B', color: '#3b82f6' },
     { name: 'IL', lat: 40.6, lng: -89.0, grade: 'B', color: '#3b82f6' },
 ];
 
-// Mapper for state centroids (approximate) to fetch deal coordinates
 const STATE_COORDS = {
     'NV': { lat: 38.8, lng: -116.4 },
     'WA': { lat: 47.7, lng: -120.7 },
@@ -40,137 +39,63 @@ function latLngToSphere(lat, lng, radius) {
     );
 }
 
-// Particle field for ambient atmosphere
-function ParticleField({ count = 2000 }) {
-    const mesh = useRef();
-    const positions = useMemo(() => {
-        const pos = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-            const r = 2.8 + Math.random() * 1.5;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos(2 * Math.random() - 1);
-            pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-            pos[i * 3 + 1] = r * Math.cos(phi);
-            pos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-        }
-        return pos;
-    }, [count]);
+function DataArc({ start, end, radius = 2, color = '#6366f1' }) {
+    const curve = useMemo(() => {
+        const startVec = latLngToSphere(start.lat, start.lng, radius);
+        const endVec = latLngToSphere(end.lat, end.lng, radius);
+        
+        // Calculate mid-point with altitude
+        const midVec = new THREE.Vector3().addVectors(startVec, endVec).normalize().multiplyScalar(radius * 1.5);
+        
+        return new THREE.QuadraticBezierCurve3(startVec, midVec, endVec);
+    }, [start, end, radius]);
 
+    const lineRef = useRef();
     useFrame((state) => {
-        if (mesh.current) {
-            mesh.current.rotation.y = state.clock.elapsedTime * 0.02;
+        if (lineRef.current) {
+            lineRef.current.material.dashOffset = -state.clock.elapsedTime * 2;
         }
     });
 
     return (
-        <points ref={mesh}>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    count={count}
-                    array={positions}
-                    itemSize={3}
-                />
-            </bufferGeometry>
-            <pointsMaterial size={0.008} color="#818cf8" transparent opacity={0.4} sizeAttenuation />
-        </points>
+        <mesh ref={lineRef}>
+            <tubeGeometry args={[curve, 20, 0.005, 8, false]} />
+            <meshBasicMaterial 
+                color={color} 
+                transparent 
+                opacity={0.3} 
+                dashSize={0.2} 
+                gapSize={0.1}
+            />
+        </mesh>
     );
 }
 
-// Glowing data points on the globe
-function DealPins({ radius = 2.02, deals = [] }) {
-    const groupRef = useRef();
-
-    useFrame((state) => {
-        if (groupRef.current) {
-            groupRef.current.children.forEach((child, i) => {
-                if (child.material) {
-                    const pulse = 0.5 + Math.sin(state.clock.elapsedTime * 4 + i) * 0.5;
-                    child.material.opacity = 0.4 + pulse * 0.6;
-                    child.scale.setScalar(1 + pulse * 0.5);
-                }
-            });
-        }
-    });
-
-    return (
-        <group ref={groupRef}>
-            {deals.slice(0, 30).map((deal, i) => {
-                // Approximate coordinate if exact not available
-                const coords = STATE_COORDS[deal.state] || { lat: 39 + Math.random() * 5, lng: -98 + Math.random() * 5 };
-                // Jitter slightly to separate multiple deals in same state
-                const lat = coords.lat + (Math.random() - 0.5) * 2;
-                const lng = coords.lng + (Math.random() - 0.5) * 2;
-                const pos = latLngToSphere(lat, lng, radius);
-                
-                return (
-                    <mesh key={i} position={pos}>
-                        <sphereGeometry args={[0.04, 12, 12]} />
-                        <meshBasicMaterial color="#fbbf24" transparent opacity={0.8} />
-                    </mesh>
-                );
-            })}
-        </group>
-    );
-}
-
-// The main globe mesh
-function GlobeMesh({ deals = [] }) {
+function Atmosphere({ radius = 2 }) {
     const meshRef = useRef();
-
     useFrame((state) => {
         if (meshRef.current) {
-            meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
+            meshRef.current.rotation.y = state.clock.elapsedTime * 0.1;
         }
     });
 
     return (
-        <group ref={meshRef}>
-            {/* Wireframe globe */}
-            <Sphere args={[2, 48, 48]}>
-                <meshBasicMaterial
-                    color="#1e293b"
-                    wireframe
-                    transparent
-                    opacity={0.15}
-                />
-            </Sphere>
-
-            {/* Solid inner sphere */}
-            <Sphere args={[1.98, 48, 48]}>
-                <meshStandardMaterial
-                    color="#0f172a"
-                    metalness={0.3}
-                    roughness={0.8}
-                />
-            </Sphere>
-
-            {/* Glow ring */}
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[2.05, 2.12, 64]} />
-                <meshBasicMaterial color="#6366f1" transparent opacity={0.2} side={THREE.DoubleSide} />
-            </mesh>
-
-            <DealPins deals={deals} />
-            
-            {/* Baseline States */}
-            {US_HOTSPOTS.map((spot, i) => {
-                const pos = latLngToSphere(spot.lat, spot.lng, 2.01);
-                return (
-                    <mesh key={`state-${i}`} position={pos}>
-                        <sphereGeometry args={[0.02, 8, 8]} />
-                        <meshBasicMaterial color={spot.color} transparent opacity={0.4} />
-                    </mesh>
-                );
-            })}
-        </group>
+        <mesh ref={meshRef}>
+            <sphereGeometry args={[radius * 1.15, 64, 64]} />
+            <meshPhongMaterial
+                color="#4f46e5"
+                transparent
+                opacity={0.05}
+                side={THREE.BackSide}
+                blending={THREE.AdditiveBlending}
+            />
+        </mesh>
     );
 }
 
-// Main component (not exported directly — use the safe default export below)
 function GlobeVisualizer({ height = '450px' }) {
     const [deals, setDeals] = useState([]);
-
+    
     useEffect(() => {
         const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080/api';
         fetch(`${apiBase}/deals/top?limit=40`)
@@ -180,80 +105,119 @@ function GlobeVisualizer({ height = '450px' }) {
     }, []);
 
     return (
-        <div
-            style={{
-                width: '100%',
-                height,
-                position: 'relative',
-                borderRadius: '2rem',
-                overflow: 'hidden',
-                background: 'radial-gradient(circle at center, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-            }}
-        >
-            <Canvas
-                camera={{ position: [0, 0, 5.5], fov: 40 }}
-                gl={{ antialias: true, alpha: true }}
-                style={{ background: 'transparent' }}
-            >
-                <ambientLight intensity={0.4} />
-                <pointLight position={[10, 10, 10]} intensity={1.2} />
-                <pointLight position={[-10, -10, -5]} intensity={0.5} color="#818cf8" />
+        <div style={{ width: '100%', height, position: 'relative', overflow: 'hidden', background: '#020617' }}>
+            <Canvas dpr={[1, 2]}>
+                <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={40} />
+                <color attach="background" args={['#020617']} />
+                <fog attach="fog" args={['#020617', 5, 10]} />
+                
+                <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+                
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} intensity={1.5} color="#4f46e5" />
+                <spotLight position={[-10, 20, 10]} angle={0.15} penumbra={1} intensity={1} color="#818cf8" />
 
                 <Suspense fallback={null}>
-                    <GlobeMesh deals={deals} />
-                    <ParticleField />
+                    <group rotation={[0, -Math.PI / 2, 0]}>
+                        {/* Core Globe */}
+                        <Sphere args={[2, 64, 64]}>
+                            <meshStandardMaterial
+                                color="#0f172a"
+                                metalness={0.9}
+                                roughness={0.1}
+                                emissive="#1e1b4b"
+                                emissiveIntensity={0.2}
+                            />
+                        </Sphere>
+                        
+                        {/* Wireframe Overlay */}
+                        <Sphere args={[2.01, 48, 48]}>
+                            <meshBasicMaterial
+                                color="#4f46e5"
+                                wireframe
+                                transparent
+                                opacity={0.1}
+                            />
+                        </Sphere>
+
+                        {/* Scan Rings */}
+                        <mesh rotation={[Math.PI / 2, 0, 0]}>
+                            <ringGeometry args={[2.05, 2.06, 64]} />
+                            <meshBasicMaterial color="#6366f1" transparent opacity={0.3} side={THREE.DoubleSide} />
+                        </mesh>
+
+                        <Atmosphere radius={2} />
+
+                        {/* Hotspots */}
+                        {US_HOTSPOTS.map((spot, i) => {
+                            const pos = latLngToSphere(spot.lat, spot.lng, 2.02);
+                            return (
+                                <group key={i} position={pos}>
+                                    <mesh>
+                                        <sphereGeometry args={[0.03, 16, 16]} />
+                                        <meshBasicMaterial color={spot.color} />
+                                    </mesh>
+                                    <mesh scale={[2.5, 2.5, 2.5]}>
+                                        <sphereGeometry args={[0.03, 16, 16]} />
+                                        <meshBasicMaterial color={spot.color} transparent opacity={0.2} />
+                                    </mesh>
+                                </group>
+                            );
+                        })}
+
+                        {/* Data Arcs */}
+                        <DataArc start={US_HOTSPOTS[0]} end={US_HOTSPOTS[1]} radius={2.02} color="#fbbf24" />
+                        <DataArc start={US_HOTSPOTS[2]} end={US_HOTSPOTS[0]} radius={2.02} color="#3b82f6" />
+                        <DataArc start={US_HOTSPOTS[3]} end={US_HOTSPOTS[5]} radius={2.02} color="#10b981" />
+                    </group>
                 </Suspense>
 
                 <OrbitControls
                     enableZoom={false}
                     enablePan={false}
                     autoRotate
-                    autoRotateSpeed={0.5}
+                    autoRotateSpeed={0.4}
                     minPolarAngle={Math.PI / 3}
                     maxPolarAngle={Math.PI / 1.5}
                 />
             </Canvas>
 
-            {/* Overlay info */}
-            <div className="absolute inset-0 pointer-events-none p-8 flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <div className="text-amber-400 text-[10px] font-black uppercase tracking-[0.3em] mb-1">
-                            Live Deal Feed
-                        </div>
-                        <h2 className="text-2xl font-black text-white">Global Command Center</h2>
+            {/* Pro-Refined HUD */}
+            <div className="absolute inset-0 pointer-events-none p-10 flex flex-col justify-between">
+                <div>
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.4em]">Live Intelligence Sync</span>
                     </div>
-                    <div className="bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                        <span className="text-white text-[10px] font-black uppercase tracking-wider">{deals.length} active deals mapped</span>
-                    </div>
+                    <h2 className="text-2xl font-black text-white tracking-tight opacity-90">Global Command</h2>
+                    <div className="h-0.5 w-12 bg-indigo-500/30 mt-3 rounded-full" />
                 </div>
 
                 <div className="flex justify-between items-end">
-                    <div className="space-y-1">
-                        <div className="text-slate-500 text-[9px] font-bold uppercase tracking-widest">Projection Model</div>
-                        <div className="text-slate-300 text-xs font-mono">GRID::PHI_PHI_ALPHA_V2</div>
+                    <div className="flex gap-12">
+                        <div>
+                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-1">States</div>
+                            <div className="text-lg font-black text-white/90">50</div>
+                        </div>
+                        <div>
+                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-1">Active Pipeline</div>
+                            <div className="text-lg font-black text-indigo-400">14.2K</div>
+                        </div>
                     </div>
                     
-                    <div className="flex gap-6">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
-                            <span className="text-slate-400 text-[10px] font-bold">Top Deals</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 opacity-50" />
-                            <span className="text-slate-400 text-[10px] font-bold">Stable Markets</span>
-                        </div>
+                    <div className="flex flex-col items-end opacity-40">
+                        <div className="text-[8px] text-slate-500 font-mono font-bold tracking-widest">NETWORK_NODE::ALPHA</div>
+                        <div className="text-[7px] text-slate-600 font-mono uppercase">Standard Encryption Active</div>
                     </div>
                 </div>
             </div>
+            
+            {/* Cinematic Scanlines */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
         </div>
     );
 }
 
-// ErrorBoundary to safely catch WebGL/Three.js crashes in headless / low-GPU environments
 class GlobeErrorBoundary extends Component {
     constructor(props) { super(props); this.state = { hasError: false }; }
     static getDerivedStateFromError() { return { hasError: true }; }
@@ -272,7 +236,7 @@ class GlobeErrorBoundary extends Component {
                     <div style={{ color: '#94a3b8', fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
                         3D Globe Unavailable
                     </div>
-                    <div style={{ color: '#475569', fontSize: '0.65rem' }}>WebGL context not supported in this environment</div>
+                    <div style={{ color: '#475569', fontSize: '0.65rem' }}>WebGL context not supported here</div>
                 </div>
             );
         }
@@ -280,7 +244,6 @@ class GlobeErrorBoundary extends Component {
     }
 }
 
-// Safe default export — wraps Globe in an error boundary
 const GlobeVisualizerSafe = (props) => (
     <GlobeErrorBoundary height={props.height}>
         <GlobeVisualizer {...props} />
