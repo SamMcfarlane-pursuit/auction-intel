@@ -80,7 +80,7 @@ export function TrendIndicator({ value, previousValue, format = 'percent' }) {
     const colors = {
         up: 'bg-emerald-100 text-emerald-700',
         down: 'bg-red-100 text-red-700',
-        stable: 'bg-slate-100 text-slate-600'
+        stable: 'bg-slate-900 text-slate-600'
     };
 
     const icons = { up: '↑', down: '↓', stable: '→' };

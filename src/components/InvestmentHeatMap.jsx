@@ -98,12 +98,12 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
     }, [filteredStates]);
 
     return (
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
             {/* Header */}
-            <div className="p-6 md:p-8 border-b border-slate-100">
+            <div className="p-6 md:p-8 border-b border-slate-800">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl md:text-3xl font-display font-black text-slate-900 tracking-tighter mb-1">
+                        <h2 className="text-lg font-mono md:text-xl font-mono font-mono font-semibold text-slate-100 tracking-tighter mb-1">
                             🗺️ Investment Heat Map
                         </h2>
                         <p className="text-xs md:text-sm text-slate-500">
@@ -115,9 +115,9 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                             <button key={f}
                                 onClick={() => setSelectedFilter(f)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all ${selectedFilter === f
-                                        ? 'bg-slate-900 text-white'
-                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                    }`}>
+ ? 'bg-slate-900 text-white'
+ : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
+ }`}>
                                 {f === 'all' ? 'All States' : `${f} States`}
                             </button>
                         ))}
@@ -126,7 +126,7 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
             </div>
 
             {/* Legend */}
-            <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100">
+            <div className="px-6 py-4 bg-slate-900 to-white border-b border-slate-800">
                 <div className="flex flex-wrap items-center gap-3 text-xs">
                     <span className="font-bold text-slate-500">Score Legend:</span>
                     {[
@@ -149,7 +149,7 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Top 10 List */}
                     <div>
-                        <h3 className="font-display font-black text-lg text-slate-900 mb-4 flex items-center gap-2">
+                        <h3 className="font-mono font-semibold text-lg text-slate-100 mb-4 flex items-center gap-2">
                             <span>🏆</span> Top 10 Investment States
                             <span className="text-xs font-normal text-slate-400">
                                 ({selectedFilter === 'all' ? 'All' : selectedFilter === 'lien' ? 'Lien Only' : 'Deed Only'})
@@ -163,17 +163,17 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                                         onClick={() => onStateSelect?.(abbr)}
                                         onMouseEnter={() => setHoveredState(abbr)}
                                         onMouseLeave={() => setHoveredState(null)}
-                                        className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${hoveredState === abbr ? 'bg-blue-50 scale-[1.02]' : 'bg-slate-50 hover:bg-slate-100'
-                                            }`}>
-                                        <div className="w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm"
+                                        className={`flex items-center gap-3 p-3 rounded-sm cursor-pointer transition-all ${hoveredState === abbr ? 'bg-blue-50 scale-[1.02]' : 'bg-slate-900 hover:bg-slate-900'
+ }`}>
+                                        <div className="w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm"
                                             style={{ background: color.bg, color: color.text }}>
                                             {idx + 1}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-slate-900">{abbr}</span>
+                                                <span className="font-bold text-slate-100">{abbr}</span>
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${data.type === 'Lien' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                                                    }`}>
+ }`}>
                                                     {data.type}
                                                 </span>
                                                 {data.interestRate > 0 && (
@@ -183,7 +183,7 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                                             <div className="text-[10px] text-slate-500 truncate">{data.highlight}</div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-black text-lg" style={{ color: color.bg }}>{data.score}</div>
+                                            <div className="font-semibold text-lg" style={{ color: color.bg }}>{data.score}</div>
                                             <div className="text-[9px] text-slate-400 uppercase">{color.label}</div>
                                         </div>
                                     </div>
@@ -194,7 +194,7 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
 
                     {/* Full State Grid */}
                     <div>
-                        <h3 className="font-display font-black text-lg text-slate-900 mb-4">
+                        <h3 className="font-mono font-semibold text-lg text-slate-100 mb-4">
                             📊 All States by Score
                         </h3>
                         <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2">
@@ -207,11 +207,11 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                                             onClick={() => onStateSelect?.(abbr)}
                                             onMouseEnter={() => setHoveredState(abbr)}
                                             onMouseLeave={() => setHoveredState(null)}
-                                            className={`aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all ${hoveredState === abbr ? 'scale-110 shadow-lg z-10' : 'hover:scale-105'
-                                                }`}
+                                            className={`aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all ${hoveredState === abbr ? 'scale-110 shadow-none z-10' : 'hover:scale-105'
+ }`}
                                             style={{ background: color.bg, color: color.text }}
                                             title={`${abbr}: ${data.score} - ${data.highlight}`}>
-                                            <div className="font-black text-sm">{abbr}</div>
+                                            <div className="font-semibold text-sm">{abbr}</div>
                                             <div className="text-[10px] opacity-80">{data.score}</div>
                                         </div>
                                     );
@@ -221,16 +221,16 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                 </div>
 
                 {/* Scoring Methodology */}
-                <div className="mt-8 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                    <h4 className="font-display font-black text-slate-900 mb-3 flex items-center gap-2">
+                <div className="mt-8 p-5 bg-slate-900 rounded-md border border-blue-100">
+                    <h4 className="font-mono font-semibold text-slate-100 mb-3 flex items-center gap-2">
                         <span>📐</span> Score Methodology
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {Object.entries(SCORING_FACTORS).map(([key, factor]) => (
-                            <div key={key} className="bg-white/60 rounded-xl p-3 text-center">
+                            <div key={key} className="bg-slate-950/60 rounded-sm p-3 text-center">
                                 <div className="text-xl mb-1">{factor.icon}</div>
-                                <div className="text-xs font-bold text-slate-700">{factor.label}</div>
-                                <div className="text-lg font-black text-blue-600">{(factor.weight * 100).toFixed(0)}%</div>
+                                <div className="text-xs font-bold text-slate-300">{factor.label}</div>
+                                <div className="text-lg font-semibold text-blue-600">{(factor.weight * 100).toFixed(0)}%</div>
                             </div>
                         ))}
                     </div>

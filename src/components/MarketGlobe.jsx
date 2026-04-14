@@ -186,8 +186,8 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
             {(!Globe || dimensions.width === 0) && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">Loading Globe</span>
+                        <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-sm animate-spin" />
+                        <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-[0.3em]">Loading Globe</span>
                     </div>
                 </div>
             )}
@@ -196,21 +196,21 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
             <div className="absolute inset-0 pointer-events-none p-8 flex flex-col justify-between">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+                        <div className="w-1.5 h-1.5 rounded-sm bg-emerald-500 animate-none shadow-[0_0_8px_#10b981]" />
                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">Live Intelligence</span>
                     </div>
-                    <h2 className="text-xl font-black text-white/90 tracking-tight">Global Command</h2>
+                    <h2 className="text-xl font-semibold text-white/90 tracking-tight">Global Command</h2>
                 </div>
 
                 <div className="flex justify-between items-end">
                     <div className="flex gap-8">
                         <div>
-                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-0.5">States Tracked</div>
-                            <div className="text-base font-black text-white/80">50</div>
+                            <div className="text-[8px] text-slate-500 font-semibold uppercase tracking-widest mb-0.5">States Tracked</div>
+                            <div className="text-base font-semibold text-white/80">50</div>
                         </div>
                         <div>
-                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-0.5">Active Pipeline</div>
-                            <div className="text-base font-black text-indigo-400">14.2K</div>
+                            <div className="text-[8px] text-slate-500 font-semibold uppercase tracking-widest mb-0.5">Active Pipeline</div>
+                            <div className="text-base font-semibold text-indigo-400">14.2K</div>
                         </div>
                     </div>
                 </div>
@@ -221,33 +221,33 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50"
                 >
-                    <div className="bg-slate-950/90 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 shadow-2xl min-w-[220px]">
+                    <div className="bg-slate-950/90 backdrop-blur-2xl border border-white/10 rounded-md p-5 shadow-none min-w-[220px]">
                         <div className="flex items-center justify-between mb-3">
-                            <div className="text-sm font-black text-white">{hoveredPoint.name}</div>
-                            <div className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
-                                hoveredPoint.type === 'lien' 
-                                    ? 'text-violet-300 bg-violet-500/10 border-violet-500/20' 
-                                    : 'text-blue-300 bg-blue-500/10 border-blue-500/20'
-                            }`}>
+                            <div className="text-sm font-semibold text-white">{hoveredPoint.name}</div>
+                            <div className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded-sm border ${
+ hoveredPoint.type === 'lien' 
+ ? 'text-violet-300 bg-violet-500/10 border-violet-500/20' 
+ : 'text-blue-300 bg-blue-500/10 border-blue-500/20'
+ }`}>
                                 {hoveredPoint.type}
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Grade</div>
-                                <div className="text-sm font-black" style={{ color: getPointColor(hoveredPoint.score) }}>{hoveredPoint.grade}</div>
+                                <div className="text-sm font-semibold" style={{ color: getPointColor(hoveredPoint.score) }}>{hoveredPoint.grade}</div>
                             </div>
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Deals</div>
-                                <div className="text-sm font-black text-white">{hoveredPoint.deals}</div>
+                                <div className="text-sm font-semibold text-white">{hoveredPoint.deals}</div>
                             </div>
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Cap Rate</div>
-                                <div className="text-sm font-black text-emerald-400">{hoveredPoint.capRate}</div>
+                                <div className="text-sm font-semibold text-emerald-400">{hoveredPoint.capRate}</div>
                             </div>
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Score</div>
-                                <div className="text-sm font-black text-white">{hoveredPoint.score}</div>
+                                <div className="text-sm font-semibold text-white">{hoveredPoint.score}</div>
                             </div>
                         </div>
                     </div>

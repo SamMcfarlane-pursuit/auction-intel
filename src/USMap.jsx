@@ -175,7 +175,7 @@ export default function USMap({ onStateClick, selectedState, hoveredState, onHov
         });
     }, [onStateClick, onHoverState]);
 
-    if (!geoData) return <div className="w-full h-full flex items-center justify-center bg-slate-950 rounded-2xl"><span className="text-slate-500 text-[10px] font-black uppercase tracking-widest animate-pulse">Initializing Neural Map...</span></div>;
+    if (!geoData) return <div className="w-full h-full flex items-center justify-center bg-slate-950 rounded-md"><span className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest animate-none">Initializing Neural Map...</span></div>;
 
     return (
         <>

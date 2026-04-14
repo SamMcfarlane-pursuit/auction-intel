@@ -57,21 +57,21 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
 
     return (
         <div
-            className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all group"
+            className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden hover:shadow-none transition-all group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Image Section */}
-            <div className="relative h-44 bg-gradient-to-br from-slate-200 to-slate-300">
+            <div className="relative h-44 bg-slate-900">
                 <div className="w-full h-full flex items-center justify-center text-slate-400">
                     <div className="text-center">
-                        <div className="text-4xl mb-1">🏠</div>
+                        <div className="text-2xl font-mono mb-1">🏠</div>
                         <div className="text-[10px]">{propertyType}</div>
                     </div>
                 </div>
 
                 {/* Tier Badge */}
-                <div className={`absolute top-2 left-2 ${tierColors[tier]} text-white text-[10px] font-black px-2 py-0.5 rounded shadow`}>
+                <div className={`absolute top-2 left-2 ${tierColors[tier]} text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow`}>
                     T{tier}
                 </div>
 
@@ -82,7 +82,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                 </div>
 
                 {/* Discount Badge */}
-                <div className="absolute bottom-2 left-2 bg-emerald-500 text-white font-black px-2 py-0.5 rounded shadow text-xs">
+                <div className="absolute bottom-2 left-2 bg-emerald-500 text-white font-semibold px-2 py-0.5 rounded shadow text-xs">
                     {discount}% Below Value
                 </div>
 
@@ -96,7 +96,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2">
                         <button
                             onClick={() => onViewDetails?.(property)}
-                            className="bg-white text-slate-900 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-slate-100 transition-all"
+                            className="bg-slate-950 text-slate-100 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-slate-900 transition-all"
                         >
                             Details
                         </button>
@@ -113,7 +113,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
             {/* Content Section */}
             <div className="p-3">
                 {/* Address */}
-                <div className="font-bold text-slate-900 text-sm mb-0.5 truncate">{address}</div>
+                <div className="font-bold text-slate-100 text-sm mb-0.5 truncate">{address}</div>
                 <div className="text-xs text-slate-500 mb-2">{city}, {state} {zip}</div>
 
                 {/* Property Stats */}
@@ -126,7 +126,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
 
                 {/* Mortgage/Equity Info (PropWire style) */}
                 {(equity !== null || mortgageBalance !== null) && (
-                    <div className="bg-slate-50 rounded-lg p-2 mb-2 text-[10px]">
+                    <div className="bg-slate-900 rounded-lg p-2 mb-2 text-[10px]">
                         <div className="flex items-center justify-between mb-1">
                             <span className="text-slate-500">Equity</span>
                             <span className="font-bold text-emerald-600">${equity?.toLocaleString() || 'N/A'}</span>
@@ -134,29 +134,29 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                         {mortgageBalance && (
                             <div className="flex items-center justify-between mb-1">
                                 <span className="text-slate-500">Mortgage Bal</span>
-                                <span className="font-bold text-slate-800">${mortgageBalance?.toLocaleString()}</span>
+                                <span className="font-bold text-slate-200">${mortgageBalance?.toLocaleString()}</span>
                             </div>
                         )}
                         {lender && (
                             <div className="flex items-center justify-between">
                                 <span className="text-slate-500">Lender</span>
-                                <span className="font-bold text-slate-800 truncate max-w-[100px]">{lender}</span>
+                                <span className="font-bold text-slate-200 truncate max-w-[100px]">{lender}</span>
                             </div>
                         )}
                         {interestRate && (
                             <div className="flex items-center justify-between">
                                 <span className="text-slate-500">Rate</span>
-                                <span className="font-bold text-slate-800">{interestRate}%</span>
+                                <span className="font-bold text-slate-200">{interestRate}%</span>
                             </div>
                         )}
                     </div>
                 )}
 
                 {/* Pricing */}
-                <div className="flex items-end justify-between border-t border-slate-100 pt-2">
+                <div className="flex items-end justify-between border-t border-slate-800 pt-2">
                     <div>
                         <div className="text-[9px] text-slate-400 uppercase font-bold">Opening Bid</div>
-                        <div className="text-lg font-black text-emerald-600">${openingBid.toLocaleString()}</div>
+                        <div className="text-lg font-semibold text-emerald-600">${openingBid.toLocaleString()}</div>
                     </div>
                     <div className="text-right">
                         <div className="text-[9px] text-slate-400 uppercase font-bold">Est. Value</div>
@@ -205,7 +205,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="text-slate-400 animate-pulse">Loading properties...</div>
+                <div className="text-slate-400 animate-none">Loading properties...</div>
             </div>
         );
     }
@@ -213,28 +213,28 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-2xl p-5 text-white">
+            <div className="bg-slate-900 rounded-md p-5 text-white">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-black mb-1">🏠 Live Property Feed</h1>
+                        <h1 className="text-lg font-mono font-semibold mb-1">🏠 Live Property Feed</h1>
                         <p className="text-purple-100 text-sm">PropWire-powered tax sale and foreclosure listings</p>
                     </div>
                     <div className="text-right">
-                        <div className="text-3xl font-black">{properties.length}</div>
+                        <div className="text-xl font-mono font-semibold">{properties.length}</div>
                         <div className="text-xs text-purple-200">Total Properties</div>
                     </div>
                 </div>
             </div>
 
             {/* Category Tabs */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-3">
+            <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-3">
                 <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setActiveCategory('all')}
-                        className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${activeCategory === 'all'
-                                ? 'bg-slate-900 text-white'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                            }`}
+                        className={`px-4 py-2 rounded-sm font-bold text-sm transition-all ${activeCategory === 'all'
+ ? 'bg-slate-900 text-white'
+ : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
+ }`}
                     >
                         All ({categoryCounts.all})
                     </button>
@@ -242,9 +242,9 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                         <button
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
-                            className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1.5 ${activeCategory === cat.id
+                            className={`px-4 py-2 rounded-sm font-bold text-sm transition-all flex items-center gap-1.5 ${activeCategory === cat.id
                                     ? `${cat.color} text-white`
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             <span>{cat.icon}</span>
@@ -256,13 +256,13 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
             </div>
 
             {/* Filters Row */}
-            <div className="bg-white rounded-xl shadow border border-slate-100 p-3 flex flex-wrap items-center gap-4">
+            <div className="bg-slate-950 rounded-sm shadow border border-slate-800 p-3 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-600">Tier:</span>
                     <select
                         value={filter.tier}
                         onChange={(e) => setFilter({ ...filter, tier: e.target.value })}
-                        className="px-2 py-1 border border-slate-200 rounded text-xs"
+                        className="px-2 py-1 border border-slate-700 rounded text-xs"
                     >
                         <option value="all">All</option>
                         {[1, 2, 3, 4, 5].map(t => <option key={t} value={t}>T{t}</option>)}
@@ -273,7 +273,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                     <select
                         value={filter.maxPrice}
                         onChange={(e) => setFilter({ ...filter, maxPrice: parseInt(e.target.value) })}
-                        className="px-2 py-1 border border-slate-200 rounded text-xs"
+                        className="px-2 py-1 border border-slate-700 rounded text-xs"
                     >
                         <option value={100000}>$100K</option>
                         <option value={250000}>$250K</option>
@@ -288,9 +288,9 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
 
             {/* Property Grid */}
             {filteredProperties.length === 0 ? (
-                <div className="bg-white rounded-2xl shadow-lg p-10 text-center">
-                    <div className="text-4xl mb-3">🏠</div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-1">No Properties Found</h3>
+                <div className="bg-slate-950 rounded-md shadow-none p-10 text-center">
+                    <div className="text-2xl font-mono mb-3">🏠</div>
+                    <h3 className="text-lg font-bold text-slate-100 mb-1">No Properties Found</h3>
                     <p className="text-sm text-slate-500">Try adjusting your filters or category</p>
                 </div>
             ) : (

@@ -77,12 +77,12 @@ function TooltipCard({ data, position }) {
                 transform: `scale(${data ? 1 : 0.95})`,
             }}
         >
-            <div className="flex items-center gap-3 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 shadow-2xl rounded-full px-4 py-2 whitespace-nowrap overflow-hidden">
+            <div className="flex items-center gap-3 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 shadow-none rounded-sm px-4 py-2 whitespace-nowrap overflow-hidden">
                 {/* Status Beacon */}
-                <div className={`w-2 h-2 rounded-full ${isLien ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] animate-pulse' : 'bg-slate-500 shadow-[0_0_8px_rgba(100,116,139,0.8)]'}`} />
+                <div className={`w-2 h-2 rounded-sm ${isLien ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] animate-none' : 'bg-slate-500 shadow-[0_0_8px_rgba(100,116,139,0.8)]'}`} />
                 
                 {/* State Name */}
-                <span className="text-xs font-black text-white tracking-tight">{data.name}</span>
+                <span className="text-xs font-semibold text-white tracking-tight">{data.name}</span>
                 
                 {/* Minimal Data Strip */}
                 {info ? (
@@ -90,7 +90,7 @@ function TooltipCard({ data, position }) {
                         <div className="w-px h-3 bg-slate-700"></div>
                         <div className="flex items-center gap-1.5">
                             <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest">Yield</span>
-                            <span className="text-[10px] font-black text-emerald-400 font-mono tracking-tighter">{info.interestRate}</span>
+                            <span className="text-[10px] font-semibold text-emerald-400 font-mono tracking-tighter">{info.interestRate}</span>
                         </div>
                         <div className="w-px h-3 bg-slate-700"></div>
                         <div className="flex items-center gap-1.5">
@@ -226,10 +226,10 @@ function USChoropleth({ onStateClick, selectedState, height = '100%' }) {
             {/* Header */}
             <div className="absolute top-6 left-6 pointer-events-none">
                 <div className="flex items-center gap-2 mb-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                    <div className="w-1.5 h-1.5 rounded-sm bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
                     <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">Interactive Analysis</span>
                 </div>
-                <h2 className="text-xl font-black text-white/90 tracking-tight">US Market Map</h2>
+                <h2 className="text-xl font-semibold text-white/90 tracking-tight">US Market Map</h2>
             </div>
         </div>
     );

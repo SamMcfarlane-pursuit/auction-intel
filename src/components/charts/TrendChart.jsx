@@ -32,7 +32,7 @@ export function TrendChart({
     return (
         <div className="w-full">
             {title && (
-                <h3 className="text-sm font-bold text-slate-700 mb-3">{title}</h3>
+                <h3 className="text-sm font-bold text-slate-300 mb-3">{title}</h3>
             )}
             <ResponsiveContainer width="100%" height={height}>
                 <ChartComponent data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
@@ -100,7 +100,7 @@ export function MultiLineChart({
 
     return (
         <div className="w-full">
-            {title && <h3 className="text-sm font-bold text-slate-700 mb-3">{title}</h3>}
+            {title && <h3 className="text-sm font-bold text-slate-300 mb-3">{title}</h3>}
             <ResponsiveContainer width="100%" height={height}>
                 <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />

@@ -194,10 +194,10 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
     ];
 
     const categoryColors = {
-        tax_lien: 'from-blue-500 to-blue-600',
-        tax_deed: 'from-purple-500 to-purple-600',
-        mortgage: 'from-red-500 to-red-600',
-        other: 'from-slate-500 to-slate-600',
+        tax_lien: ' ',
+        tax_deed: ' ',
+        mortgage: ' ',
+        other: ' ',
     };
 
     const categoryLabels = {
@@ -209,10 +209,10 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-slate-900 rounded-md sm:rounded-md shadow-none w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
 
                 {/* Hero Header */}
-                <div className="relative bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 p-4 sm:p-6">
+                <div className="relative bg-slate-900 p-4 sm:p-6">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-5">
                         <div className="absolute inset-0" style={{
@@ -224,42 +224,42 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                         <div className="flex-1">
                             {/* Badges */}
                             <div className="flex flex-wrap items-center gap-2 mb-3">
-                                <span className={`bg-gradient-to-r ${categoryColors[category] || categoryColors.other} text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg`}>
+                                <span className={`bg-slate-900 ${categoryColors[category] || categoryColors.other} text-white text-xs font-bold px-3 py-1 rounded-sm shadow-none`}>
                                     {categoryLabels[category] || 'Other'}
                                 </span>
-                                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                <span className="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-sm shadow-none">
                                     Tier {tier}
                                 </span>
-                                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                                <span className="bg-slate-900 text-white text-xs font-bold px-3 py-1 rounded-sm shadow-none">
                                     {discount}% Below Market
                                 </span>
-                                <span className="bg-slate-700/80 text-white text-[10px] font-black px-2 py-0.5 rounded border border-slate-600">
+                                <span className="bg-slate-700/80 text-white text-[10px] font-semibold px-2 py-0.5 rounded border border-slate-600">
                                     VOLATILITY: LOW
                                 </span>
-                                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded border border-emerald-500/30 font-mono">
+                                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded border border-emerald-500/30 font-mono">
                                     STABILITY: A+
                                 </span>
                             </div>
 
                             {/* Address */}
-                            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-1">{address}</h1>
+                            <h1 className="text-xl sm:text-lg font-mono md:text-xl font-mono font-semibold text-white mb-1">{address}</h1>
                             <p className="text-slate-300 text-sm sm:text-base">{city}, {state} {zip} • {county} County</p>
 
                             {/* Quick Stats */}
                             <div className="flex flex-wrap gap-3 mt-4">
-                                <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-950/10 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-400 text-xs">🏠</span>
                                     <span className="text-white font-bold ml-1">{propertyType}</span>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-950/10 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-400 text-xs">🛏️</span>
                                     <span className="text-white font-bold ml-1">{bedrooms} bd / {bathrooms} ba</span>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-950/10 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-400 text-xs">📐</span>
                                     <span className="text-white font-bold ml-1">{sqft.toLocaleString()} sqft</span>
                                 </div>
-                                <div className="bg-white/10 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-950/10 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-400 text-xs">📅</span>
                                     <span className="text-white font-bold ml-1">Built {yearBuilt}</span>
                                 </div>
@@ -269,7 +269,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="text-white/60 hover:text-white hover:bg-white/10 w-10 h-10 rounded-full flex items-center justify-center transition-all text-2xl"
+                            className="text-white/60 hover:text-white hover:bg-slate-950/10 w-10 h-10 rounded-sm flex items-center justify-center transition-all text-lg font-mono"
                         >
                             ×
                         </button>
@@ -279,7 +279,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                     <div className="mt-4 flex flex-wrap gap-4 items-end">
                         <div>
                             <div className="text-xs text-emerald-400 font-bold uppercase tracking-wide">Opening Bid</div>
-                            <div className="text-3xl sm:text-4xl font-black text-emerald-400">${openingBid.toLocaleString()}</div>
+                            <div className="text-xl font-mono sm:text-2xl font-mono font-semibold text-emerald-400">${openingBid.toLocaleString()}</div>
                         </div>
                         <div>
                             <div className="text-xs text-slate-400 font-bold uppercase tracking-wide">Est. Value</div>
@@ -287,7 +287,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                         </div>
                         <div>
                             <div className="text-xs text-amber-400 font-bold uppercase tracking-wide">Potential Equity</div>
-                            <div className="text-2xl font-bold text-amber-400">+${(estimatedValue - openingBid).toLocaleString()}</div>
+                            <div className="text-lg font-mono font-bold text-amber-400">+${(estimatedValue - openingBid).toLocaleString()}</div>
                         </div>
                     </div>
                 </div>
@@ -299,9 +299,9 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab.id
-                                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                                }`}
+ ? 'bg-slate-900 text-white shadow-none'
+ : 'text-slate-400 hover:text-white hover:bg-slate-950/5'
+ }`}
                         >
                             <span className="hidden sm:inline">{tab.label}</span>
                             <span className="sm:hidden">{tab.icon}</span>
@@ -316,7 +316,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                     {activeTab === 'valuation' && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                             {/* Multi-Source Valuation */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     💰 Multi-Source Valuation
                                 </h3>
@@ -327,9 +327,9 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         { source: 'Regrid AVM', value: Math.round(estimatedValue * 0.95), color: 'bg-purple-500', confidence: 'High' },
                                         { source: 'County Assessment', value: Math.round(estimatedValue * 0.85), color: 'bg-slate-500', confidence: 'Official' },
                                     ].map((est, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-xl">
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-sm">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-3 h-3 ${est.color} rounded-full`} />
+                                                <div className={`w-3 h-3 ${est.color} rounded-sm`} />
                                                 <div>
                                                     <div className="text-sm font-bold text-white">{est.source}</div>
                                                     <div className="text-xs text-slate-400">{est.confidence} Confidence</div>
@@ -339,32 +339,32 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-4 p-3 bg-emerald-500/20 rounded-xl border border-emerald-500/30">
+                                <div className="mt-4 p-3 bg-emerald-500/20 rounded-sm border border-emerald-500/30">
                                     <div className="text-xs text-emerald-400 font-bold uppercase">Average Estimate</div>
-                                    <div className="text-2xl font-black text-emerald-400">${estimatedValue.toLocaleString()}</div>
+                                    <div className="text-lg font-mono font-semibold text-emerald-400">${estimatedValue.toLocaleString()}</div>
                                 </div>
                             </div>
 
                             {/* Investment Analysis */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     📈 Investment Analysis
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-slate-700/50 rounded-xl p-3">
+                                        <div className="bg-slate-700/50 rounded-sm p-3">
                                             <div className="text-xs text-slate-400">Price/SqFt</div>
                                             <div className="text-xl font-bold text-white">${pricePerSqft}</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3">
+                                        <div className="bg-slate-700/50 rounded-sm p-3">
                                             <div className="text-xs text-slate-400">Lot Size</div>
                                             <div className="text-xl font-bold text-white">{(lotSize / 43560).toFixed(2)} acres</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3">
+                                        <div className="bg-slate-700/50 rounded-sm p-3">
                                             <div className="text-xs text-slate-400">Cap Rate (Est.)</div>
                                             <div className="text-xl font-bold text-emerald-400">{(8 + Math.random() * 4).toFixed(1)}%</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3">
+                                        <div className="bg-slate-700/50 rounded-sm p-3">
                                             <div className="text-xs text-slate-400">Cash-on-Cash</div>
                                             <div className="text-xl font-bold text-emerald-400">{(12 + Math.random() * 8).toFixed(1)}%</div>
                                         </div>
@@ -396,7 +396,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                     {/* Comparables Tab */}
                     {activeTab === 'comparables' && (
                         <div className="space-y-4">
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     📊 Recent Comparable Sales (within 1 mile)
                                 </h3>
@@ -429,23 +429,23 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
 
                                 {/* Summary Stats */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-                                    <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+                                    <div className="bg-slate-700/50 rounded-sm p-3 text-center">
                                         <div className="text-xs text-slate-400">Avg Sale Price</div>
                                         <div className="text-lg font-bold text-white">
                                             ${Math.round(comparables.reduce((s, c) => s + c.salePrice, 0) / comparables.length).toLocaleString()}
                                         </div>
                                     </div>
-                                    <div className="bg-slate-700/50 rounded-xl p-3 text-center">
+                                    <div className="bg-slate-700/50 rounded-sm p-3 text-center">
                                         <div className="text-xs text-slate-400">Avg $/SqFt</div>
                                         <div className="text-lg font-bold text-white">
                                             ${Math.round(comparables.reduce((s, c) => s + (c.salePrice / c.sqft), 0) / comparables.length)}
                                         </div>
                                     </div>
-                                    <div className="bg-emerald-500/20 rounded-xl p-3 text-center border border-emerald-500/30">
+                                    <div className="bg-emerald-500/20 rounded-sm p-3 text-center border border-emerald-500/30">
                                         <div className="text-xs text-emerald-400">Subject Discount</div>
                                         <div className="text-lg font-bold text-emerald-400">{discount}%</div>
                                     </div>
-                                    <div className="bg-amber-500/20 rounded-xl p-3 text-center border border-amber-500/30">
+                                    <div className="bg-amber-500/20 rounded-sm p-3 text-center border border-amber-500/30">
                                         <div className="text-xs text-amber-400">Subject $/SqFt</div>
                                         <div className="text-lg font-bold text-amber-400">${pricePerSqft}</div>
                                     </div>
@@ -458,7 +458,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                     {activeTab === 'history' && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                             {/* Ownership History */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     📜 Ownership History
                                 </h3>
@@ -469,8 +469,8 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                     <div className="space-y-4">
                                         {ownershipHistory.map((record, idx) => (
                                             <div key={idx} className="relative pl-8">
-                                                <div className={`absolute left-1.5 w-3 h-3 rounded-full ${record.status === 'delinquent' ? 'bg-red-500' : 'bg-emerald-500'}`} />
-                                                <div className={`p-3 rounded-xl ${record.status === 'delinquent' ? 'bg-red-500/20 border border-red-500/30' : 'bg-slate-700/50'}`}>
+                                                <div className={`absolute left-1.5 w-3 h-3 rounded-sm ${record.status === 'delinquent' ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                                                <div className={`p-3 rounded-sm ${record.status === 'delinquent' ? 'bg-red-500/20 border border-red-500/30' : 'bg-slate-700/50'}`}>
                                                     <div className="flex items-start justify-between">
                                                         <div>
                                                             <div className="text-sm font-bold text-white">{record.owner}</div>
@@ -492,28 +492,28 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                             </div>
 
                             {/* Property Records */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     📋 Property Records
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-xl">
+                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-sm">
                                         <span className="text-slate-400">Parcel ID</span>
                                         <span className="text-white font-mono">{parcelId || `${county.substring(0, 3).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`}</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-xl">
+                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-sm">
                                         <span className="text-slate-400">Zoning</span>
                                         <span className="text-white">R-1 Residential</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-xl">
+                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-sm">
                                         <span className="text-slate-400">Legal Description</span>
                                         <span className="text-white text-xs text-right max-w-[200px] truncate">Lot 15, Block 3, {city} Subdivision</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-xl">
+                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-sm">
                                         <span className="text-slate-400">Year Delinquent</span>
                                         <span className="text-red-400 font-bold">2024</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-xl">
+                                    <div className="flex justify-between p-3 bg-slate-700/50 rounded-sm">
                                         <span className="text-slate-400">Redemption Period</span>
                                         <span className="text-amber-400 font-bold">6 months</span>
                                     </div>
@@ -526,11 +526,11 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                     {activeTab === 'location' && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                             {/* Street View */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     🏠 Street View
                                 </h3>
-                                <div className="relative aspect-video bg-slate-700 rounded-xl overflow-hidden">
+                                <div className="relative aspect-video bg-slate-700 rounded-sm overflow-hidden">
                                     {/* Google Street View Embed (static mode - upgrade with API key for interactive) */}
                                     <iframe
                                         title="Street View"
@@ -548,36 +548,36 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                     href={`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-all"
+                                    className="mt-3 flex items-center justify-center gap-2 w-full py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-sm transition-all"
                                 >
                                     🗺️ Open in Google Maps
                                 </a>
                             </div>
 
                             {/* Neighborhood Info */}
-                            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-700">
+                            <div className="bg-slate-900 rounded-md p-4 sm:p-6 border border-slate-700">
                                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     🏘️ Neighborhood
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-slate-700/50 rounded-xl p-3 text-center">
-                                            <div className="text-2xl mb-1">🏫</div>
+                                        <div className="bg-slate-700/50 rounded-sm p-3 text-center">
+                                            <div className="text-lg font-mono mb-1">🏫</div>
                                             <div className="text-xs text-slate-400">Schools</div>
                                             <div className="text-lg font-bold text-white">A-</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3 text-center">
-                                            <div className="text-2xl mb-1">🚔</div>
+                                        <div className="bg-slate-700/50 rounded-sm p-3 text-center">
+                                            <div className="text-lg font-mono mb-1">🚔</div>
                                             <div className="text-xs text-slate-400">Crime</div>
                                             <div className="text-lg font-bold text-emerald-400">Low</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3 text-center">
-                                            <div className="text-2xl mb-1">🚶</div>
+                                        <div className="bg-slate-700/50 rounded-sm p-3 text-center">
+                                            <div className="text-lg font-mono mb-1">🚶</div>
                                             <div className="text-xs text-slate-400">Walk Score</div>
                                             <div className="text-lg font-bold text-white">{55 + Math.floor(Math.random() * 30)}</div>
                                         </div>
-                                        <div className="bg-slate-700/50 rounded-xl p-3 text-center">
-                                            <div className="text-2xl mb-1">🚗</div>
+                                        <div className="bg-slate-700/50 rounded-sm p-3 text-center">
+                                            <div className="text-lg font-mono mb-1">🚗</div>
                                             <div className="text-xs text-slate-400">Commute</div>
                                             <div className="text-lg font-bold text-white">{15 + Math.floor(Math.random() * 20)} min</div>
                                         </div>
@@ -606,25 +606,25 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                 <UnderwritingPanel property={property} />
                             </div>
                             <div className="lg:col-span-2 space-y-4">
-                                <div className="bg-slate-800/40 rounded-2xl p-6 border border-slate-700 h-full">
-                                    <h3 className="text-lg font-black text-white mb-4">Investment Thesis</h3>
+                                <div className="bg-slate-800/40 rounded-md p-6 border border-slate-700 h-full">
+                                    <h3 className="text-lg font-semibold text-white mb-4">Investment Thesis</h3>
                                     <div className="space-y-4 text-slate-300 text-sm leading-relaxed">
                                         <p>
                                             This property represents a <span className="text-emerald-400 font-bold">Tier {tier}</span> opportunity with a projected acquisition discount of <span className="text-emerald-400 font-bold">{discount}%</span>. 
                                             The underwriting model suggests a <span className="text-white font-bold">Maximum Allowable Bid</span> calculated using the professional 70% ARV rule.
                                         </p>
-                                        <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 text-xs">
+                                        <div className="p-4 bg-blue-500/10 rounded-sm border border-blue-500/20 text-xs">
                                             <p className="font-bold text-blue-400 mb-2">PRO-TIP: EXIT STRATEGY</p>
                                             Based on local market liquidity (DOM: {sqft > 2000 ? 'Low' : 'Moderate'}), the primary exit should be a retail resale after minor cosmetic rehab.
                                         </div>
                                         <div className="grid grid-cols-2 gap-4 mt-6">
                                             <div className="p-3 bg-slate-700/50 rounded-lg">
-                                                <div className="text-[10px] text-slate-500 uppercase font-black">Capital Required</div>
-                                                <div className="text-lg font-black text-white">${(openingBid + 35000).toLocaleString()}</div>
+                                                <div className="text-[10px] text-slate-500 uppercase font-semibold">Capital Required</div>
+                                                <div className="text-lg font-semibold text-white">${(openingBid + 35000).toLocaleString()}</div>
                                             </div>
                                             <div className="p-3 bg-slate-700/50 rounded-lg">
-                                                <div className="text-[10px] text-slate-500 uppercase font-black">Hold Time (Est)</div>
-                                                <div className="text-lg font-black text-white">4-6 Months</div>
+                                                <div className="text-[10px] text-slate-500 uppercase font-semibold">Hold Time (Est)</div>
+                                                <div className="text-lg font-semibold text-white">4-6 Months</div>
                                             </div>
                                         </div>
                                     </div>
@@ -638,14 +638,14 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                 <div className="border-t border-slate-700 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-800/50">
                     <button
                         onClick={onClose}
-                        className="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-slate-600 text-slate-300 font-bold hover:bg-slate-700 transition-all"
+                        className="w-full sm:w-auto px-6 py-2.5 rounded-sm border border-slate-600 text-slate-300 font-bold hover:bg-slate-700 transition-all"
                     >
                         Close
                     </button>
                     <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                         <button
                             onClick={handleExportReport}
-                            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-slate-600 text-white font-bold hover:bg-slate-500 transition-all"
+                            className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-slate-600 text-white font-bold hover:bg-slate-500 transition-all"
                         >
                             📥 Export Report
                         </button>
@@ -653,17 +653,17 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                             href={`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all text-center"
+                            className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all text-center"
                         >
                             🗺️ View on Map
                         </a>
                         <button
                             onClick={handleAddToWatchlist}
                             disabled={isWatched}
-                            className={`w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold transition-all ${isWatched
-                                    ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600'
-                                }`}
+                            className={`w-full sm:w-auto px-6 py-2.5 rounded-sm font-bold transition-all ${isWatched
+ ? 'bg-slate-600 text-slate-400 cursor-not-allowed'
+ : 'bg-slate-900 text-white hover: hover:'
+ }`}
                         >
                             {isWatched ? '✓ In Watchlist' : '⭐ Add to Watchlist'}
                         </button>

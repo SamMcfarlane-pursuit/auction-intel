@@ -48,7 +48,7 @@ export function CountdownTimer({ targetDate, label }) {
     if (timeLeft.expired) return <span className="text-emerald-600 font-bold">🎉 Auction Day!</span>;
 
     const urgent = timeLeft.d < 7;
-    const bg = urgent ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-slate-700';
+    const bg = urgent ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-slate-300';
 
     return (
         <div className="flex gap-1">
@@ -62,7 +62,7 @@ export function CountdownTimer({ targetDate, label }) {
 export function StateCountdown({ stateAbbr }) {
     const info = AUCTION_DATES[stateAbbr];
     return (
-        <div className="p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+        <div className="p-3 bg-slate-900 rounded-sm border border-blue-100">
             <div className="text-[10px] font-bold text-blue-600 uppercase mb-2">⏱️ Next Auction</div>
             <CountdownTimer targetDate={info?.next} label={info?.note} />
             {info?.next && <div className="text-xs text-slate-500 mt-2">{info.next.toLocaleDateString()}</div>}

@@ -76,43 +76,43 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
 
     if (watchlist.length === 0) {
         return (
-            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-amber-100 to-yellow-50 rounded-2xl flex items-center justify-center text-4xl">⭐</div>
-                <h2 className="text-3xl font-display font-black text-slate-900 tracking-tighter mb-3">Your Watchlist is Empty</h2>
+            <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-12 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-slate-900 rounded-md flex items-center justify-center text-2xl font-mono">⭐</div>
+                <h2 className="text-xl font-mono font-mono font-semibold text-slate-100 tracking-tighter mb-3">Your Watchlist is Empty</h2>
                 <p className="text-slate-500 mb-6 max-w-md mx-auto">Start building your investment portfolio by adding counties from the State Database.</p>
-                <button onClick={() => onSelectState(null)} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-display font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">📊 Browse State Database</button>
+                <button onClick={() => onSelectState(null)} className="bg-blue-600 text-white px-6 py-3 rounded-sm font-mono font-bold hover:bg-blue-700 transition-all shadow-none shadow-blue-600/20">📊 Browse State Database</button>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full">
-            <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100">
+        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 flex flex-col h-full">
+            <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800">
                 <div>
                     <div className="flex items-center gap-3 mb-1 flex-wrap">
-                        <h2 className="text-3xl md:text-4xl font-display font-black text-slate-900 tracking-tighter">My Watchlist</h2>
-                        <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-bold">{stats.total} saved</span>
-                        {stats.highPriority > 0 && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">🔥 {stats.highPriority} high priority</span>}
+                        <h2 className="text-xl font-mono md:text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">My Watchlist</h2>
+                        <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-sm text-sm font-bold">{stats.total} saved</span>
+                        {stats.highPriority > 0 && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-sm text-xs font-bold">🔥 {stats.highPriority} high priority</span>}
                     </div>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Your tracked opportunities • {stats.completed} fully researched</p>
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">Your tracked opportunities • {stats.completed} fully researched</p>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                    <button onClick={handleExportWatchlist} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2"><span>📥</span> Export CSV</button>
+                    <button onClick={handleExportWatchlist} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-mono font-semibold text-xs shadow-none hover:bg-black transition-all flex items-center gap-2"><span>📥</span> Export CSV</button>
                     <button onClick={() => {
                         const url = window.prompt("Enter your CRM/Sheets Webhook URL (Zapier, Make.com):", localStorage.getItem('auction_portfolio_webhook') || "");
                         if (url !== null) {
                             localStorage.setItem('auction_portfolio_webhook', url);
                             alert(url ? "Webhook Sync Enabled! Your portfolio will auto-sync on changes." : "Webhook Sync Disabled.");
                         }
-                    }} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-emerald-700 transition-all flex items-center gap-2"><span>🔄</span> Auto-Sync CRM</button>
-                    <button onClick={clearWatchlist} className="bg-white text-red-600 border border-red-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-red-50 transition-all flex items-center gap-2"><span>🗑️</span> Clear All</button>
+                    }} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-mono font-semibold text-xs shadow-none hover:bg-emerald-700 transition-all flex items-center gap-2"><span>🔄</span> Auto-Sync CRM</button>
+                    <button onClick={clearWatchlist} className="bg-slate-950 text-red-600 border border-red-200 px-4 py-2 rounded-lg font-mono font-semibold text-xs hover:bg-red-50 transition-all flex items-center gap-2"><span>🗑️</span> Clear All</button>
                 </div>
             </div>
 
-            <div className="p-4 md:p-6 border-b border-slate-50 flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
+            <div className="p-4 md:p-6 border-b border-slate-800 flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide">
                 {[{ id: 'addedAt', label: 'Recent' }, { id: 'priority', label: 'Priority' }, { id: 'tier', label: 'Tier' }, { id: 'state', label: 'State' }, { id: 'population', label: 'Population' }].map(opt => (
                     <button key={opt.id} onClick={() => { setSortBy(opt.id); setSortAsc(!sortAsc); }}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${sortBy === opt.id ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                        className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${sortBy === opt.id ? 'bg-slate-900 text-white shadow-none' : 'bg-slate-900 text-slate-600 hover:bg-slate-200'}`}>
                         {opt.label} {sortBy === opt.id && (sortAsc ? '↑' : '↓')}
                     </button>
                 ))}
@@ -125,64 +125,64 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
                         const isExpanded = expandedId === item.id;
                         const progress = getProgress(item);
                         return (
-                            <div key={item.id} className={`bg-gradient-to-br from-white to-slate-50 rounded-2xl border-2 ${item.priority === 'high' ? 'border-red-200' : 'border-slate-100'} p-5 hover:shadow-lg transition-all group`}>
+                            <div key={item.id} className={`bg-slate-900 from-white rounded-md border-2 ${item.priority === 'high' ? 'border-red-200' : 'border-slate-800'} p-5 hover:shadow-none transition-all group`}>
                                 <div className="flex items-start justify-between mb-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <div className="font-display font-black text-lg text-slate-900 truncate">{item.county}</div>
+                                            <div className="font-mono font-semibold text-lg text-slate-100 truncate">{item.county}</div>
                                             {item.priority === 'high' && <span className="text-red-500">🔥</span>}
                                         </div>
                                         <div className="text-xs font-bold text-slate-400">{item.stateName} ({item.stateAbbr})</div>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
-                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-black text-white" style={{ background: tier.color }}>{tier.label}</span>
+                                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-semibold text-white" style={{ background: tier.color }}>{tier.label}</span>
                                         <button onClick={() => removeFromWatchlist(item.id)} className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-100 hover:text-red-600 transition-all opacity-0 group-hover:opacity-100">×</button>
                                     </div>
                                 </div>
                                 {/* Progress Bar */}
                                 <div className="mb-3">
                                     <div className="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1"><span>Due Diligence</span><span>{progress}%</span></div>
-                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div className={`h-full transition-all ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${progress}%` }}></div></div>
+                                    <div className="h-1.5 bg-slate-900 rounded-sm overflow-hidden"><div className={`h-full transition-all ${progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${progress}%` }}></div></div>
                                 </div>
                                 {/* Priority Buttons */}
                                 <div className="flex gap-1 mb-3">
                                     {['low', 'medium', 'high'].map(p => (
                                         <button key={p} onClick={() => updateWatchlistItem && updateWatchlistItem(item.id, { priority: p })}
-                                            className={`flex-1 py-1 rounded text-[10px] font-bold capitalize transition-all ${item.priority === p ? (p === 'high' ? 'bg-red-500 text-white' : p === 'low' ? 'bg-slate-300 text-slate-700' : 'bg-amber-500 text-white') : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>{p}</button>
+                                            className={`flex-1 py-1 rounded text-[10px] font-bold capitalize transition-all ${item.priority === p ? (p === 'high' ? 'bg-red-500 text-white' : p === 'low' ? 'bg-slate-300 text-slate-300' : 'bg-amber-500 text-white') : 'bg-slate-900 text-slate-500 hover:bg-slate-200'}`}>{p}</button>
                                     ))}
                                 </div>
                                 {/* Predictive Alert Toggle */}
-                                <div className="mb-3 flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                <div className="mb-3 flex items-center justify-between bg-slate-900 p-2.5 rounded-sm border border-slate-800">
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-bold text-slate-800">Predictive Bidding Alerts</span>
-                                        <span className="text-[9px] text-slate-500 mt-0.5">MAB Threshold: <span className="font-black text-amber-600">${item.mabThreshold ? parseInt(item.mabThreshold).toLocaleString() : (item.targetPrice || (item.zhvi * 0.7).toFixed(0)).toLocaleString()}</span></span>
+                                        <span className="text-[10px] font-bold text-slate-200">Predictive Bidding Alerts</span>
+                                        <span className="text-[9px] text-slate-500 mt-0.5">MAB Threshold: <span className="font-semibold text-amber-600">${item.mabThreshold ? parseInt(item.mabThreshold).toLocaleString() : (item.targetPrice || (item.zhvi * 0.7).toFixed(0)).toLocaleString()}</span></span>
                                     </div>
                                     <button 
                                         onClick={() => togglePredictiveAlert(item.id, item.mabThreshold || item.targetPrice || (item.zhvi * 0.7))}
-                                        className={`px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-black transition-all ${item.alertEnabled ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300 shadow-inner' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-400 hover:text-slate-700 shadow-sm'}`}>
+                                        className={`px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-wider font-semibold transition-all ${item.alertEnabled ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300 shadow-inner' : 'bg-slate-950 text-slate-500 border border-slate-700 hover:border-slate-400 hover:text-slate-300 shadow-none'}`}>
                                         {item.alertEnabled ? '🔔 ACTIVE' : '🔕 OFF'}
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-3 gap-3 mb-3">
-                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Pop</div><div className="font-bold text-slate-900">{(item.population / 1000).toFixed(0)}K</div></div>
-                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Income</div><div className="font-bold text-slate-900">${(item.income / 1000).toFixed(0)}K</div></div>
-                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">ZHVI</div><div className="font-bold text-slate-900">${(item.zhvi / 1000).toFixed(0)}K</div></div>
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Pop</div><div className="font-bold text-slate-100">{(item.population / 1000).toFixed(0)}K</div></div>
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">Income</div><div className="font-bold text-slate-100">${(item.income / 1000).toFixed(0)}K</div></div>
+                                    <div><div className="text-[9px] font-bold text-slate-400 uppercase">ZHVI</div><div className="font-bold text-slate-100">${(item.zhvi / 1000).toFixed(0)}K</div></div>
                                 </div>
                                 {/* Expand Toggle */}
-                                <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-700 py-2 border-t border-slate-100">
+                                <button onClick={() => setExpandedId(isExpanded ? null : item.id)} className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-700 py-2 border-t border-slate-800">
                                     {isExpanded ? '▲ Close Details' : '▼ Notes & Checklist'}
                                 </button>
                                 {isExpanded && (
                                     <div className="mt-3 space-y-3">
                                         <div>
                                             <label className="text-[9px] font-bold text-slate-400 uppercase mb-1 block">📝 Research Notes</label>
-                                            <textarea value={item.userNotes || ''} onChange={(e) => updateWatchlistItem && updateWatchlistItem(item.id, { userNotes: e.target.value })} placeholder="Add your research notes..." className="w-full p-2 text-xs border border-slate-200 rounded-lg resize-none h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                                            <textarea value={item.userNotes || ''} onChange={(e) => updateWatchlistItem && updateWatchlistItem(item.id, { userNotes: e.target.value })} placeholder="Add your research notes..." className="w-full p-2 text-xs border border-slate-700 rounded-lg resize-none h-20 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                                         </div>
                                         <div>
                                             <label className="text-[9px] font-bold text-slate-400 uppercase mb-2 block">✓ Due Diligence Checklist</label>
                                             <div className="space-y-1">
                                                 {Object.entries(ddLabels).map(([key, label]) => (
-                                                    <label key={key} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                                                    <label key={key} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-900 cursor-pointer">
                                                         <input type="checkbox" checked={item.dueDiligence?.[key] || false}
                                                             onChange={(e) => updateWatchlistItem && updateWatchlistItem(item.id, { dueDiligence: { ...item.dueDiligence, [key]: e.target.checked } })}
                                                             className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
@@ -195,9 +195,9 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
                                 )}
                                 <div className="flex gap-2 mt-3">
                                     <button onClick={() => onSelectCounty(item)} className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">View Details</button>
-                                    <button onClick={() => onSelectState(item.stateAbbr)} className="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">State →</button>
+                                    <button onClick={() => onSelectState(item.stateAbbr)} className="px-3 py-2 bg-slate-900 text-slate-300 rounded-lg text-xs font-bold hover:bg-slate-200 transition-all">State →</button>
                                 </div>
-                                <div className="mt-2 pt-2 border-t border-slate-100 text-[9px] text-slate-400">Added {new Date(item.addedAt).toLocaleDateString()}</div>
+                                <div className="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-400">Added {new Date(item.addedAt).toLocaleDateString()}</div>
                             </div>
                         );
                     })}
@@ -898,7 +898,7 @@ export default function AuctionPlatform() {
     };
 
     return (
-        <div className="flex h-screen bg-slate-100 overflow-hidden text-sm font-sans selection:bg-blue-100 selection:text-blue-900">
+        <div className="flex h-screen bg-slate-900 overflow-hidden text-sm font-sans selection:bg-blue-100 selection:text-blue-900">
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
@@ -907,11 +907,11 @@ export default function AuctionPlatform() {
                 />
             )}
             {/* Sidebar - Premium Dark Theme with Mobile Responsiveness */}
-            <aside className={`fixed md:relative w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-50 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+            <aside className={`fixed md:relative w-64 bg-slate-900 text-slate-300 flex flex-col shadow-none z-50 h-full transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
                 <div className="p-6 border-b border-slate-800/50 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-display font-black text-xl shadow-lg shadow-blue-500/20">A</div>
+                    <div className="w-10 h-10 bg-slate-900 rounded-sm flex items-center justify-center text-white font-mono font-semibold text-xl shadow-none shadow-blue-500/20">A</div>
                     <div>
-                        <div className="font-display font-black text-white tracking-tight text-base">AUCTION INTEL</div>
+                        <div className="font-mono font-semibold text-white tracking-tight text-base">AUCTION INTEL</div>
                         <div className="text-[9px] text-slate-500 font-bold tracking-widest uppercase">System Control v4.0</div>
                     </div>
                 </div>
@@ -919,7 +919,7 @@ export default function AuctionPlatform() {
                 <nav className="flex-1 py-4 overflow-y-auto scrollbar-hide px-3">
                     {/* 1 DISCOVER */}
                     <div className="mb-5">
-                        <div className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                        <div className="text-[9px] font-semibold text-blue-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
                             <span className="w-4 h-4 rounded bg-blue-500/20 flex items-center justify-center text-[8px]">1</span>
                             <span>Explore</span>
                         </div>
@@ -930,7 +930,7 @@ export default function AuctionPlatform() {
                                 { id: 'properties', label: 'Properties', icon: '🏠' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-blue-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-blue-600 text-white font-bold shadow-none' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
                                     <span className="text-sm">{item.icon}</span>
                                     <span className="text-xs font-semibold">{item.label}</span>
                                 </button>
@@ -940,7 +940,7 @@ export default function AuctionPlatform() {
 
                     {/* 2 RESEARCH */}
                     <div className="mb-5">
-                        <div className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                        <div className="text-[9px] font-semibold text-emerald-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
                             <span className="w-4 h-4 rounded bg-emerald-500/20 flex items-center justify-center text-[8px]">2</span>
                             <span>Research</span>
                         </div>
@@ -952,7 +952,7 @@ export default function AuctionPlatform() {
                                 { id: 'forecaster', label: 'AI Forecaster', icon: '🔮' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-emerald-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-emerald-600 text-white font-bold shadow-none' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
                                     <span className="text-sm">{item.icon}</span>
                                     <span className="text-xs font-semibold">{item.label}</span>
                                 </button>
@@ -962,7 +962,7 @@ export default function AuctionPlatform() {
 
                     {/* 3 MY PORTFOLIO */}
                     <div className="mb-5">
-                        <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
+                        <div className="text-[9px] font-semibold text-amber-400 uppercase tracking-[0.2em] mb-2 px-2 flex items-center gap-1.5">
                             <span className="w-4 h-4 rounded bg-amber-500/20 flex items-center justify-center text-[8px]">3</span>
                             <span>Portfolio</span>
                         </div>
@@ -972,7 +972,7 @@ export default function AuctionPlatform() {
                                 { id: 'alerts', label: 'Alerts', icon: '🔔' },
                             ].map(item => (
                                 <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
-                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-amber-600 text-white font-bold shadow-lg' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
+                                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-amber-600 text-white font-bold shadow-none' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}>
                                     <span className="text-sm">{item.icon}</span>
                                     <span className="text-xs font-semibold">{item.label}</span>
                                 </button>
@@ -1015,19 +1015,19 @@ export default function AuctionPlatform() {
 
                 <div className="p-4 bg-slate-800/20 border-t border-slate-800/50">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Backend Status</span>
+                        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-widest">Backend Status</span>
                         <div className="flex items-center gap-1.5">
                             <span className={`text-[9px] font-bold tracking-tighter uppercase ${apiStatus === 'live' ? 'text-green-500' : apiStatus === 'connecting' ? 'text-yellow-500' : 'text-slate-500'}`}>
                                 {apiStatus === 'live' ? 'LIVE' : apiStatus === 'connecting' ? 'CONNECTING' : 'OFFLINE'}
                             </span>
-                            <span className={`w-2 h-2 rounded-full ${apiStatus === 'live' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] animate-pulse' : apiStatus === 'connecting' ? 'bg-yellow-500 animate-pulse' : 'bg-slate-500'}`}></span>
+                            <span className={`w-2 h-2 rounded-sm ${apiStatus === 'live' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] animate-none' : apiStatus === 'connecting' ? 'bg-yellow-500 animate-none' : 'bg-slate-500'}`}></span>
                         </div>
                     </div>
                     <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-[9px] font-bold text-slate-400 tracking-tight">
                         {apiStatus === 'live' ? 'BACKEND API: localhost:8080' : apiStatus === 'connecting' ? 'CONNECTING TO BACKEND...' : 'USING STATIC DATA (BACKEND OFFLINE)'}
                     </div>
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-gradient-to-r from-blue-900/30 to-blue-800/30 rounded-lg border border-blue-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-blue-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">🏠</span>
@@ -1038,7 +1038,7 @@ export default function AuctionPlatform() {
                         </div>
                     )}
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg border border-red-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-red-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">📈</span>
@@ -1049,7 +1049,7 @@ export default function AuctionPlatform() {
                         </div>
                     )}
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg border border-green-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-green-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">💰</span>
@@ -1063,9 +1063,9 @@ export default function AuctionPlatform() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-100 w-full">
+            <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-900 w-full">
                 {/* Top Navigation Bar - All elements visible on all devices */}
-                <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm shrink-0 z-40 relative">
+                <header className="bg-slate-950/80 backdrop-blur-xl border-b border-slate-700/60 shadow-none shrink-0 z-40 relative">
                     {/* Main header row */}
                     <div className="flex items-center justify-between px-3 md:px-6 py-2 md:py-3">
                         {/* Left: Hamburger + Title */}
@@ -1073,15 +1073,15 @@ export default function AuctionPlatform() {
                             {/* Mobile Hamburger Menu */}
                             <button
                                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                                className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors shrink-0"
+                                className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-200 transition-colors shrink-0"
                             >
                                 <span className="text-lg">{isSidebarOpen ? '✕' : '☰'}</span>
                             </button>
 
                             <div className="min-w-0">
                                 <div className="hidden md:flex items-center gap-2 mb-0.5">
-                                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full"></span>
-                                    <span className="text-[9px] text-slate-400 uppercase font-black tracking-[0.2em]">
+                                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-sm"></span>
+                                    <span className="text-[9px] text-slate-400 uppercase font-semibold tracking-[0.2em]">
                                         {view === 'properties' ? 'Property Intelligence' :
                                             view === 'alerts' ? 'Alert Management' :
                                                 view === 'watchlist' ? 'My Watchlist' :
@@ -1096,7 +1096,7 @@ export default function AuctionPlatform() {
                                                                                 'Global Statistics'}
                                     </span>
                                 </div>
-                                <div className="font-display font-black text-sm md:text-xl text-slate-900 tracking-tighter truncate">
+                                <div className="font-mono font-semibold text-sm md:text-xl text-slate-100 tracking-tighter truncate">
                                     {view === 'properties' ? 'Live Property Feed' :
                                         view === 'alerts' ? 'Alert Settings' :
                                             view === 'watchlist' ? 'Saved Counties' :
@@ -1119,9 +1119,9 @@ export default function AuctionPlatform() {
                         {/* Right: User Profile Dropdown */}
                         <div className="relative flex items-center gap-2 md:gap-3 shrink-0">
                             <div className="hidden sm:flex flex-col text-right">
-                                <div className="text-[9px] md:text-[10px] font-black text-slate-900 uppercase tracking-tight">{user?.name || 'User'}</div>
+                                <div className="text-[9px] md:text-[10px] font-semibold text-slate-100 uppercase tracking-tight">{user?.name || 'User'}</div>
                                 <div className="hidden md:flex gap-1 justify-end items-center">
-                                    <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
+                                    <span className="w-1 h-1 bg-blue-500 rounded-sm"></span>
                                     <div className="text-[8px] text-blue-600 font-bold uppercase">Premium</div>
                                 </div>
                             </div>
@@ -1129,7 +1129,7 @@ export default function AuctionPlatform() {
                             <NotificationBell onClick={() => setView('alerts')} />
                             <button
                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center text-white font-display font-black text-xs md:text-sm shadow-lg hover:scale-105 transition-transform"
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-sm bg-slate-900 flex items-center justify-center text-white font-mono font-semibold text-xs md:text-sm shadow-none hover:scale-105 transition-transform"
                             >
                                 {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
                             </button>
@@ -1143,15 +1143,15 @@ export default function AuctionPlatform() {
                                         onClick={() => setIsUserMenuOpen(false)}
                                     />
                                     {/* Dropdown */}
-                                    <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="absolute top-full right-0 mt-2 w-64 bg-slate-950 rounded-md shadow-none border border-slate-800 z-50 overflow-hidden animate-in fade-in slide-in- duration-200">
                                         {/* User Info */}
-                                        <div className="p-4 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+                                        <div className="p-4 bg-slate-900 to-white border-b border-slate-800">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center text-white font-display font-black text-lg shadow-lg">
+                                                <div className="w-12 h-12 rounded-sm bg-slate-900 flex items-center justify-center text-white font-mono font-semibold text-lg shadow-none">
                                                     {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="font-display font-bold text-slate-900 truncate">{user?.name || 'User'}</div>
+                                                    <div className="font-mono font-bold text-slate-100 truncate">{user?.name || 'User'}</div>
                                                     <div className="text-xs text-slate-500 truncate">{user?.email || ''}</div>
                                                 </div>
                                             </div>
@@ -1159,25 +1159,25 @@ export default function AuctionPlatform() {
 
                                         {/* Menu Items */}
                                         <div className="p-2">
-                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-left text-slate-300 hover:bg-slate-900 transition-colors">
                                                 <span>👤</span>
                                                 <span className="text-sm font-medium">Profile Settings</span>
                                             </button>
-                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-left text-slate-300 hover:bg-slate-900 transition-colors">
                                                 <span>⚙️</span>
                                                 <span className="text-sm font-medium">Preferences</span>
                                             </button>
-                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-left text-slate-300 hover:bg-slate-900 transition-colors">
                                                 <span>💎</span>
                                                 <span className="text-sm font-medium">Upgrade Plan</span>
                                             </button>
                                         </div>
 
                                         {/* Sign Out */}
-                                        <div className="p-2 border-t border-slate-100">
+                                        <div className="p-2 border-t border-slate-800">
                                             <button
                                                 onClick={() => { setIsUserMenuOpen(false); signOut(); }}
-                                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-red-600 hover:bg-red-50 transition-colors"
+                                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-left text-red-600 hover:bg-red-50 transition-colors"
                                             >
                                                 <span>🚪</span>
                                                 <span className="text-sm font-medium">Sign Out</span>
@@ -1197,21 +1197,21 @@ export default function AuctionPlatform() {
                                 placeholder="Search ZIP, state, or county..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full bg-slate-100/70 border-slate-200 border rounded-lg md:rounded-xl px-4 py-2 md:py-2.5 pl-9 md:pl-10 text-sm font-medium focus:ring-2 focus:ring-blue-100 focus:bg-white focus:outline-none transition-all"
+                                className="w-full bg-slate-900/70 border-slate-700 border rounded-lg md:rounded-sm px-4 py-2 md:py-2.5 pl-9 md:pl-10 text-sm font-medium focus:ring-2 focus:ring-blue-100 focus:bg-slate-950 focus:outline-none transition-all"
                             />
                             <span className="absolute left-3 top-2 md:top-2.5 text-slate-400">🔍</span>
                             {searchResults.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-white rounded-xl shadow-2xl border border-slate-100 z-[100] overflow-hidden py-2 max-h-72 overflow-y-auto">
-                                    <div className="px-3 py-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">Search Results</div>
+                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-slate-950 rounded-sm shadow-none border border-slate-800 z-[100] overflow-hidden py-2 max-h-72 overflow-y-auto">
+                                    <div className="px-3 py-1.5 text-[9px] font-semibold text-slate-400 uppercase tracking-widest border-b border-slate-800">Search Results</div>
                                     {searchResults.map((r, i) => {
                                         if (!r.county) {
                                             const auctionInfo = STATE_AUCTION_INFO[r.abbr];
                                             return (
                                                 <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(null); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
-                                                    className="flex items-center justify-between px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b border-slate-50">
+                                                    className="flex items-center justify-between px-3 py-2 hover:bg-blue-50 cursor-pointer transition-colors border-b border-slate-800">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center text-white text-xs font-black">{r.abbr}</div>
-                                                        <div className="font-bold text-slate-900 text-sm">{r.state}</div>
+                                                        <div className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center text-white text-xs font-semibold">{r.abbr}</div>
+                                                        <div className="font-bold text-slate-100 text-sm">{r.state}</div>
                                                     </div>
                                                     {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>{auctionInfo.type}</span>}
                                                 </div>
@@ -1222,15 +1222,15 @@ export default function AuctionPlatform() {
                                         const isAlpha = tier <= 2 && growth > 5;
                                         return (
                                             <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
-                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-50 last:border-0 group">
+                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-900 cursor-pointer transition-colors border-b border-slate-800 last:border-0 group">
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-slate-800 text-sm truncate">{name}, {r.abbr}</span>
-                                                        {isAlpha && <span className="text-[7px] font-black bg-blue-600 text-white px-1.2 py-0.5 rounded-full animate-pulse tracking-tighter">AI ALPHA</span>}
+                                                        <span className="font-bold text-slate-200 text-sm truncate">{name}, {r.abbr}</span>
+                                                        {isAlpha && <span className="text-[7px] font-semibold bg-blue-600 text-white px-1.2 py-0.5 rounded-sm animate-none tracking-tighter">AI ALPHA</span>}
                                                     </div>
                                                     <div className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">Tier {tier} Opportunity</div>
                                                 </div>
-                                                <span className="px-2 py-0.5 rounded text-[9px] font-black text-white" style={{ background: t.color }}>{t.label}</span>
+                                                <span className="px-2 py-0.5 rounded text-[9px] font-semibold text-white" style={{ background: t.color }}>{t.label}</span>
                                             </div>
                                         );
                                     })}
@@ -1245,25 +1245,25 @@ export default function AuctionPlatform() {
                     <div className="max-w-[1600px] mx-auto h-full">
                         {selectedCounty ? (
                             /* County Detail View */
-                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="space-y-8 animate-in fade-in slide-in- duration-500">
                                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                                     <div className="min-w-0">
                                         <button onClick={() => setSelectedCounty(null)} className="group text-slate-400 font-bold hover:text-blue-600 flex items-center gap-2 mb-3 transition-colors">
                                             <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                                            <span className="uppercase tracking-[0.15em] text-[9px] font-black">Return to {STATE_NAMES[selectedState]}</span>
+                                            <span className="uppercase tracking-[0.15em] text-[9px] font-semibold">Return to {STATE_NAMES[selectedState]}</span>
                                         </button>
                                         <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-                                            <h1 className="text-2xl md:text-5xl font-display font-black text-slate-900 tracking-tighter">{selectedCounty[0]}</h1>
-                                            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
-                                                <span className="w-2.5 h-2.5 rounded-full" style={{ background: TIERS[selectedCounty[6]].color }}></span>
-                                                <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{TIERS[selectedCounty[6]].name}</span>
+                                            <h1 className="text-lg font-mono md:text-3xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">{selectedCounty[0]}</h1>
+                                            <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-sm shadow-none border border-slate-800">
+                                                <span className="w-2.5 h-2.5 rounded-sm" style={{ background: TIERS[selectedCounty[6]].color }}></span>
+                                                <span className="text-sm font-semibold text-slate-100 uppercase tracking-tight">{TIERS[selectedCounty[6]].name}</span>
                                                 <span className="text-xs font-bold text-slate-400">/ Tier {selectedCounty[6]}</span>
                                             </div>
                                             {/* Auction Type Badge */}
                                             {STATE_AUCTION_INFO[selectedState] && (
-                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-50 border-blue-200' : 'bg-slate-50 border-slate-200'}`}>
-                                                    <span className={`w-2.5 h-2.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}></span>
-                                                    <span className={`text-sm font-black uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-900' : 'text-slate-900'}`}>
+                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-sm shadow-none border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-50 border-blue-200' : 'bg-slate-900 border-slate-700'}`}>
+                                                    <span className={`w-2.5 h-2.5 rounded-sm ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}></span>
+                                                    <span className={`text-sm font-semibold uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-900' : 'text-slate-100'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].type}
                                                     </span>
                                                     <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-500' : 'text-slate-500'}`}>
@@ -1287,15 +1287,15 @@ export default function AuctionPlatform() {
                                                     }
                                                 }}
                                                 disabled={isInWatchlist(selectedState, selectedCounty[0])}
-                                                className={`px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm transition-all flex items-center gap-1 md:gap-2 ${isInWatchlist(selectedState, selectedCounty[0]) ? 'bg-amber-100 text-amber-700 border-2 border-amber-200' : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-xl hover:from-amber-600 hover:to-yellow-600'}`}
+                                                className={`px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm transition-all flex items-center gap-1 md:gap-2 ${isInWatchlist(selectedState, selectedCounty[0]) ? 'bg-amber-100 text-amber-700 border-2 border-amber-200' : 'bg-slate-900 text-white shadow-none hover: hover:'}`}
                                             >
                                                 <span>{isInWatchlist(selectedState, selectedCounty[0]) ? '⭐' : '☆'}</span> {isInWatchlist(selectedState, selectedCounty[0]) ? 'In Watchlist' : 'Add to Watchlist'}
                                             </button>
                                         )}
-                                        <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm shadow-xl hover:bg-black transition-all flex items-center gap-1 md:gap-2">
+                                        <button onClick={handleExportParcelsCSV} className="bg-slate-900 text-white px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm shadow-none hover:bg-black transition-all flex items-center gap-1 md:gap-2">
                                             <span>📥</span> <span className="hidden sm:inline">DOWNLOAD</span> CSV
                                         </button>
-                                        <button onClick={handlePrintCountyReport} className="bg-white text-slate-900 border-2 border-slate-200 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-display font-black text-xs md:text-sm hover:bg-slate-50 transition-all flex items-center gap-1 md:gap-2">
+                                        <button onClick={handlePrintCountyReport} className="bg-slate-950 text-slate-100 border-2 border-slate-700 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm hover:bg-slate-900 transition-all flex items-center gap-1 md:gap-2">
                                             <span>📄</span> REPORT
                                         </button>
                                     </div>
@@ -1304,13 +1304,13 @@ export default function AuctionPlatform() {
                                 {/* County Details from NY_COUNTY_DETAILS */}
                                 {getCountyDetails(selectedCounty[0]) && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Investor Focus</h4>
-                                            <p className="text-slate-800 font-medium">{getCountyDetails(selectedCounty[0]).investorFocus}</p>
+                                        <div className="bg-slate-950 p-6 rounded-md shadow-none border border-slate-800">
+                                            <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">Investor Focus</h4>
+                                            <p className="text-slate-200 font-medium">{getCountyDetails(selectedCounty[0]).investorFocus}</p>
                                         </div>
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Lifestyle Score</h4>
-                                            <p className="text-slate-800 font-medium">{getCountyDetails(selectedCounty[0]).lifestyle}</p>
+                                        <div className="bg-slate-950 p-6 rounded-md shadow-none border border-slate-800">
+                                            <h4 className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-3">Lifestyle Score</h4>
+                                            <p className="text-slate-200 font-medium">{getCountyDetails(selectedCounty[0]).lifestyle}</p>
                                         </div>
                                     </div>
                                 )}
@@ -1320,15 +1320,15 @@ export default function AuctionPlatform() {
                                     {[
                                         { label: "Housing Value (ZHVI)", value: `$${(selectedCounty[3] / 1000).toFixed(0)}K`, sub: `${selectedCounty[4]}% YoY`, icon: "📈", color: "text-blue-600" },
                                         { label: "Population", value: `${(selectedCounty[1] / 1000).toFixed(0)}K`, sub: "Residents", icon: "👥", color: "text-blue-600" },
-                                        { label: "Median Income", value: `$${(selectedCounty[2] / 1000).toFixed(0)}K`, sub: "Household", icon: "💰", color: "text-slate-900" },
+                                        { label: "Median Income", value: `$${(selectedCounty[2] / 1000).toFixed(0)}K`, sub: "Household", icon: "💰", color: "text-slate-100" },
                                         { label: "Days on Market", value: `${selectedCounty[5]}`, sub: "Average", icon: "⏱️", color: "text-amber-600" }
                                     ].map((stat, i) => (
-                                        <div key={i} className="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all">
+                                        <div key={i} className="bg-slate-950 p-4 md:p-6 rounded-md shadow-none border border-slate-800 hover:shadow-none transition-all">
                                             <div className="flex items-center justify-between mb-2 md:mb-4">
-                                                <span className="text-slate-400 text-[8px] md:text-[9px] font-black tracking-widest uppercase">{stat.label}</span>
+                                                <span className="text-slate-400 text-[8px] md:text-[9px] font-semibold tracking-widest uppercase">{stat.label}</span>
                                                 <span className="text-lg md:text-xl">{stat.icon}</span>
                                             </div>
-                                            <div className={`text-xl md:text-3xl font-display font-black tracking-tighter ${stat.color}`}>{stat.value}</div>
+                                            <div className={`text-xl md:text-xl font-mono font-mono font-semibold tracking-tighter ${stat.color}`}>{stat.value}</div>
                                             <div className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase mt-1">{stat.sub}</div>
                                         </div>
                                     ))}
@@ -1349,13 +1349,13 @@ export default function AuctionPlatform() {
                                     if (stateAuctions.length === 0) return null;
 
                                     return (
-                                        <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl border border-blue-200/50 overflow-hidden">
+                                        <div className="bg-slate-900 rounded-md border border-blue-200/50 overflow-hidden">
                                             <div className="p-5 border-b border-blue-100/50">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                                                        <h3 className="font-display font-black text-slate-900">Upcoming Auctions</h3>
-                                                        <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[9px] font-black">{stateAuctions.length}</span>
+                                                        <span className="w-2 h-2 bg-red-500 rounded-sm animate-none"></span>
+                                                        <h3 className="font-mono font-semibold text-slate-100">Upcoming Auctions</h3>
+                                                        <span className="px-2 py-0.5 bg-blue-600 text-white rounded text-[9px] font-semibold">{stateAuctions.length}</span>
                                                     </div>
                                                     <button
                                                         onClick={() => setView('auctions')}
@@ -1370,11 +1370,11 @@ export default function AuctionPlatform() {
                                                     const days = Math.ceil((new Date(a.saleDate) - new Date()) / (1000 * 60 * 60 * 24));
                                                     const isUrgent = days <= 7;
                                                     return (
-                                                        <div key={a.id} className="p-4 flex items-center justify-between gap-3 hover:bg-white/50 transition-all">
+                                                        <div key={a.id} className="p-4 flex items-center justify-between gap-3 hover:bg-slate-950/50 transition-all">
                                                             <div className="min-w-0 flex-1">
                                                                 <div className="flex items-center gap-2 mb-0.5">
-                                                                    <span className="font-bold text-slate-900 text-sm">{a.county} County</span>
-                                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black text-white ${a.saleType.includes('Lien') ? 'bg-blue-600' : 'bg-slate-600'}`}>
+                                                                    <span className="font-bold text-slate-100 text-sm">{a.county} County</span>
+                                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-semibold text-white ${a.saleType.includes('Lien') ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                                         {a.saleType}
                                                                     </span>
                                                                 </div>
@@ -1382,8 +1382,8 @@ export default function AuctionPlatform() {
                                                                     {new Date(a.saleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {a.propertyCount}+ props • {a.platform}
                                                                 </div>
                                                             </div>
-                                                            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white shrink-0 ${isUrgent ? 'bg-red-500 animate-pulse' : days <= 30 ? 'bg-amber-500' : 'bg-blue-500'
-                                                                }`}>
+                                                            <div className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold text-white shrink-0 ${isUrgent ? 'bg-red-500 animate-none' : days <= 30 ? 'bg-amber-500' : 'bg-blue-500'
+ }`}>
                                                                 {days === 0 ? 'TODAY' : days <= 3 ? `${days}d LEFT` : `${days} days`}
                                                             </div>
                                                         </div>
@@ -1395,12 +1395,12 @@ export default function AuctionPlatform() {
                                 })()}
 
                                 {/* Tax Sale Inventory with Platform Links */}
-                                <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-                                    <div className="p-6 border-b border-slate-50">
+                                <div className="bg-slate-950 rounded-md shadow-none overflow-hidden border border-slate-800">
+                                    <div className="p-6 border-b border-slate-800">
                                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                                             <div className="flex items-baseline gap-3">
-                                                <h3 className="font-display font-black text-lg text-slate-900">Tax Sale Inventory</h3>
-                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${auctionInfo?.saleType === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
+                                                <h3 className="font-mono font-semibold text-lg text-slate-100">Tax Sale Inventory</h3>
+                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold text-white ${auctionInfo?.saleType === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                     {auctionInfo?.saleType || 'Deed'} State
                                                 </span>
                                                 <span className="text-xs font-bold text-emerald-600">{parcels.length} HUD/REO Listings</span>
@@ -1419,27 +1419,27 @@ export default function AuctionPlatform() {
 
                                         {/* Auction Info Cards */}
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <div className="bg-slate-50 rounded-xl p-3">
-                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Interest/Penalty</div>
-                                                <div className="font-display font-black text-slate-900">{auctionInfo?.interestRate || 'Varies'}</div>
+                                            <div className="bg-slate-900 rounded-sm p-3">
+                                                <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Interest/Penalty</div>
+                                                <div className="font-mono font-semibold text-slate-100">{auctionInfo?.interestRate || 'Varies'}</div>
                                             </div>
-                                            <div className="bg-slate-50 rounded-xl p-3">
-                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Redemption</div>
-                                                <div className="font-display font-black text-slate-900">{auctionInfo?.redemption || 'Varies'}</div>
+                                            <div className="bg-slate-900 rounded-sm p-3">
+                                                <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Redemption</div>
+                                                <div className="font-mono font-semibold text-slate-100">{auctionInfo?.redemption || 'Varies'}</div>
                                             </div>
-                                            <div className="bg-slate-50 rounded-xl p-3">
-                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Sale Frequency</div>
-                                                <div className="font-display font-black text-slate-900">{auctionInfo?.frequency || 'Varies'}</div>
+                                            <div className="bg-slate-900 rounded-sm p-3">
+                                                <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Sale Frequency</div>
+                                                <div className="font-mono font-semibold text-slate-100">{auctionInfo?.frequency || 'Varies'}</div>
                                             </div>
-                                            <div className="bg-slate-50 rounded-xl p-3">
-                                                <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Platform</div>
-                                                <div className="font-display font-black text-slate-900">{auctionInfo?.platform || 'County'}</div>
+                                            <div className="bg-slate-900 rounded-sm p-3">
+                                                <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Platform</div>
+                                                <div className="font-mono font-semibold text-slate-100">{auctionInfo?.platform || 'County'}</div>
                                             </div>
                                         </div>
 
                                         {/* Tax Collector Link */}
                                         {auctionInfo?.taxCollectorUrl && (
-                                            <div className="mt-4 pt-4 border-t border-slate-100">
+                                            <div className="mt-4 pt-4 border-t border-slate-800">
                                                 <a
                                                     href={auctionInfo.taxCollectorUrl}
                                                     target="_blank"
@@ -1454,7 +1454,7 @@ export default function AuctionPlatform() {
 
                                     <div className="p-4 bg-emerald-50 border-b border-emerald-100">
                                         <p className="text-xs text-emerald-700 font-medium flex items-center gap-2">
-                                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                                            <span className="w-2 h-2 bg-emerald-500 rounded-sm animate-none"></span>
                                             <strong>Live Data:</strong> Real-time HUD, Fannie Mae, and Freddie Mac foreclosure listings from official sources.
                                             {listingsLoading && <span className="text-slate-500 ml-2">(Loading...)</span>}
                                         </p>
@@ -1462,8 +1462,8 @@ export default function AuctionPlatform() {
 
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left">
-                                            <thead className="bg-slate-50">
-                                                <tr className="text-slate-400 text-[9px] font-black tracking-widest uppercase">
+                                            <thead className="bg-slate-900">
+                                                <tr className="text-slate-400 text-[9px] font-semibold tracking-widest uppercase">
                                                     <th className="px-6 py-4">Address</th>
                                                     <th className="px-6 py-4">City</th>
                                                     <th className="px-6 py-4 text-right">Price</th>
@@ -1485,27 +1485,27 @@ export default function AuctionPlatform() {
                                                 {listingsLoading && (
                                                     <tr>
                                                         <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
-                                                            <div className="animate-pulse">Loading real foreclosure listings...</div>
+                                                            <div className="animate-none">Loading real foreclosure listings...</div>
                                                         </td>
                                                     </tr>
                                                 )}
                                                 {parcels.map((p, i) => (
-                                                    <tr key={i} className="hover:bg-slate-50/80 transition-all">
-                                                        <td className="px-6 py-4 font-bold text-slate-900">{p.address}</td>
+                                                    <tr key={i} className="hover:bg-slate-900/80 transition-all">
+                                                        <td className="px-6 py-4 font-bold text-slate-100">{p.address}</td>
                                                         <td className="px-6 py-4 text-slate-600">{p.city}, {p.state} {p.zip}</td>
-                                                        <td className="px-6 py-4 text-right font-display font-black text-emerald-600">${p.price?.toLocaleString()}</td>
-                                                        <td className="px-6 py-4 text-center font-bold text-slate-700">{p.bedrooms}bd / {p.bathrooms}ba</td>
+                                                        <td className="px-6 py-4 text-right font-mono font-semibold text-emerald-600">${p.price?.toLocaleString()}</td>
+                                                        <td className="px-6 py-4 text-center font-bold text-slate-300">{p.bedrooms}bd / {p.bathrooms}ba</td>
                                                         <td className="px-6 py-4 text-right text-slate-600">{p.sqft?.toLocaleString()} sqft</td>
-                                                        <td className="px-6 py-4"><span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-500 uppercase">{p.property_type}</span></td>
+                                                        <td className="px-6 py-4"><span className="px-2 py-1 bg-slate-900 rounded text-[9px] font-semibold text-slate-500 uppercase">{p.property_type}</span></td>
                                                         <td className="px-6 py-4">
-                                                            <span className={`px-2 py-1 rounded text-[9px] font-black uppercase ${p.source === 'HUD' ? 'bg-blue-100 text-blue-700' :
-                                                                p.source === 'Fannie Mae' ? 'bg-purple-100 text-purple-700' :
-                                                                    'bg-amber-100 text-amber-700'
-                                                                }`}>{p.source}</span>
+                                                            <span className={`px-2 py-1 rounded text-[9px] font-semibold uppercase ${p.source === 'HUD' ? 'bg-blue-100 text-blue-700' :
+ p.source === 'Fannie Mae' ? 'bg-purple-100 text-purple-700' :
+ 'bg-amber-100 text-amber-700'
+ }`}>{p.source}</span>
                                                         </td>
                                                         <td className="px-6 py-4 text-center">
-                                                            <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${p.status === 'Available' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'
-                                                                }`}>{p.status}</span>
+                                                            <span className={`px-3 py-1 rounded-sm text-[8px] font-semibold uppercase ${p.status === 'Available' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'
+ }`}>{p.status}</span>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -1518,7 +1518,7 @@ export default function AuctionPlatform() {
                             /* Map View - Command Center Transformation */
                             <>
                                 {/* 4K Cinematic Edge-to-Edge Container */}
-                                <div className={isMapExpanded ? "fixed inset-0 z-50 bg-slate-950 animate-in fade-in duration-300" : "flex-1 w-full h-full min-h-[60vh] md:min-h-[700px] relative rounded-3xl overflow-hidden bg-slate-950 border border-slate-900 shadow-2xl transition-all duration-300"}>
+                                <div className={isMapExpanded ? "fixed inset-0 z-50 bg-slate-950 animate-in fade-in duration-300" : "flex-1 w-full h-full min-h-[60vh] md:min-h-[700px] relative rounded-md overflow-hidden bg-slate-950 border border-slate-900 shadow-none transition-all duration-300"}>
                                     {/* Base UI layer (Map) */}
                                     <div className="absolute inset-0" style={{ zIndex: 1 }}>
                                         <USChoropleth
@@ -1531,19 +1531,19 @@ export default function AuctionPlatform() {
                                     {/* Glass Overlay Layer: Top HUD */}
                                     <div className="absolute top-6 left-6 right-6 flex justify-between items-start pointer-events-none" style={{ zIndex: 10 }}>
                                         {/* Top Left Title Glass */}
-                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-xl p-5 shadow-2xl">
+                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-sm p-5 shadow-none">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-                                                <h2 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">State Liquidity :: Neural Projection</h2>
+                                                <div className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-none shadow-[0_0_8px_#34d399]" />
+                                                <h2 className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.3em]">State Liquidity :: Neural Projection</h2>
                                             </div>
-                                            <h1 className="text-2xl font-black text-white/90 tracking-tighter">Market Intelligence Hub</h1>
+                                            <h1 className="text-lg font-mono font-semibold text-white/90 tracking-tighter">Market Intelligence Hub</h1>
                                         </div>
 
                                         {/* Top Right Fullscreen Toggle */}
                                         <div className="flex items-center gap-3 pointer-events-auto">
                                             <button
                                                 onClick={() => setIsMapExpanded(!isMapExpanded)}
-                                                className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900/40 backdrop-blur-2xl border border-white/10 text-white/60 hover:text-white hover:bg-slate-800 transition-all shadow-2xl"
+                                                className="w-12 h-12 flex items-center justify-center rounded-sm bg-slate-900/40 backdrop-blur-2xl border border-white/10 text-white/60 hover:text-white hover:bg-slate-800 transition-all shadow-none"
                                                 title={isMapExpanded ? "Exit Fullscreen" : "Fullscreen Mode"}
                                             >
                                                 <span className="text-xl leading-none">{isMapExpanded ? '×' : '⤢'}</span>
@@ -1557,36 +1557,36 @@ export default function AuctionPlatform() {
                                         <div className="hidden md:block w-[140px] invisible"></div>
 
                                         {/* Bottom Center Intelligence Bar */}
-                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-xl px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-2xl pointer-events-auto filter drop-shadow-2xl max-w-full">
+                                        <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-sm px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-none pointer-events-auto filter drop-shadow-none max-w-full">
                                             <div>
-                                                <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Global Coverage</div>
+                                                <div className="text-[8px] text-slate-400 font-semibold uppercase tracking-[0.2em] mb-1">Global Coverage</div>
                                                 <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-xl md:text-2xl font-black text-white/90">50</span>
+                                                    <span className="text-xl md:text-lg font-mono font-semibold text-white/90">50</span>
                                                     <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">States</span>
                                                 </div>
                                             </div>
-                                            <div className="w-px h-6 bg-white/10 hidden md:block" />
+                                            <div className="w-px h-6 bg-slate-950/10 hidden md:block" />
                                             <div>
-                                                <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Active Pipeline</div>
+                                                <div className="text-[8px] text-slate-400 font-semibold uppercase tracking-[0.2em] mb-1">Active Pipeline</div>
                                                 <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-xl md:text-2xl font-black text-white/90">14.2K</span>
+                                                    <span className="text-xl md:text-lg font-mono font-semibold text-white/90">14.2K</span>
                                                     <span className="text-[9px] font-bold text-blue-400 uppercase tracking-wider">Deals</span>
                                                 </div>
                                             </div>
-                                            <div className="w-px h-6 bg-white/10 hidden md:block" />
+                                            <div className="w-px h-6 bg-slate-950/10 hidden md:block" />
                                             <div className="flex items-center gap-3">
                                                 <div className="text-right">
-                                                    <div className="text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] mb-0.5">Network Status</div>
+                                                    <div className="text-[8px] text-slate-400 font-semibold uppercase tracking-[0.2em] mb-0.5">Network Status</div>
                                                     <div className="text-[9px] font-mono text-emerald-400 font-bold">TERMINUS_SYNC_OK</div>
                                                 </div>
-                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_#34d399]" />
+                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-sm bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-sm animate-none shadow-[0_0_8px_#34d399]" />
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Bottom Right Legend */}
-                                        <div className="bg-slate-900/90 backdrop-blur-md shadow-2xl border border-slate-700/50 rounded-xl p-3 flex flex-row items-center gap-4 min-w-[140px] pointer-events-auto md:w-[140px] md:flex-col md:items-start md:gap-3 justify-center md:justify-self-end text-left w-auto z-50">
+                                        <div className="bg-slate-900/90 backdrop-blur-md shadow-none border border-slate-700/50 rounded-sm p-3 flex flex-row items-center gap-4 min-w-[140px] pointer-events-auto md:w-[140px] md:flex-col md:items-start md:gap-3 justify-center md:justify-self-end text-left w-auto z-50">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2.5 h-2.5 rounded border border-blue-500 bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.4)]" />
                                                 <span className="text-[9px] text-slate-300 font-bold uppercase tracking-wider">Lien States</span>
@@ -1627,27 +1627,27 @@ export default function AuctionPlatform() {
                         ) : view === 'heatmap' ? (
                             /* Investment Heat Map View */
                             <div className="h-full overflow-hidden flex flex-col">
-                                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+                                <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">📊</div>
-                                        <h2 className="text-xl font-black text-slate-900 tracking-tight">National Market Intelligence</h2>
+                                        <h2 className="text-xl font-semibold text-slate-100 tracking-tight">National Market Intelligence</h2>
                                     </div>
-                                    <div className="flex bg-slate-100 p-1 rounded-xl">
+                                    <div className="flex bg-slate-900 p-1 rounded-sm">
                                         <button 
                                             onClick={() => setProMode(false)}
-                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!proMode ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!proMode ? 'bg-slate-950 shadow-none text-blue-600' : 'text-slate-500 hover:text-slate-300'}`}
                                         >
                                             2D Heatmap
                                         </button>
                                         <button 
                                             onClick={() => setProMode(true)}
-                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${proMode ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${proMode ? 'bg-slate-950 shadow-none text-blue-600' : 'text-slate-500 hover:text-slate-300'}`}
                                         >
                                             Pro 3D Map
                                         </button>
                                     </div>
                                 </div>
-                                <div className="flex-1 min-h-0 bg-slate-50">
+                                <div className="flex-1 min-h-0 bg-slate-900">
                                     {proMode ? (
                                         <MarketGlobe height="100%" />
                                     ) : (
@@ -1732,42 +1732,42 @@ export default function AuctionPlatform() {
                             <PortfolioManager onBack={() => setView('watchlist')} />
                         ) : view === 'alerts' ? (
                             /* Alerts View - Notifications Center */
-                            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 h-full overflow-auto">
+                            <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-8 h-full overflow-auto">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter">My Alerts</h2>
-                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Stay updated on your investments</p>
+                                        <h2 className="text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">My Alerts</h2>
+                                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-1">Stay updated on your investments</p>
                                     </div>
-                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-xl font-display font-bold text-sm shadow-lg hover:bg-blue-700 transition-all flex items-center gap-2">
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-sm font-mono font-bold text-sm shadow-none hover:bg-blue-700 transition-all flex items-center gap-2">
                                         <span>🔔</span> Create Alert
                                     </button>
                                 </div>
 
                                 {/* Alert Categories */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
+                                    <div className="bg-slate-900 rounded-md p-5 border border-green-100">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white text-lg">💰</div>
+                                            <div className="w-10 h-10 bg-green-500 rounded-sm flex items-center justify-center text-white text-lg">💰</div>
                                             <div>
-                                                <div className="text-2xl font-display font-black text-green-700">0</div>
+                                                <div className="text-lg font-mono font-mono font-semibold text-green-700">0</div>
                                                 <div className="text-[9px] font-bold text-green-600 uppercase tracking-wider">Price Drops</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100">
+                                    <div className="bg-slate-900 rounded-md p-5 border border-amber-100">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center text-white text-lg">📅</div>
+                                            <div className="w-10 h-10 bg-amber-500 rounded-sm flex items-center justify-center text-white text-lg">📅</div>
                                             <div>
-                                                <div className="text-2xl font-display font-black text-amber-700">0</div>
+                                                <div className="text-lg font-mono font-mono font-semibold text-amber-700">0</div>
                                                 <div className="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Auction Reminders</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-5 border border-blue-100">
+                                    <div className="bg-slate-900 rounded-md p-5 border border-blue-100">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white text-lg">⭐</div>
+                                            <div className="w-10 h-10 bg-blue-500 rounded-sm flex items-center justify-center text-white text-lg">⭐</div>
                                             <div>
-                                                <div className="text-2xl font-display font-black text-blue-700">0</div>
+                                                <div className="text-lg font-mono font-mono font-semibold text-blue-700">0</div>
                                                 <div className="text-[9px] font-bold text-blue-600 uppercase tracking-wider">Watchlist Updates</div>
                                             </div>
                                         </div>
@@ -1776,14 +1776,14 @@ export default function AuctionPlatform() {
 
                                 {/* Empty State */}
                                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                                    <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center text-4xl mb-6">🔕</div>
-                                    <h3 className="text-xl font-display font-black text-slate-700 mb-2">No Active Alerts</h3>
+                                    <div className="w-20 h-20 bg-slate-900 rounded-md flex items-center justify-center text-2xl font-mono mb-6">🔕</div>
+                                    <h3 className="text-xl font-mono font-semibold text-slate-300 mb-2">No Active Alerts</h3>
                                     <p className="text-slate-400 text-sm max-w-md mb-6">Set up alerts to get notified about price changes, upcoming auctions, and updates to your watchlist properties.</p>
                                     <div className="flex gap-3">
-                                        <button onClick={() => setView('properties')} className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-display font-bold text-sm shadow-lg hover:bg-blue-700 transition-all">
+                                        <button onClick={() => setView('properties')} className="bg-blue-600 text-white px-5 py-2.5 rounded-sm font-mono font-bold text-sm shadow-none hover:bg-blue-700 transition-all">
                                             Browse Properties
                                         </button>
-                                        <button onClick={() => setView('watchlist')} className="bg-white text-slate-700 border border-slate-200 px-5 py-2.5 rounded-xl font-display font-bold text-sm hover:bg-slate-50 transition-all">
+                                        <button onClick={() => setView('watchlist')} className="bg-slate-950 text-slate-300 border border-slate-700 px-5 py-2.5 rounded-sm font-mono font-bold text-sm hover:bg-slate-900 transition-all">
                                             View Watchlist
                                         </button>
                                     </div>
@@ -1791,40 +1791,40 @@ export default function AuctionPlatform() {
                             </div>
                         ) : view === 'list' ? (
                             /* List View - State Database */
-                            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col h-full">
+                            <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 flex flex-col h-full">
                                 <div className="p-8 flex items-center justify-between">
                                     <div>
                                         <div className="flex items-center gap-4 mb-1">
-                                            <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter">State Database</h2>
+                                            <h2 className="text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">State Database</h2>
                                             {selectedState && STATE_AUCTION_INFO[selectedState] && (
-                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-100 border border-blue-200' : 'bg-slate-100 border border-slate-200'}`}>
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
+                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-sm ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-100 border border-blue-200' : 'bg-slate-900 border border-slate-700'}`}>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-semibold text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].type}
                                                     </span>
-                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-700' : 'text-slate-700'}`}>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-700' : 'text-slate-300'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : STATE_AUCTION_INFO[selectedState].redemptionPeriod}
                                                     </span>
                                                 </div>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Select a territory to view county data</p>
+                                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">Select a territory to view county data</p>
                                     </div>
                                     {selectedState && displayCounties.length > 0 && (
                                         <div className="flex gap-2">
-                                            <button onClick={handleExportStateCSV} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2">
+                                            <button onClick={handleExportStateCSV} className="bg-slate-900 text-white px-4 py-2 rounded-lg font-mono font-semibold text-xs shadow-none hover:bg-black transition-all flex items-center gap-2">
                                                 <span>📥</span> Export CSV
                                             </button>
-                                            <button onClick={handleCopyStateData} className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2">
+                                            <button onClick={handleCopyStateData} className="bg-slate-950 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg font-mono font-semibold text-xs hover:bg-slate-900 transition-all flex items-center gap-2">
                                                 <span>📋</span> Copy
                                             </button>
-                                            <button onClick={handlePrintStateReport} className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2">
+                                            <button onClick={handlePrintStateReport} className="bg-slate-950 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg font-mono font-semibold text-xs hover:bg-slate-900 transition-all flex items-center gap-2">
                                                 <span>🖨️</span> Print
                                             </button>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="px-8 pb-6 border-b border-slate-50 overflow-x-auto scrollbar-hide shrink-0">
+                                <div className="px-8 pb-6 border-b border-slate-800 overflow-x-auto scrollbar-hide shrink-0">
                                     <div className="flex gap-3 min-w-max pb-2">
                                         {allStates.map(abbr => {
                                             const { best } = getStateSummary(abbr);
@@ -1833,7 +1833,7 @@ export default function AuctionPlatform() {
                                                 <button
                                                     key={abbr}
                                                     onClick={() => { setSelectedState(abbr); setSelectedCounty(null); }}
-                                                    className={`px-4 py-3 rounded-xl font-display font-black transition-all duration-300 ${isSelected ? 'shadow-lg ring-2 ring-blue-500 scale-105' : 'opacity-50 hover:opacity-100 hover:shadow-md'}`}
+                                                    className={`px-4 py-3 rounded-sm font-mono font-semibold transition-all duration-300 ${isSelected ? 'shadow-none ring-2 ring-blue-500 scale-105' : 'opacity-50 hover:opacity-100 hover:shadow-md'}`}
                                                     style={{ background: TIERS[best].bg, color: TIERS[best].color }}
                                                 >
                                                     <div className="text-lg tracking-tighter">{abbr}</div>
@@ -1846,10 +1846,10 @@ export default function AuctionPlatform() {
                                 {selectedState ? (
                                     <div className="flex-1 overflow-auto px-4 pb-4">
                                         <table className="w-full text-sm">
-                                            <thead className="bg-white/95 backdrop-blur-sm sticky top-0 z-20">
-                                                <tr className="text-slate-400 text-[9px] font-black tracking-widest uppercase border-b border-slate-100">
+                                            <thead className="bg-slate-950/95 backdrop-blur-sm sticky top-0 z-20">
+                                                <tr className="text-slate-400 text-[9px] font-semibold tracking-widest uppercase border-b border-slate-800">
                                                     {[['name', 'County'], ['tier', 'Grade'], ['pop', 'Population'], ['income', 'Income'], ['zhvi', 'ZHVI'], ['growth', '% Change'], ['dom', 'DOM']].map(([col, label]) => (
-                                                        <th key={col} onClick={() => handleSort(col)} className="px-6 py-5 text-left cursor-pointer hover:bg-slate-50 transition-colors">
+                                                        <th key={col} onClick={() => handleSort(col)} className="px-6 py-5 text-left cursor-pointer hover:bg-slate-900 transition-colors">
                                                             <div className="flex items-center gap-1">
                                                                 <span>{label}</span>
                                                                 {sortCol === col && <span className="text-blue-600">{sortAsc ? '↑' : '↓'}</span>}
@@ -1865,9 +1865,9 @@ export default function AuctionPlatform() {
                                                     const t = TIERS[tier];
                                                     return (
                                                         <tr key={i} onClick={() => setSelectedCounty(c)} className="group hover:bg-blue-50/50 cursor-pointer transition-all">
-                                                            <td className="px-6 py-5 font-display font-black text-slate-800">{name}</td>
+                                                            <td className="px-6 py-5 font-mono font-semibold text-slate-200">{name}</td>
                                                             <td className="px-6 py-5">
-                                                                <span className="px-2 py-1 rounded-lg text-[9px] font-black text-white" style={{ background: t.color }}>{t.label}</span>
+                                                                <span className="px-2 py-1 rounded-lg text-[9px] font-semibold text-white" style={{ background: t.color }}>{t.label}</span>
                                                             </td>
                                                             <td className="px-6 py-5 font-bold text-slate-500 tabular-nums">{(pop / 1000).toFixed(0)}K</td>
                                                             <td className="px-6 py-5 font-bold text-slate-500 tabular-nums">${(income / 1000).toFixed(0)}K</td>
@@ -1878,10 +1878,10 @@ export default function AuctionPlatform() {
                                                                 </span>
                                                             </td>
                                                             <td className="px-6 py-5">
-                                                                <span className="px-2 py-1 bg-slate-100 rounded text-[10px] font-black text-slate-500">{dom}d</span>
+                                                                <span className="px-2 py-1 bg-slate-900 rounded text-[10px] font-semibold text-slate-500">{dom}d</span>
                                                             </td>
                                                             <td className="px-6 py-5 text-right">
-                                                                <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase opacity-0 group-hover:opacity-100 transition-all">Analyze</button>
+                                                                <button className="bg-slate-900 text-white px-4 py-2 rounded-lg text-[9px] font-semibold uppercase opacity-0 group-hover:opacity-100 transition-all">Analyze</button>
                                                             </td>
                                                         </tr>
                                                     );
@@ -1891,8 +1891,8 @@ export default function AuctionPlatform() {
                                     </div>
                                 ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center p-16 text-center">
-                                        <div className="w-24 h-24 bg-slate-50 rounded-2xl flex items-center justify-center text-4xl mb-6 opacity-30">🌐</div>
-                                        <h3 className="text-2xl font-display font-black text-slate-200 uppercase">Select a State</h3>
+                                        <div className="w-24 h-24 bg-slate-900 rounded-md flex items-center justify-center text-2xl font-mono mb-6 opacity-30">🌐</div>
+                                        <h3 className="text-lg font-mono font-mono font-semibold text-slate-200 uppercase">Select a State</h3>
                                         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">Choose from the state buttons above</p>
                                     </div>
                                 )}
@@ -1900,8 +1900,8 @@ export default function AuctionPlatform() {
                         ) : view === 'detection' ? (
                             /* Tier Detection Algorithm View */
                             <div className="space-y-6">
-                                <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                                    <h2 className="text-2xl font-display font-black text-slate-900 mb-2">🎯 Tier Detection Algorithm</h2>
+                                <div className="bg-slate-950 rounded-md p-6 shadow-none border border-slate-800">
+                                    <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-2">🎯 Tier Detection Algorithm</h2>
                                     <p className="text-slate-500">Automatically classify any US county into investment tiers using quantitative metrics.</p>
                                 </div>
 
@@ -1909,23 +1909,23 @@ export default function AuctionPlatform() {
                                     {Object.entries(TIER_CRITERIA).map(([tier, info]) => {
                                         const tierData = TIERS[tier];
                                         return (
-                                            <div key={tier} className="rounded-2xl p-5 border-l-4" style={{ backgroundColor: `${tierData.color}10`, borderLeftColor: tierData.color }}>
+                                            <div key={tier} className="rounded-md p-5 border-l-4" style={{ backgroundColor: `${tierData.color}10`, borderLeftColor: tierData.color }}>
                                                 <div className="flex items-center gap-4 mb-4">
-                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-display font-black text-lg" style={{ backgroundColor: tierData.color }}>
+                                                    <div className="w-10 h-10 rounded-sm flex items-center justify-center text-white font-mono font-semibold text-lg" style={{ backgroundColor: tierData.color }}>
                                                         {tier}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-display font-black text-slate-900">{info.name}</h3>
+                                                        <h3 className="font-mono font-semibold text-slate-100">{info.name}</h3>
                                                         <p className="text-sm text-slate-500">{info.description}</p>
                                                     </div>
                                                 </div>
                                                 <div className="grid grid-cols-3 gap-3">
                                                     {Object.entries(info.criteria).map(([metric, value]) => (
-                                                        <div key={metric} className="bg-white/80 rounded-lg p-3 border border-slate-100">
-                                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                                        <div key={metric} className="bg-slate-950/80 rounded-lg p-3 border border-slate-800">
+                                                            <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1">
                                                                 {metric.replace(/([A-Z])/g, ' $1').trim()}
                                                             </div>
-                                                            <div className="font-mono text-sm font-bold text-slate-800">{value}</div>
+                                                            <div className="font-mono text-sm font-bold text-slate-200">{value}</div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1935,9 +1935,9 @@ export default function AuctionPlatform() {
                                 </div>
 
                                 {/* Scoring Formula */}
-                                <div className="bg-slate-900 rounded-2xl p-6 text-white">
-                                    <h3 className="font-display font-black text-lg mb-4">📐 Scoring Formula</h3>
-                                    <div className="bg-slate-800 rounded-xl p-4 font-mono text-sm overflow-x-auto">
+                                <div className="bg-slate-900 rounded-md p-6 text-white">
+                                    <h3 className="font-mono font-semibold text-lg mb-4">📐 Scoring Formula</h3>
+                                    <div className="bg-slate-800 rounded-sm p-4 font-mono text-sm overflow-x-auto">
                                         <div className="text-green-400 mb-2">// Tier Score Calculation (0-100)</div>
                                         <div className="text-blue-300">tier_score = (</div>
                                         <div className="pl-4 text-gray-300">
@@ -1963,12 +1963,12 @@ export default function AuctionPlatform() {
                         ) : view === 'sources' ? (
                             /* Data Sources View */
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border border-green-200/50">
-                                    <h2 className="text-2xl font-display font-black text-slate-900 mb-1">100% Free Data Sources</h2>
+                                <div className="bg-slate-900 rounded-md p-6 border border-green-200/50">
+                                    <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-1">100% Free Data Sources</h2>
                                     <p className="text-slate-500">All tier detection uses publicly available, free data APIs</p>
                                     <div className="mt-4 flex gap-6">
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-blue-600">{FREE_DATA_SOURCES.length}</div>
+                                            <div className="text-xl font-mono font-mono font-semibold text-blue-600">{FREE_DATA_SOURCES.length}</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Data Sources</div>
                                         </div>
                                     </div>
@@ -1976,17 +1976,17 @@ export default function AuctionPlatform() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     {FREE_DATA_SOURCES.map(source => (
-                                        <div key={source.name} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                                        <div key={source.name} className="bg-slate-950 rounded-md p-5 shadow-none border border-slate-800">
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-2xl">{source.icon}</span>
-                                                    <h3 className="font-display font-black text-slate-900">{source.name}</h3>
+                                                    <span className="text-lg font-mono">{source.icon}</span>
+                                                    <h3 className="font-mono font-semibold text-slate-100">{source.name}</h3>
                                                 </div>
-                                                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-[9px] font-black uppercase">Free</span>
+                                                <span className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-[9px] font-semibold uppercase">Free</span>
                                             </div>
                                             <div className="flex flex-wrap gap-1.5 mb-3">
                                                 {source.metrics.map(m => (
-                                                    <span key={m} className="px-2 py-1 bg-slate-100 rounded text-[10px] font-bold text-slate-600">{m}</span>
+                                                    <span key={m} className="px-2 py-1 bg-slate-900 rounded text-[10px] font-bold text-slate-600">{m}</span>
                                                 ))}
                                             </div>
                                             <div className="flex items-center justify-between text-sm">
@@ -2000,12 +2000,12 @@ export default function AuctionPlatform() {
                                 </div>
 
                                 {/* Python Quick Start */}
-                                <div className="bg-slate-900 rounded-2xl p-6">
+                                <div className="bg-slate-900 rounded-md p-6">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <span className="text-2xl">🐍</span>
-                                        <h3 className="font-display font-black text-white text-lg">Quick Start: Fetch Tier Data</h3>
+                                        <span className="text-lg font-mono">🐍</span>
+                                        <h3 className="font-mono font-semibold text-white text-lg">Quick Start: Fetch Tier Data</h3>
                                     </div>
-                                    <pre className="bg-slate-800 p-4 rounded-xl text-sm overflow-x-auto">
+                                    <pre className="bg-slate-800 p-4 rounded-sm text-sm overflow-x-auto">
                                         <code className="text-green-400">{PYTHON_QUICK_START}</code>
                                     </pre>
                                 </div>
@@ -2013,25 +2013,25 @@ export default function AuctionPlatform() {
                         ) : view === 'stateinfo' ? (
                             /* State Info View - Lien vs Deed Types */
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-2xl p-6 border border-blue-200/50">
+                                <div className="bg-slate-900 rounded-md p-6 border border-blue-200/50">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <h2 className="text-2xl font-display font-black text-slate-900 mb-1">🏛️ State Tax Sale Information</h2>
+                                            <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-1">🏛️ State Tax Sale Information</h2>
                                             <p className="text-slate-500">Comprehensive guide to lien vs deed sales, interest rates, and redemption periods</p>
                                         </div>
                                         {/* Filter Toggle Buttons */}
                                         <div className="flex flex-wrap gap-2 items-center">
                                             <button
                                                 onClick={() => setStateInfoFilter('all')}
-                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'all' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+                                                className={`px-4 py-2 rounded-sm text-xs font-semibold uppercase transition-all ${stateInfoFilter === 'all' ? 'bg-slate-900 text-white shadow-none' : 'bg-slate-950 text-slate-600 hover:bg-slate-900 border border-slate-700'}`}
                                             >All ({Object.keys(STATE_AUCTION_INFO).length})</button>
                                             <button
                                                 onClick={() => setStateInfoFilter('lien')}
-                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'lien' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'}`}
+                                                className={`px-4 py-2 rounded-sm text-xs font-semibold uppercase transition-all ${stateInfoFilter === 'lien' ? 'bg-blue-600 text-white shadow-none shadow-blue-200' : 'bg-slate-950 text-blue-600 hover:bg-blue-50 border border-blue-200'}`}
                                             >Lien ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length})</button>
                                             <button
                                                 onClick={() => setStateInfoFilter('deed')}
-                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'deed' ? 'bg-slate-600 text-white shadow-lg shadow-slate-200' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
+                                                className={`px-4 py-2 rounded-sm text-xs font-semibold uppercase transition-all ${stateInfoFilter === 'deed' ? 'bg-slate-600 text-white shadow-none shadow-slate-200' : 'bg-slate-950 text-slate-600 hover:bg-slate-900 border border-slate-700'}`}
                                             >Deed ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length})</button>
 
                                             <div className="h-6 w-px bg-slate-300 mx-1"></div>
@@ -2040,7 +2040,7 @@ export default function AuctionPlatform() {
                                             <select
                                                 value={stateRateFilter}
                                                 onChange={(e) => setStateRateFilter(e.target.value)}
-                                                className="px-3 py-2 rounded-xl text-xs font-bold border border-green-200 bg-white text-green-700 hover:bg-green-50 focus:ring-2 focus:ring-green-500 focus:outline-none cursor-pointer transition-all"
+                                                className="px-3 py-2 rounded-sm text-xs font-bold border border-green-200 bg-slate-950 text-green-700 hover:bg-green-50 focus:ring-2 focus:ring-green-500 focus:outline-none cursor-pointer transition-all"
                                             >
                                                 <option value="all">💰 All Rates</option>
                                                 <option value="high">🔥 High (16%+)</option>
@@ -2052,7 +2052,7 @@ export default function AuctionPlatform() {
                                             <select
                                                 value={stateRedemptionFilter}
                                                 onChange={(e) => setStateRedemptionFilter(e.target.value)}
-                                                className="px-3 py-2 rounded-xl text-xs font-bold border border-amber-200 bg-white text-amber-700 hover:bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer transition-all"
+                                                className="px-3 py-2 rounded-sm text-xs font-bold border border-amber-200 bg-slate-950 text-amber-700 hover:bg-amber-50 focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer transition-all"
                                             >
                                                 <option value="all">⏱️ All Redemption</option>
                                                 <option value="short">⚡ Short (≤6 mo)</option>
@@ -2064,30 +2064,30 @@ export default function AuctionPlatform() {
                                             {(stateRateFilter !== 'all' || stateRedemptionFilter !== 'all') && (
                                                 <button
                                                     onClick={() => { setStateRateFilter('all'); setStateRedemptionFilter('all'); }}
-                                                    className="px-3 py-2 rounded-xl text-xs font-bold border border-red-200 bg-white text-red-600 hover:bg-red-50 transition-all"
+                                                    className="px-3 py-2 rounded-sm text-xs font-bold border border-red-200 bg-slate-950 text-red-600 hover:bg-red-50 transition-all"
                                                 >✕ Clear</button>
                                             )}
                                         </div>
                                     </div>
                                     <div className="mt-4 flex gap-8">
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-blue-600">
+                                            <div className="text-xl font-mono font-mono font-semibold text-blue-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Lien States</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-slate-600">
+                                            <div className="text-xl font-mono font-mono font-semibold text-slate-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Deed States</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-green-600">24%</div>
+                                            <div className="text-xl font-mono font-mono font-semibold text-green-600">24%</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Highest Rate (IA)</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-amber-600">4 yr</div>
+                                            <div className="text-xl font-mono font-mono font-semibold text-amber-600">4 yr</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Longest Redemption</div>
                                         </div>
                                     </div>
@@ -2095,29 +2095,29 @@ export default function AuctionPlatform() {
 
                                 {/* Lien vs Deed Explanation */}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-blue-100 rounded-2xl p-5 border border-blue-200">
+                                    <div className="bg-blue-100 rounded-md p-5 border border-blue-200">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black">L</div>
-                                            <h3 className="font-display font-black text-blue-900">Tax Lien States</h3>
+                                            <div className="w-10 h-10 bg-blue-600 rounded-sm flex items-center justify-center text-white font-semibold">L</div>
+                                            <h3 className="font-mono font-semibold text-blue-900">Tax Lien States</h3>
                                         </div>
                                         <p className="text-sm text-blue-800">In lien states, you purchase a <strong>lien certificate</strong> on the property. The owner has a redemption period to pay back the lien plus interest. If they don't redeem, you can foreclose.</p>
                                         <div className="mt-3 text-xs font-bold text-blue-600">✓ Earn interest on investment • ✓ Lower risk • ✓ Passive income potential</div>
                                     </div>
-                                    <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
+                                    <div className="bg-slate-900 rounded-md p-5 border border-slate-700">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-slate-600 rounded-xl flex items-center justify-center text-white font-black">D</div>
-                                            <h3 className="font-display font-black text-slate-900">Tax Deed States</h3>
+                                            <div className="w-10 h-10 bg-slate-600 rounded-sm flex items-center justify-center text-white font-semibold">D</div>
+                                            <h3 className="font-mono font-semibold text-slate-100">Tax Deed States</h3>
                                         </div>
-                                        <p className="text-sm text-slate-800">In deed states, you bid on the <strong>property itself</strong> at auction. Winning bidder receives title to the property (subject to redemption period in some states).</p>
+                                        <p className="text-sm text-slate-200">In deed states, you bid on the <strong>property itself</strong> at auction. Winning bidder receives title to the property (subject to redemption period in some states).</p>
                                         <div className="mt-3 text-xs font-bold text-slate-600">✓ Direct property ownership • ✓ Faster acquisition • ✓ Property value upside</div>
                                     </div>
                                 </div>
 
                                 {/* Full State Table */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                    <div className="p-5 border-b border-slate-50 flex items-center justify-between">
+                                <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
+                                    <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                                         <div>
-                                            <h3 className="font-display font-black text-lg text-slate-900">
+                                            <h3 className="font-mono font-semibold text-lg text-slate-100">
                                                 {stateInfoFilter === 'all' ? 'All 50 States + DC' : stateInfoFilter === 'lien' ? 'Tax Lien States' : 'Tax Deed States'}
                                             </h3>
                                             <p className="text-xs text-slate-400">Click column headers to sort • Click row to view details</p>
@@ -2133,7 +2133,7 @@ export default function AuctionPlatform() {
                                                     await copyToClipboard(`State\tType\tInterest Rate\tRedemption\tNotes\n${text}`);
                                                     toast.success('Copied to clipboard!');
                                                 }}
-                                                className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg font-display font-black text-xs hover:bg-slate-50 transition-all flex items-center gap-2"
+                                                className="bg-slate-950 text-slate-300 border border-slate-700 px-4 py-2 rounded-lg font-mono font-semibold text-xs hover:bg-slate-900 transition-all flex items-center gap-2"
                                             >
                                                 <span>📋</span> Copy
                                             </button>
@@ -2159,7 +2159,7 @@ export default function AuctionPlatform() {
                                                     const filename = stateInfoFilter === 'all' ? 'state_auction_info' : `${stateInfoFilter}_states_info`;
                                                     exportToCSV(data, columns, filename);
                                                 }}
-                                                className="bg-slate-900 text-white px-4 py-2 rounded-lg font-display font-black text-xs shadow-lg hover:bg-black transition-all flex items-center gap-2"
+                                                className="bg-slate-900 text-white px-4 py-2 rounded-lg font-mono font-semibold text-xs shadow-none hover:bg-black transition-all flex items-center gap-2"
                                             >
                                                 <span>📥</span> Export CSV
                                             </button>
@@ -2167,10 +2167,10 @@ export default function AuctionPlatform() {
                                     </div>
                                     <div className="overflow-auto max-h-[500px]">
                                         <table className="w-full text-sm">
-                                            <thead className="bg-slate-50 sticky top-0 z-10">
-                                                <tr className="text-slate-400 text-[9px] font-black tracking-widest uppercase">
+                                            <thead className="bg-slate-900 sticky top-0 z-10">
+                                                <tr className="text-slate-400 text-[9px] font-semibold tracking-widest uppercase">
                                                     <th
-                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-900 transition-colors"
                                                         onClick={() => setStateInfoSort(prev => ({ col: 'state', asc: prev.col === 'state' ? !prev.asc : true }))}
                                                     >
                                                         <div className="flex items-center gap-1">
@@ -2178,7 +2178,7 @@ export default function AuctionPlatform() {
                                                         </div>
                                                     </th>
                                                     <th
-                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-900 transition-colors"
                                                         onClick={() => setStateInfoSort(prev => ({ col: 'type', asc: prev.col === 'type' ? !prev.asc : true }))}
                                                     >
                                                         <div className="flex items-center gap-1">
@@ -2186,7 +2186,7 @@ export default function AuctionPlatform() {
                                                         </div>
                                                     </th>
                                                     <th
-                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-900 transition-colors"
                                                         onClick={() => setStateInfoSort(prev => ({ col: 'rate', asc: prev.col === 'rate' ? !prev.asc : false }))}
                                                     >
                                                         <div className="flex items-center gap-1">
@@ -2194,7 +2194,7 @@ export default function AuctionPlatform() {
                                                         </div>
                                                     </th>
                                                     <th
-                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-100 transition-colors"
+                                                        className="px-5 py-4 text-left cursor-pointer hover:bg-slate-900 transition-colors"
                                                         onClick={() => setStateInfoSort(prev => ({ col: 'redemption', asc: prev.col === 'redemption' ? !prev.asc : true }))}
                                                     >
                                                         <div className="flex items-center gap-1">
@@ -2235,12 +2235,12 @@ export default function AuctionPlatform() {
                                                         >
                                                             <td className="px-5 py-4">
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className="font-display font-black text-slate-900">{STATE_NAMES[abbr] || abbr}</span>
-                                                                    <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{abbr}</span>
+                                                                    <span className="font-mono font-semibold text-slate-100">{STATE_NAMES[abbr] || abbr}</span>
+                                                                    <span className="text-[9px] font-bold text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded">{abbr}</span>
                                                                 </div>
                                                             </td>
                                                             <td className="px-5 py-4">
-                                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black text-white ${info.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                <span className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold text-white ${info.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
                                                                     {info.type}
                                                                 </span>
                                                             </td>
@@ -2261,26 +2261,26 @@ export default function AuctionPlatform() {
                                 {/* State Verification Modal */}
                                 {selectedStateInfo && (
                                     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4" onClick={() => setSelectedStateInfo(null)}>
-                                        <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                                        <div className="bg-slate-950 rounded-md shadow-none max-w-5xl w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                                             {/* Header with state name and type */}
-                                            <div className={`p-6 ${selectedStateInfo.type === 'Lien' ? 'bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700' : 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-700'}`}>
+                                            <div className={`p-6 ${selectedStateInfo.type === 'Lien' ? 'bg-slate-900 ' : 'bg-slate-900 '}`}>
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-6">
-                                                        <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                                                            <span className="text-4xl font-display font-black text-white">{selectedStateInfo.abbr}</span>
+                                                        <div className="w-20 h-20 bg-slate-950/10 rounded-md flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                                            <span className="text-2xl font-mono font-mono font-semibold text-white">{selectedStateInfo.abbr}</span>
                                                         </div>
                                                         <div>
                                                             <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">
                                                                 {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien State' : '📜 Tax Deed State'}
                                                             </div>
-                                                            <h2 className="text-4xl font-display font-black text-white tracking-tight">
+                                                            <h2 className="text-2xl font-mono font-mono font-semibold text-white tracking-tight">
                                                                 {STATE_NAMES[selectedStateInfo.abbr] || selectedStateInfo.abbr}
                                                             </h2>
                                                         </div>
                                                     </div>
                                                     <button
                                                         onClick={() => setSelectedStateInfo(null)}
-                                                        className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center text-white transition-colors"
+                                                        className="w-10 h-10 bg-slate-950/10 hover:bg-slate-950/20 rounded-sm flex items-center justify-center text-white transition-colors"
                                                     >
                                                         ✕
                                                     </button>
@@ -2295,27 +2295,27 @@ export default function AuctionPlatform() {
                                                     <div className="space-y-4">
                                                         {/* Key metrics */}
                                                         <div className="grid grid-cols-2 gap-3">
-                                                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4">
-                                                                <div className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">💰 Interest Rate</div>
-                                                                <div className="text-2xl font-display font-black text-green-900">{selectedStateInfo.interestRate}</div>
+                                                            <div className="bg-slate-900 border border-green-200 rounded-md p-4">
+                                                                <div className="text-[10px] font-semibold text-green-600 uppercase tracking-widest mb-1">💰 Interest Rate</div>
+                                                                <div className="text-lg font-mono font-mono font-semibold text-green-900">{selectedStateInfo.interestRate}</div>
                                                             </div>
-                                                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-4">
-                                                                <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">⏱️ Redemption</div>
-                                                                <div className="text-2xl font-display font-black text-blue-900">{selectedStateInfo.redemptionPeriod}</div>
+                                                            <div className="bg-slate-900 border border-blue-200 rounded-md p-4">
+                                                                <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-widest mb-1">⏱️ Redemption</div>
+                                                                <div className="text-lg font-mono font-mono font-semibold text-blue-900">{selectedStateInfo.redemptionPeriod}</div>
                                                             </div>
                                                         </div>
 
                                                         {/* Notes */}
                                                         {selectedStateInfo.notes && (
-                                                            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4">
-                                                                <div className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-2">📋 Key Information</div>
+                                                            <div className="bg-slate-900 border border-amber-200 rounded-md p-4">
+                                                                <div className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest mb-2">📋 Key Information</div>
                                                                 <div className="text-sm font-medium text-amber-900">{selectedStateInfo.notes}</div>
                                                             </div>
                                                         )}
 
                                                         {/* Process explanation */}
-                                                        <div className={`rounded-2xl p-4 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-50 border border-purple-200' : 'bg-indigo-50 border border-indigo-200'}`}>
-                                                            <div className={`text-[10px] font-black uppercase tracking-widest mb-2 ${selectedStateInfo.type === 'Lien' ? 'text-purple-600' : 'text-indigo-600'}`}>
+                                                        <div className={`rounded-md p-4 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-50 border border-purple-200' : 'bg-indigo-50 border border-indigo-200'}`}>
+                                                            <div className={`text-[10px] font-semibold uppercase tracking-widest mb-2 ${selectedStateInfo.type === 'Lien' ? 'text-purple-600' : 'text-indigo-600'}`}>
                                                                 {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien Process' : '📜 Tax Deed Process'}
                                                             </div>
                                                             <div className={`text-sm ${selectedStateInfo.type === 'Lien' ? 'text-purple-900' : 'text-indigo-900'}`}>
@@ -2326,7 +2326,7 @@ export default function AuctionPlatform() {
                                                         </div>
 
                                                         {/* State map placeholder with SVG */}
-                                                        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                                                        <div className="bg-slate-900 border border-slate-700 rounded-md p-6 text-center">
                                                             <div className="relative">
                                                                 {STATE_PATHS[selectedStateInfo.abbr] ? (
                                                                     <svg viewBox="0 0 960 600" className="w-full h-40 mx-auto">
@@ -2338,7 +2338,7 @@ export default function AuctionPlatform() {
                                                                     </svg>
                                                                 ) : (
                                                                     <div className="w-full h-40 flex items-center justify-center">
-                                                                        <span className="text-7xl font-display font-black text-slate-200">{selectedStateInfo.abbr}</span>
+                                                                        <span className="text-7xl font-mono font-semibold text-slate-200">{selectedStateInfo.abbr}</span>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -2350,15 +2350,15 @@ export default function AuctionPlatform() {
 
                                                     {/* Right side - County list */}
                                                     <div className="space-y-4">
-                                                        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                                                            <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                                                        <div className="bg-slate-950 border border-slate-700 rounded-md overflow-hidden shadow-none">
+                                                            <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
                                                                 <div>
-                                                                    <h3 className="font-display font-black text-slate-900">📍 Counties</h3>
+                                                                    <h3 className="font-mono font-semibold text-slate-100">📍 Counties</h3>
                                                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">
                                                                         {(COUNTIES[selectedStateInfo.abbr] || []).length} counties available
                                                                     </p>
                                                                 </div>
-                                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black text-white ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                <span className={`px-3 py-1 rounded-sm text-[10px] font-semibold text-white ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
                                                                     {selectedStateInfo.type}
                                                                 </span>
                                                             </div>
@@ -2377,18 +2377,18 @@ export default function AuctionPlatform() {
                                                                                         setView('detection');
                                                                                         setSelectedStateInfo(null);
                                                                                     }}
-                                                                                    className="w-full flex items-center justify-between p-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-all text-left group"
+                                                                                    className="w-full flex items-center justify-between p-3 hover:bg-slate-900 border-b border-slate-800 last:border-0 transition-all text-left group"
                                                                                 >
                                                                                     <div className="min-w-0">
                                                                                         <div className="flex items-center gap-2">
-                                                                                            <span className="font-bold text-slate-900 truncate">{county[0]}</span>
-                                                                                            {isAlpha && <span className="text-[8px] font-black bg-indigo-600 text-white px-1.5 py-0.5 rounded-full animate-pulse">AI ALPHA</span>}
+                                                                                            <span className="font-bold text-slate-100 truncate">{county[0]}</span>
+                                                                                            {isAlpha && <span className="text-[8px] font-semibold bg-indigo-600 text-white px-1.5 py-0.5 rounded-sm animate-none">AI ALPHA</span>}
                                                                                         </div>
                                                                                         <div className="text-[10px] text-slate-400 font-bold">{selectedStateInfo.abbr} • Tier {county[6]}</div>
                                                                                     </div>
                                                                                     <div className="flex items-center gap-2">
                                                                                         <span
-                                                                                            className="px-2 py-1 rounded-lg text-[9px] font-black text-white"
+                                                                                            className="px-2 py-1 rounded-lg text-[9px] font-semibold text-white"
                                                                                             style={{ backgroundColor: tier.color }}
                                                                                         >
                                                                                             T{county[6]}
@@ -2405,7 +2405,7 @@ export default function AuctionPlatform() {
                                                                     </div>
                                                                 ) : (
                                                                     <div className="p-8 text-center">
-                                                                        <div className="text-4xl mb-2">🗺️</div>
+                                                                        <div className="text-2xl font-mono mb-2">🗺️</div>
                                                                         <div className="text-sm font-bold text-slate-400">County data not yet available</div>
                                                                         <div className="text-xs text-slate-300">Data coming soon</div>
                                                                     </div>
@@ -2416,20 +2416,20 @@ export default function AuctionPlatform() {
                                                         {/* Quick stats */}
                                                         {(COUNTIES[selectedStateInfo.abbr] || []).length > 0 && (
                                                             <div className="grid grid-cols-3 gap-2">
-                                                                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
-                                                                    <div className="text-lg font-display font-black text-emerald-700">
+                                                                <div className="bg-emerald-50 border border-emerald-200 rounded-sm p-3 text-center">
+                                                                    <div className="text-lg font-mono font-semibold text-emerald-700">
                                                                         {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] === 1).length}
                                                                     </div>
                                                                     <div className="text-[8px] font-bold text-emerald-500 uppercase">Tier 1</div>
                                                                 </div>
-                                                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
-                                                                    <div className="text-lg font-display font-black text-blue-700">
+                                                                <div className="bg-blue-50 border border-blue-200 rounded-sm p-3 text-center">
+                                                                    <div className="text-lg font-mono font-semibold text-blue-700">
                                                                         {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] === 2).length}
                                                                     </div>
                                                                     <div className="text-[8px] font-bold text-blue-500 uppercase">Tier 2</div>
                                                                 </div>
-                                                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
-                                                                    <div className="text-lg font-display font-black text-amber-700">
+                                                                <div className="bg-amber-50 border border-amber-200 rounded-sm p-3 text-center">
+                                                                    <div className="text-lg font-mono font-semibold text-amber-700">
                                                                         {COUNTIES[selectedStateInfo.abbr].filter(c => c[6] >= 3).length}
                                                                     </div>
                                                                     <div className="text-[8px] font-bold text-amber-500 uppercase">Tier 3+</div>
@@ -2441,14 +2441,14 @@ export default function AuctionPlatform() {
                                             </div>
 
                                             {/* Footer with actions */}
-                                            <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-4">
+                                            <div className="p-6 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-4">
                                                 <div className="text-[10px] text-slate-400 font-medium">
                                                     Source: THE GUIDE TO FINANCIAL INDEPENDENCE - Tax Reference
                                                 </div>
                                                 <div className="flex gap-3">
                                                     <button
                                                         onClick={() => setSelectedStateInfo(null)}
-                                                        className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-display font-black text-sm hover:bg-slate-50 transition-colors"
+                                                        className="px-6 py-3 bg-slate-950 border border-slate-700 text-slate-300 rounded-sm font-mono font-semibold text-sm hover:bg-slate-900 transition-colors"
                                                     >
                                                         Close
                                                     </button>
@@ -2459,7 +2459,7 @@ export default function AuctionPlatform() {
                                                                 setSelectedStateInfo(null);
                                                                 setView('list');
                                                             }}
-                                                            className={`px-6 py-3 rounded-xl font-display font-black text-sm text-white shadow-lg transition-all hover:scale-105 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                                                            className={`px-6 py-3 rounded-sm font-mono font-semibold text-sm text-white shadow-none transition-all hover:scale-105 ${selectedStateInfo.type === 'Lien' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}
                                                         >
                                                             🔍 Explore {COUNTIES[selectedStateInfo.abbr].length} Counties
                                                         </button>
@@ -2474,31 +2474,31 @@ export default function AuctionPlatform() {
                             /* User Guide View */
                             <div className="space-y-6 overflow-auto max-h-[calc(100vh-180px)]">
                                 {/* Header */}
-                                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200/50">
-                                    <h2 className="text-3xl font-display font-black text-slate-900 mb-2">📚 User Guide</h2>
+                                <div className="bg-slate-900 rounded-md p-6 border border-emerald-200/50">
+                                    <h2 className="text-xl font-mono font-mono font-semibold text-slate-100 mb-2">📚 User Guide</h2>
                                     <p className="text-slate-500">Master the platform for optimal tax lien/deed investment research</p>
                                 </div>
 
                                 {/* Quick Start */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
                                     <div className="bg-blue-50 px-5 py-4 border-b border-blue-100">
-                                        <h3 className="font-display font-black text-lg text-blue-900">🚀 Quick Start</h3>
+                                        <h3 className="font-mono font-semibold text-lg text-blue-900">🚀 Quick Start</h3>
                                     </div>
                                     <div className="p-5">
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                <div className="text-2xl mb-2">📍</div>
-                                                <div className="font-bold text-slate-900 mb-1">Map Explorer</div>
+                                            <div className="bg-slate-900 rounded-sm p-4 border border-slate-800">
+                                                <div className="text-lg font-mono mb-2">📍</div>
+                                                <div className="font-bold text-slate-100 mb-1">Map Explorer</div>
                                                 <div className="text-xs text-slate-500">Visual overview - click any state to see counties</div>
                                             </div>
-                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                <div className="text-2xl mb-2">📊</div>
-                                                <div className="font-bold text-slate-900 mb-1">State Database</div>
+                                            <div className="bg-slate-900 rounded-sm p-4 border border-slate-800">
+                                                <div className="text-lg font-mono mb-2">📊</div>
+                                                <div className="font-bold text-slate-100 mb-1">State Database</div>
                                                 <div className="text-xs text-slate-500">Analyze counties by tier, export CSV data</div>
                                             </div>
-                                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                <div className="text-2xl mb-2">🏛️</div>
-                                                <div className="font-bold text-slate-900 mb-1">State Info</div>
+                                            <div className="bg-slate-900 rounded-sm p-4 border border-slate-800">
+                                                <div className="text-lg font-mono mb-2">🏛️</div>
+                                                <div className="font-bold text-slate-100 mb-1">State Info</div>
                                                 <div className="text-xs text-slate-500">Lien vs Deed reference, interest rates</div>
                                             </div>
                                         </div>
@@ -2506,9 +2506,9 @@ export default function AuctionPlatform() {
                                 </div>
 
                                 {/* Tier System */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
                                     <div className="bg-amber-50 px-5 py-4 border-b border-amber-100">
-                                        <h3 className="font-display font-black text-lg text-amber-900">🎯 Understanding Tiers</h3>
+                                        <h3 className="font-mono font-semibold text-lg text-amber-900">🎯 Understanding Tiers</h3>
                                     </div>
                                     <div className="p-5">
                                         <div className="space-y-3">
@@ -2519,10 +2519,10 @@ export default function AuctionPlatform() {
                                                 { tier: 4, name: 'Speculative', action: '⚠️ CAUTION', color: 'bg-orange-500', desc: 'Limited liquidity, higher exit risk' },
                                                 { tier: 5, name: 'Capital Trap', action: '❌ AVOID', color: 'bg-red-500', desc: 'Population decline, weak fundamentals' },
                                             ].map(t => (
-                                                <div key={t.tier} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                                    <div className={`w-10 h-10 ${t.color} rounded-xl flex items-center justify-center text-white font-black`}>T{t.tier}</div>
+                                                <div key={t.tier} className="flex items-center gap-4 p-3 rounded-sm bg-slate-900 border border-slate-800">
+                                                    <div className={`w-10 h-10 ${t.color} rounded-sm flex items-center justify-center text-white font-semibold`}>T{t.tier}</div>
                                                     <div className="flex-1">
-                                                        <div className="font-bold text-slate-900">{t.name}</div>
+                                                        <div className="font-bold text-slate-100">{t.name}</div>
                                                         <div className="text-xs text-slate-500">{t.desc}</div>
                                                     </div>
                                                     <div className="text-sm font-bold">{t.action}</div>
@@ -2533,44 +2533,44 @@ export default function AuctionPlatform() {
                                 </div>
 
                                 {/* Data Gathering Workflow */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
                                     <div className="bg-purple-50 px-5 py-4 border-b border-purple-100">
-                                        <h3 className="font-display font-black text-lg text-purple-900">📥 Optimal Data Gathering</h3>
+                                        <h3 className="font-mono font-semibold text-lg text-purple-900">📥 Optimal Data Gathering</h3>
                                     </div>
                                     <div className="p-5">
                                         <div className="space-y-4">
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">1</div>
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold shrink-0">1</div>
                                                 <div>
-                                                    <div className="font-bold text-slate-900">Go to State Info → Filter by "Lien"</div>
+                                                    <div className="font-bold text-slate-100">Go to State Info → Filter by "Lien"</div>
                                                     <div className="text-xs text-slate-500">Focus on states with interest-bearing investments</div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">2</div>
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold shrink-0">2</div>
                                                 <div>
-                                                    <div className="font-bold text-slate-900">Sort by Interest Rate (descending)</div>
+                                                    <div className="font-bold text-slate-100">Sort by Interest Rate (descending)</div>
                                                     <div className="text-xs text-slate-500">Find highest return states (Iowa: 24%, Georgia: 20%)</div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">3</div>
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold shrink-0">3</div>
                                                 <div>
-                                                    <div className="font-bold text-slate-900">Click state → View county preview</div>
+                                                    <div className="font-bold text-slate-100">Click state → View county preview</div>
                                                     <div className="text-xs text-slate-500">See tier breakdown and top counties instantly</div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">4</div>
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold shrink-0">4</div>
                                                 <div>
-                                                    <div className="font-bold text-slate-900">Click "Explore Counties" → Filter Tier 1-2</div>
+                                                    <div className="font-bold text-slate-100">Click "Explore Counties" → Filter Tier 1-2</div>
                                                     <div className="text-xs text-slate-500">Focus on prime opportunities with best liquidity</div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-black shrink-0">5</div>
+                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 font-semibold shrink-0">5</div>
                                                 <div>
-                                                    <div className="font-bold text-slate-900">Export to CSV for offline analysis</div>
+                                                    <div className="font-bold text-slate-100">Export to CSV for offline analysis</div>
                                                     <div className="text-xs text-slate-500">Download data for due diligence and tracking</div>
                                                 </div>
                                             </div>
@@ -2579,9 +2579,9 @@ export default function AuctionPlatform() {
                                 </div>
 
                                 {/* Pro Tips */}
-                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden">
                                     <div className="bg-green-50 px-5 py-4 border-b border-green-100">
-                                        <h3 className="font-display font-black text-lg text-green-900">💡 Pro Tips</h3>
+                                        <h3 className="font-mono font-semibold text-lg text-green-900">💡 Pro Tips</h3>
                                     </div>
                                     <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {[
@@ -2592,7 +2592,7 @@ export default function AuctionPlatform() {
                                             { tip: 'Wyoming has longest redemption (4 years)', icon: '⏰' },
                                             { tip: 'Click column headers to sort data', icon: '📊' },
                                         ].map((p, i) => (
-                                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-green-50/50 border border-green-100">
+                                            <div key={i} className="flex items-center gap-3 p-3 rounded-sm bg-green-50/50 border border-green-100">
                                                 <span className="text-xl">{p.icon}</span>
                                                 <span className="text-sm font-medium text-green-900">{p.tip}</span>
                                             </div>
@@ -2602,20 +2602,20 @@ export default function AuctionPlatform() {
 
                                 {/* Key Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
+                                    <div className="bg-slate-900 rounded-md p-5 text-white">
+                                        <div className="text-xl font-mono font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Lien States</div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
+                                    <div className="bg-slate-900 rounded-md p-5 text-white">
+                                        <div className="text-xl font-mono font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deed States</div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">{totalCounties}</div>
+                                    <div className="bg-slate-900 rounded-md p-5 text-white">
+                                        <div className="text-xl font-mono font-mono font-semibold">{totalCounties}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Total Counties</div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-5 text-white">
-                                        <div className="text-3xl font-display font-black">{totalT123}</div>
+                                    <div className="bg-slate-900 rounded-md p-5 text-white">
+                                        <div className="text-xl font-mono font-mono font-semibold">{totalT123}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Prime Counties</div>
                                     </div>
                                 </div>
@@ -2628,7 +2628,7 @@ export default function AuctionPlatform() {
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full gap-4 opacity-30">
                                 <div className="text-6xl">⚡</div>
-                                <div className="font-display font-black text-3xl uppercase text-slate-900">Coming Soon</div>
+                                <div className="font-mono font-semibold text-xl font-mono uppercase text-slate-100">Coming Soon</div>
                                 <div className="text-xs font-bold tracking-widest uppercase text-slate-500">Feature in development</div>
                             </div>
                         )}
@@ -2636,12 +2636,12 @@ export default function AuctionPlatform() {
                 </div >
 
                 {/* Footer */}
-                <footer className="h-9 bg-white/50 backdrop-blur-sm border-t border-slate-200/40 flex items-center justify-between px-8 shrink-0" >
-                    <div className="text-[8px] font-black text-slate-400 tracking-widest uppercase">System Core v4.2.19</div>
+                <footer className="h-9 bg-slate-950/50 backdrop-blur-sm border-t border-slate-700/40 flex items-center justify-between px-8 shrink-0" >
+                    <div className="text-[8px] font-semibold text-slate-400 tracking-widest uppercase">System Core v4.2.19</div>
                     <div className="flex gap-4 items-center">
                         <span className="text-[8px] font-bold text-slate-400 uppercase">Data: Census • Zillow • Regrid</span>
                         <div className="h-3 w-px bg-slate-200"></div>
-                        <span className="text-[8px] font-black text-blue-600 uppercase animate-pulse">Encrypted</span>
+                        <span className="text-[8px] font-semibold text-blue-600 uppercase animate-none">Encrypted</span>
                     </div>
                 </footer >
             </main >

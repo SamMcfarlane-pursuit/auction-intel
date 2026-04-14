@@ -80,14 +80,14 @@ export default function ROICalculator({ onClose }) {
     }, [purchasePrice, holdMonths]);
 
     return (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 md:p-8">
+        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="font-display font-black text-2xl text-slate-900">💰 ROI Calculator</h2>
+                    <h2 className="font-mono font-semibold text-lg font-mono text-slate-100">💰 ROI Calculator</h2>
                     <p className="text-slate-500 text-sm mt-1">Calculate potential returns on tax lien investments</p>
                 </div>
                 {onClose && (
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-lg font-mono">&times;</button>
                 )}
             </div>
 
@@ -95,24 +95,24 @@ export default function ROICalculator({ onClose }) {
                 {/* Input Section */}
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-xs font-black text-slate-400 uppercase mb-2">Investment Amount</label>
+                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Investment Amount</label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
                             <input
                                 type="number"
                                 value={purchasePrice}
                                 onChange={(e) => setPurchasePrice(Number(e.target.value))}
-                                className="w-full pl-8 pr-4 py-3 bg-slate-50 rounded-xl border border-slate-200 font-display font-black text-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-8 pr-4 py-3 bg-slate-900 rounded-sm border border-slate-700 font-mono font-semibold text-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-black text-slate-400 uppercase mb-2">State</label>
+                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">State</label>
                         <select
                             value={selectedState}
                             onChange={(e) => setSelectedState(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-slate-900 rounded-sm border border-slate-700 font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             {Object.entries(STATE_RATES)
                                 .sort((a, b) => b[1].rate - a[1].rate)
@@ -126,7 +126,7 @@ export default function ROICalculator({ onClose }) {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-black text-slate-400 uppercase mb-2">Hold Period: {holdMonths} months</label>
+                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Hold Period: {holdMonths} months</label>
                         <input
                             type="range"
                             min="1"
@@ -143,25 +143,25 @@ export default function ROICalculator({ onClose }) {
                 </div>
 
                 {/* Results Section */}
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
-                    <div className="text-xs font-black text-blue-200 uppercase mb-4">Projected Returns</div>
+                <div className="bg-slate-900 rounded-md p-6 text-white">
+                    <div className="text-xs font-semibold text-blue-200 uppercase mb-4">Projected Returns</div>
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-white/10 rounded-xl p-4">
+                        <div className="bg-slate-950/10 rounded-sm p-4">
                             <div className="text-xs text-blue-200 uppercase font-bold">Interest Earned</div>
-                            <div className="font-display font-black text-2xl">${Number(calculations.interest).toLocaleString()}</div>
+                            <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.interest).toLocaleString()}</div>
                         </div>
-                        <div className="bg-white/10 rounded-xl p-4">
+                        <div className="bg-slate-950/10 rounded-sm p-4">
                             <div className="text-xs text-blue-200 uppercase font-bold">Total Return</div>
-                            <div className="font-display font-black text-2xl">${Number(calculations.totalReturn).toLocaleString()}</div>
+                            <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.totalReturn).toLocaleString()}</div>
                         </div>
-                        <div className="bg-white/10 rounded-xl p-4">
+                        <div className="bg-slate-950/10 rounded-sm p-4">
                             <div className="text-xs text-blue-200 uppercase font-bold">ROI ({holdMonths}mo)</div>
-                            <div className="font-display font-black text-2xl">{calculations.roi}%</div>
+                            <div className="font-mono font-semibold text-lg font-mono">{calculations.roi}%</div>
                         </div>
-                        <div className="bg-white/10 rounded-xl p-4">
+                        <div className="bg-slate-950/10 rounded-sm p-4">
                             <div className="text-xs text-blue-200 uppercase font-bold">Annualized ROI</div>
-                            <div className="font-display font-black text-2xl text-emerald-300">{calculations.annualizedROI}%</div>
+                            <div className="font-mono font-semibold text-lg font-mono text-emerald-300">{calculations.annualizedROI}%</div>
                         </div>
                     </div>
 
@@ -183,8 +183,8 @@ export default function ROICalculator({ onClose }) {
                 {showComparison && (
                     <div className="mt-4 overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-50">
-                                <tr className="text-slate-400 text-[10px] font-black uppercase">
+                            <thead className="bg-slate-900">
+                                <tr className="text-slate-400 text-[10px] font-semibold uppercase">
                                     <th className="px-4 py-3">State</th>
                                     <th className="px-4 py-3">Rate</th>
                                     <th className="px-4 py-3 text-right">Interest ({holdMonths}mo)</th>
@@ -193,11 +193,11 @@ export default function ROICalculator({ onClose }) {
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {topStates.map((s, i) => (
-                                    <tr key={s.state} className={`${i === 0 ? 'bg-emerald-50' : ''} hover:bg-slate-50`}>
-                                        <td className="px-4 py-3 font-display font-black">{s.state} {i === 0 && '🏆'}</td>
+                                    <tr key={s.state} className={`${i === 0 ? 'bg-emerald-50' : ''} hover:bg-slate-900`}>
+                                        <td className="px-4 py-3 font-mono font-semibold">{s.state} {i === 0 && '🏆'}</td>
                                         <td className="px-4 py-3 font-bold text-blue-600">{s.rate}%</td>
                                         <td className="px-4 py-3 text-right font-bold text-emerald-600">${Number(s.interest).toLocaleString()}</td>
-                                        <td className="px-4 py-3 text-right font-display font-black">${Number(s.total).toLocaleString()}</td>
+                                        <td className="px-4 py-3 text-right font-mono font-semibold">${Number(s.total).toLocaleString()}</td>
                                     </tr>
                                 ))}
                             </tbody>

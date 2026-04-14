@@ -18,7 +18,7 @@ const FloatingParticles = () => {
             {particles.map(p => (
                 <div
                     key={p.id}
-                    className="absolute rounded-full"
+                    className="absolute rounded-sm"
                     style={{
                         width: p.size,
                         height: p.size,
@@ -103,8 +103,8 @@ export default function SignIn() {
             <FloatingParticles />
 
             {/* Mesh gradient overlays */}
-            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-sm blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-sm blur-3xl pointer-events-none"></div>
 
             {/* ═══ Left Panel — Desktop Only ═══ */}
             <div className="hidden lg:flex flex-col justify-between w-[500px] xl:w-[550px] p-8 xl:p-12 relative z-10"
@@ -117,19 +117,19 @@ export default function SignIn() {
                 <div>
                     {/* Logo */}
                     <div className="flex items-center gap-3 mb-12">
-                        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-                            <span className="text-white font-black text-lg">AI</span>
+                        <div className="w-11 h-11 bg-slate-900 rounded-sm flex items-center justify-center shadow-none shadow-purple-500/20">
+                            <span className="text-white font-semibold text-lg">AI</span>
                         </div>
                         <div>
-                            <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
+                            <div className="text-white font-mono font-semibold text-xl tracking-tight">Auction Intel</div>
                             <div className="text-blue-300/60 text-[9px] font-bold uppercase tracking-[0.2em]">Intelligence Platform</div>
                         </div>
                     </div>
 
                     {/* Hero Text */}
-                    <h1 className="text-white font-display font-black text-4xl xl:text-5xl leading-tight tracking-tight mb-4">
+                    <h1 className="text-white font-mono font-semibold text-2xl font-mono xl:text-3xl font-mono leading-tight tracking-tight mb-4">
                         Tax Auction
-                        <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Intelligence</span>
+                        <span className="block bg-slate-900 bg-clip-text text-transparent">Intelligence</span>
                     </h1>
                     <p className="text-slate-400 text-base leading-relaxed max-w-sm mb-10">
                         Research 3,143 counties across all 50 states. Real data, real returns, real opportunities.
@@ -144,7 +144,7 @@ export default function SignIn() {
                             { icon: '🔥', title: 'Live Auction Alerts', desc: 'Countdown timers & notifications for upcoming sales' },
                         ].map((feature, i) => (
                             <div key={i} className="flex items-start gap-3 group">
-                                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-white/10 transition-all">
+                                <div className="w-10 h-10 rounded-sm bg-slate-950/5 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-slate-950/10 transition-all">
                                     {feature.icon}
                                 </div>
                                 <div>
@@ -160,17 +160,17 @@ export default function SignIn() {
                 <div className="mt-8 pt-8 border-t border-white/5">
                     <div className="flex items-center gap-6">
                         <div className="text-center">
-                            <div className="text-white font-display font-black text-2xl"><AnimatedCounter end={50} /></div>
+                            <div className="text-white font-mono font-semibold text-lg font-mono"><AnimatedCounter end={50} /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">States</div>
                         </div>
-                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="w-px h-8 bg-slate-950/10"></div>
                         <div className="text-center">
-                            <div className="text-white font-display font-black text-2xl"><AnimatedCounter end={3143} suffix="+" /></div>
+                            <div className="text-white font-mono font-semibold text-lg font-mono"><AnimatedCounter end={3143} suffix="+" /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Counties</div>
                         </div>
-                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="w-px h-8 bg-slate-950/10"></div>
                         <div className="text-center">
-                            <div className="text-emerald-400 font-display font-black text-2xl"><AnimatedCounter end={2500} suffix="+" /></div>
+                            <div className="text-emerald-400 font-mono font-semibold text-lg font-mono"><AnimatedCounter end={2500} suffix="+" /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Investors</div>
                         </div>
                     </div>
@@ -189,51 +189,51 @@ export default function SignIn() {
                 >
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-                            <span className="text-white font-black text-lg">AI</span>
+                        <div className="w-10 h-10 bg-slate-900 rounded-sm flex items-center justify-center shadow-none shadow-purple-500/20">
+                            <span className="text-white font-semibold text-lg">AI</span>
                         </div>
-                        <div className="text-white font-display font-black text-xl tracking-tight">Auction Intel</div>
+                        <div className="text-white font-mono font-semibold text-xl tracking-tight">Auction Intel</div>
                     </div>
 
                     {/* Card */}
-                    <div className="backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border"
+                    <div className="backdrop-blur-xl rounded-md p-6 md:p-8 shadow-none border"
                         style={{
                             background: 'rgba(255, 255, 255, 0.06)',
                             borderColor: 'rgba(255, 255, 255, 0.1)',
                         }}
                     >
                         <div className="mb-6">
-                            <h2 className="text-white font-display font-black text-2xl tracking-tight">Welcome Back</h2>
+                            <h2 className="text-white font-mono font-semibold text-lg font-mono tracking-tight">Welcome Back</h2>
                             <p className="text-slate-400 text-sm mt-1">Sign in to access your auction intelligence dashboard</p>
                         </div>
 
                         {error && (
-                            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-2">
+                            <div className="mb-4 p-3 rounded-sm bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-2">
                                 <span>⚠️</span> {error}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Email Address</label>
+                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Email Address</label>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                                     placeholder="investor@email.com"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Password</label>
+                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Password</label>
                                 <div className="relative">
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         value={formData.password}
                                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                        className="w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                                        className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
                                         style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                                         placeholder="••••••••"
                                     />
@@ -260,14 +260,14 @@ export default function SignIn() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-none shadow-blue-500/20 hover:shadow-blue-500/30"
                                 style={{
                                     background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
                                 }}
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center gap-2">
-                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-sm animate-spin"></span>
                                         Signing in...
                                     </span>
                                 ) : 'Sign In'}
@@ -275,15 +275,15 @@ export default function SignIn() {
                         </form>
 
                         <div className="mt-4 flex items-center gap-3">
-                            <div className="flex-1 h-px bg-white/10"></div>
+                            <div className="flex-1 h-px bg-slate-950/10"></div>
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
-                            <div className="flex-1 h-px bg-white/10"></div>
+                            <div className="flex-1 h-px bg-slate-950/10"></div>
                         </div>
 
                         <button
                             onClick={demoLogin}
                             disabled={loading}
-                            className="mt-4 w-full py-3 rounded-xl font-bold text-sm transition-all hover:bg-white/10 disabled:opacity-50"
+                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm transition-all hover:bg-slate-950/10 disabled:opacity-50"
                             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8' }}
                         >
                             🎯 Try Demo Account
@@ -298,9 +298,9 @@ export default function SignIn() {
                     {/* Mobile Trust Bar */}
                     <div className="lg:hidden mt-6 flex items-center justify-center gap-4">
                         <span className="text-slate-500 text-xs font-bold">50 States</span>
-                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-sm"></span>
                         <span className="text-slate-500 text-xs font-bold">3,143 Counties</span>
-                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                        <span className="w-1 h-1 bg-slate-700 rounded-sm"></span>
                         <span className="text-emerald-500/60 text-xs font-bold">Live Data</span>
                     </div>
                 </div>

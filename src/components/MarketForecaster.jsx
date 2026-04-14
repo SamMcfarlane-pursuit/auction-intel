@@ -72,27 +72,27 @@ export default function MarketForecaster({ county, onBack }) {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center p-20 space-y-4">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <div className="text-slate-400 font-bold animate-pulse">Running AI Forecast Models...</div>
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-sm animate-spin"></div>
+                <div className="text-slate-400 font-bold animate-none">Running AI Forecast Models...</div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="bg-slate-950 rounded-sm shadow-none border border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="p-8 bg-slate-900 text-white flex justify-between items-center border-b border-slate-800">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <span className="text-2xl">🔮</span>
-                        <h2 className="text-3xl font-display font-black tracking-tighter">AI Alpha Forecaster</h2>
+                        <span className="text-lg font-mono">🔮</span>
+                        <h2 className="text-xl font-mono font-mono font-semibold tracking-tighter">AI Alpha Forecaster</h2>
                     </div>
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
                         Predictive Analysis for {county?.name || "Target Market"}
                     </p>
                 </div>
                 {onBack && (
-                    <button onClick={onBack} className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-xs font-bold transition-all border border-white/20">
+                    <button onClick={onBack} className="bg-slate-950/10 hover:bg-slate-950/20 px-4 py-2 rounded-sm text-xs font-bold transition-all border border-white/20">
                         ← Back to Market
                     </button>
                 )}
@@ -101,38 +101,38 @@ export default function MarketForecaster({ county, onBack }) {
             <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Metrics Sidebar */}
                 <div className="space-y-6">
-                    <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                        <div className="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Market Sentiment</div>
-                        <div className={`text-2xl font-black mb-2 ${
-                            forecast?.market_sentiment === 'Bullish' ? 'text-emerald-600' : 
-                            forecast?.market_sentiment === 'Stable' ? 'text-blue-600' : 'text-amber-600'
-                        }`}>
+                    <div className="bg-slate-900 rounded-md p-6 border border-slate-800">
+                        <div className="text-[10px] font-semibold text-slate-400 uppercase mb-4 tracking-widest">Market Sentiment</div>
+                        <div className={`text-lg font-mono font-semibold mb-2 ${
+ forecast?.market_sentiment === 'Bullish' ? 'text-emerald-600' : 
+ forecast?.market_sentiment === 'Stable' ? 'text-blue-600' : 'text-amber-600'
+ }`}>
                             {forecast?.market_sentiment || "Analyzing..."}
                         </div>
-                        <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-1.5 w-full bg-slate-200 rounded-sm overflow-hidden">
                             <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${(forecast?.confidence_score || 0.8) * 100}%` }}></div>
                         </div>
-                        <div className="flex justify-between mt-2 text-[9px] font-black text-slate-400 uppercase">
+                        <div className="flex justify-between mt-2 text-[9px] font-semibold text-slate-400 uppercase">
                             <span>Confidence</span>
                             <span>{Math.round((forecast?.confidence_score || 0.8) * 100)}%</span>
                         </div>
                     </div>
 
                     <div className="space-y-3">
-                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Select Scenario</div>
+                        <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-2">Select Scenario</div>
                         <div className="grid grid-cols-1 gap-2">
                             {['aggressive', 'baseline', 'conservative'].map(s => (
                                 <button 
                                     key={s}
                                     onClick={() => setScenario(s)}
-                                    className={`p-4 rounded-xl text-left transition-all border-2 ${
-                                        scenario === s 
-                                        ? 'bg-blue-50 border-blue-600 shadow-sm' 
-                                        : 'bg-white border-slate-200 hover:border-slate-300 text-slate-500'
-                                    }`}
+                                    className={`p-4 rounded-sm text-left transition-all border-2 ${
+ scenario === s 
+ ? 'bg-blue-50 border-blue-600 shadow-none' 
+ : 'bg-slate-950 border-slate-700 hover:border-slate-300 text-slate-500'
+ }`}
                                 >
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-black uppercase tracking-tighter">{s}</span>
+                                        <span className="text-xs font-semibold uppercase tracking-tighter">{s}</span>
                                         {scenario === s && <span className="text-blue-600">●</span>}
                                     </div>
                                     <div className="text-[10px] opacity-70 mt-1">
@@ -145,9 +145,9 @@ export default function MarketForecaster({ county, onBack }) {
                         </div>
                     </div>
 
-                    <div className="bg-slate-900 rounded-xl p-6 text-white shadow-lg border border-slate-800">
-                        <div className="text-[9px] font-black text-slate-400 uppercase mb-1">Projected 12M Yield</div>
-                        <div className="text-3xl font-display font-black text-emerald-400">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
+                    <div className="bg-slate-900 rounded-sm p-6 text-white shadow-none border border-slate-800">
+                        <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Projected 12M Yield</div>
+                        <div className="text-xl font-mono font-mono font-semibold text-emerald-400">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
                         <div className="text-[10px] text-slate-400 mt-2">
                            Forecasted equity gain based on {county?.name} momentum and current economic cooling factors.
                         </div>
@@ -156,15 +156,15 @@ export default function MarketForecaster({ county, onBack }) {
 
                 {/* Main Forecast Chart */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-slate-50 rounded-xl p-8 border border-slate-200 h-[450px] relative">
+                    <div className="bg-slate-900 rounded-sm p-8 border border-slate-700 h-[450px] relative">
                         <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Price Appreciation Forecast</h3>
+                                <h3 className="text-lg font-semibold text-slate-100 tracking-tight">Price Appreciation Forecast</h3>
                                 <p className="text-xs text-slate-400 font-bold">Projected ZHVI Value (24 Month Window)</p>
                             </div>
-                            <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest">
-                                <span className="flex items-center gap-2 text-blue-600"><span className="w-2 h-2 rounded-full bg-blue-600"></span> Current Target</span>
-                                <span className="flex items-center gap-2 text-slate-400"><span className="w-2 h-2 rounded-full bg-slate-400"></span> Baseline Average</span>
+                            <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest">
+                                <span className="flex items-center gap-2 text-blue-600"><span className="w-2 h-2 rounded-sm bg-blue-600"></span> Current Target</span>
+                                <span className="flex items-center gap-2 text-slate-400"><span className="w-2 h-2 rounded-sm bg-slate-400"></span> Baseline Average</span>
                             </div>
                         </div>
 
@@ -204,33 +204,33 @@ export default function MarketForecaster({ county, onBack }) {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white">
-                            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 text-lg">📈</div>
+                        <div className="border border-slate-700 rounded-sm p-4 flex items-center gap-4 bg-slate-950">
+                            <div className="w-10 h-10 bg-emerald-100 rounded-sm flex items-center justify-center text-emerald-600 text-lg">📈</div>
                             <div>
-                                <div className="text-[9px] font-black text-slate-400 uppercase">12M Projection</div>
-                                <div className="text-sm font-black text-slate-900">${Math.round(forecast?.projected_zhvi_12m || 0).toLocaleString()}</div>
+                                <div className="text-[9px] font-semibold text-slate-400 uppercase">12M Projection</div>
+                                <div className="text-sm font-semibold text-slate-100">${Math.round(forecast?.projected_zhvi_12m || 0).toLocaleString()}</div>
                             </div>
                         </div>
-                        <div className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white">
+                        <div className="border border-slate-700 rounded-sm p-4 flex items-center gap-4 bg-slate-950">
                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 text-lg">🚀</div>
                             <div>
-                                <div className="text-[9px] font-black text-slate-400 uppercase">24M Target</div>
-                                <div className="text-sm font-black text-slate-900">${Math.round(forecast?.projected_zhvi_24m || 0).toLocaleString()}</div>
+                                <div className="text-[9px] font-semibold text-slate-400 uppercase">24M Target</div>
+                                <div className="text-sm font-semibold text-slate-100">${Math.round(forecast?.projected_zhvi_24m || 0).toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 {/* Security & Historical Efficiency Scatter */}
-                <div className="lg:col-span-3 bg-slate-50 rounded-xl p-8 border border-slate-200 h-[450px] relative mt-4">
+                <div className="lg:col-span-3 bg-slate-900 rounded-sm p-8 border border-slate-700 h-[450px] relative mt-4">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-lg font-black text-slate-900 tracking-tight">Historical Clearing Price Matrix</h3>
+                            <h3 className="text-lg font-semibold text-slate-100 tracking-tight">Historical Clearing Price Matrix</h3>
                             <p className="text-xs text-slate-400 font-bold">Max Allowable Bid (MAB) vs Actual Winning Bid (Last 12M)</p>
                         </div>
-                        <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest">
-                            <span className="flex items-center gap-2 text-emerald-500"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Deal Snipes</span>
-                            <span className="flex items-center gap-2 text-red-400"><span className="w-2 h-2 rounded-full bg-red-400"></span> Overbids</span>
+                        <div className="flex items-center gap-4 text-[10px] font-semibold uppercase tracking-widest">
+                            <span className="flex items-center gap-2 text-emerald-500"><span className="w-2 h-2 rounded-sm bg-emerald-500"></span> Deal Snipes</span>
+                            <span className="flex items-center gap-2 text-red-400"><span className="w-2 h-2 rounded-sm bg-red-400"></span> Overbids</span>
                         </div>
                     </div>
 
@@ -262,11 +262,11 @@ export default function MarketForecaster({ county, onBack }) {
                                     if (active && payload && payload.length) {
                                         const data = payload[0].payload;
                                         return (
-                                            <div className="bg-white p-3 rounded-xl shadow-xl border border-slate-100 text-xs font-bold font-display">
+                                            <div className="bg-slate-950 p-3 rounded-sm shadow-none border border-slate-800 text-xs font-bold font-mono">
                                                 <div className="text-slate-400 mb-2">{data.date}</div>
-                                                <div className="text-slate-900">ARV: <span className="text-blue-600">${data.arv.toLocaleString()}</span></div>
-                                                <div className="text-slate-900">MAB: <span className="text-indigo-600">${data.mab.toLocaleString()}</span></div>
-                                                <div className="text-slate-900 mt-1 pt-1 border-t border-slate-100">
+                                                <div className="text-slate-100">ARV: <span className="text-blue-600">${data.arv.toLocaleString()}</span></div>
+                                                <div className="text-slate-100">MAB: <span className="text-indigo-600">${data.mab.toLocaleString()}</span></div>
+                                                <div className="text-slate-100 mt-1 pt-1 border-t border-slate-800">
                                                     Cleared: <span className={data.win === 'Snipe' ? 'text-emerald-500' : 'text-red-500'}>${data.actual.toLocaleString()}</span>
                                                 </div>
                                             </div>

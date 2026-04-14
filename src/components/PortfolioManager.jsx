@@ -123,13 +123,13 @@ export default function PortfolioManager({ onBack }) {
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden h-full flex flex-col">
+        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden h-full flex flex-col">
             {/* Header */}
-            <div className="p-8 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex justify-between items-center shrink-0">
+            <div className="p-8 bg-slate-900 text-white flex justify-between items-center shrink-0">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <span className="text-2xl">💼</span>
-                        <h2 className="text-3xl font-display font-black tracking-tighter">Fund Manager</h2>
+                        <span className="text-lg font-mono">💼</span>
+                        <h2 className="text-xl font-mono font-mono font-semibold tracking-tighter">Fund Manager</h2>
                     </div>
                     <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">
                         Portfolio Capital Allocation & Risk Aggregation
@@ -139,51 +139,51 @@ export default function PortfolioManager({ onBack }) {
                     <button 
                         onClick={generateProspectus}
                         disabled={isGenerating || watchlist.length === 0}
-                        className={`bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-3 rounded-xl text-sm font-black transition-all shadow-lg flex items-center gap-2 ${
-                            isGenerating || watchlist.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                        className={`bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-3 rounded-sm text-sm font-semibold transition-all shadow-none flex items-center gap-2 ${
+ isGenerating || watchlist.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+ }`}
                     >
                         {isGenerating ? '⏳ Compiling PDF...' : '📄 Generate Prospectus'}
                     </button>
                     {onBack && (
-                        <button onClick={onBack} className="bg-white/10 hover:bg-white/20 px-4 py-3 rounded-xl text-xs font-bold transition-all border border-white/20">
+                        <button onClick={onBack} className="bg-slate-950/10 hover:bg-slate-950/20 px-4 py-3 rounded-sm text-xs font-bold transition-all border border-white/20">
                             ← Back
                         </button>
                     )}
                 </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-8 bg-slate-50">
+            <div className="flex-1 overflow-auto p-8 bg-slate-900">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     {/* Capital Inputs */}
                     <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Asset Allocation</h3>
+                        <div className="bg-slate-950 rounded-md p-8 border border-slate-700 shadow-none">
+                            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">Asset Allocation</h3>
                             
-                            <label className="block text-xs font-bold text-slate-700 mb-2">Total Liquid Capital Constraint</label>
+                            <label className="block text-xs font-bold text-slate-300 mb-2">Total Liquid Capital Constraint</label>
                             <div className="relative mb-8">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-black">$</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">$</span>
                                 <input 
                                     type="number"
                                     value={liquidCapital}
                                     onChange={(e) => setLiquidCapital(Number(e.target.value))}
-                                    className="w-full pl-8 pr-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-xl text-lg font-black text-slate-900 focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
+                                    className="w-full pl-8 pr-4 py-4 bg-slate-900 border-2 border-slate-700 rounded-sm text-lg font-semibold text-slate-100 focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
                                 />
                             </div>
 
                             <div className="space-y-4">
-                                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex justify-between items-center">
-                                    <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Est. Market Cap Need</div>
-                                    <div className="text-lg font-black text-indigo-700">${(metrics.mktCap).toLocaleString()}</div>
+                                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-md flex justify-between items-center">
+                                    <div className="text-[10px] font-semibold text-indigo-400 uppercase tracking-widest">Est. Market Cap Need</div>
+                                    <div className="text-lg font-semibold text-indigo-700">${(metrics.mktCap).toLocaleString()}</div>
                                 </div>
-                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex justify-between items-center">
-                                    <div className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Blended Yield Target</div>
-                                    <div className="text-lg font-black text-emerald-700">{metrics.avgYield}%</div>
+                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-md flex justify-between items-center">
+                                    <div className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Blended Yield Target</div>
+                                    <div className="text-lg font-semibold text-emerald-700">{metrics.avgYield}%</div>
                                 </div>
-                                <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl flex justify-between items-center">
-                                    <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tracked Assets</div>
-                                    <div className="text-lg font-black text-slate-900">{watchlist.length} Deals</div>
+                                <div className="p-4 bg-slate-900 border border-slate-700 rounded-md flex justify-between items-center">
+                                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Tracked Assets</div>
+                                    <div className="text-lg font-semibold text-slate-100">{watchlist.length} Deals</div>
                                 </div>
                             </div>
                         </div>
@@ -191,12 +191,12 @@ export default function PortfolioManager({ onBack }) {
 
                     {/* Yield Projections */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm h-[400px] flex flex-col">
+                        <div className="bg-slate-950 rounded-md p-8 border border-slate-700 shadow-none h-[400px] flex flex-col">
                             <div className="flex justify-between items-center mb-6 shrink-0">
-                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Compounded Equity Growth</h3>
+                                <h3 className="text-lg font-semibold text-slate-100 tracking-tight">Compounded Equity Growth</h3>
                                 <div className="flex gap-4">
-                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-500"><span className="w-2 h-2 rounded-full bg-indigo-600"></span> Projected Returns</div>
-                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-500"><span className="w-2 h-2 rounded-full bg-slate-300"></span> Baseline Capital</div>
+                                    <div className="flex items-center gap-2 text-[10px] font-semibold uppercase text-slate-500"><span className="w-2 h-2 rounded-sm bg-indigo-600"></span> Projected Returns</div>
+                                    <div className="flex items-center gap-2 text-[10px] font-semibold uppercase text-slate-500"><span className="w-2 h-2 rounded-sm bg-slate-300"></span> Baseline Capital</div>
                                 </div>
                             </div>
                             

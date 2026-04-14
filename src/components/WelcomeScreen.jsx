@@ -36,18 +36,18 @@ export default function WelcomeScreen({ user, onDismiss }) {
             <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" onClick={handleDismiss} />
 
             {/* Card */}
-            <div className="relative z-10 w-full max-w-2xl bg-slate-900 rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden animate-scale-in">
+            <div className="relative z-10 w-full max-w-2xl bg-slate-900 rounded-sm border border-slate-700/50 shadow-none overflow-hidden animate-scale-in">
                 {/* Decorative gradient orbs */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full filter blur-3xl -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full filter blur-3xl translate-y-1/2 -translate-x-1/2" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-sm filter blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-sm filter blur-3xl translate-y-1/2 -translate-x-1/2" />
 
                 <div className="relative p-8 md:p-12">
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-800 border border-slate-700 rounded-xl mb-4 shadow-lg">
-                            <span className="text-4xl text-white">🏛️</span>
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-800 border border-slate-700 rounded-sm mb-4 shadow-none">
+                            <span className="text-2xl font-mono text-white">🏛️</span>
                         </div>
-                        <h1 className="font-display text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
+                        <h1 className="font-mono text-xl font-mono md:text-2xl font-mono font-semibold text-white tracking-tight mb-2">
                             Welcome, {user?.name?.split(' ')[0] || 'Investor'}!
                         </h1>
                         <p className="text-slate-400 text-lg">
@@ -57,36 +57,36 @@ export default function WelcomeScreen({ user, onDismiss }) {
 
                     {/* Feature cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
                             <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center border border-blue-500/20">
-                                <span className="text-2xl">🗺️</span>
+                                <span className="text-lg font-mono">🗺️</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-1">Step 1</div>
-                            <h3 className="font-display font-bold text-white mb-1">Discover</h3>
+                            <h3 className="font-mono font-bold text-white mb-1">Discover</h3>
                             <p className="text-xs text-slate-400">Explore tax lien opportunities across all 50 states</p>
                         </div>
 
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
                             <div className="w-12 h-12 mx-auto mb-3 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center border border-emerald-500/20">
-                                <span className="text-2xl">📊</span>
+                                <span className="text-lg font-mono">📊</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Step 2</div>
-                            <h3 className="font-display font-bold text-white mb-1">Analyze</h3>
+                            <h3 className="font-mono font-bold text-white mb-1">Analyze</h3>
                             <p className="text-xs text-slate-400">Research interest rates, redemption periods & ROI</p>
                         </div>
 
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 text-center hover:bg-slate-800 transition-all">
+                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
                             <div className="w-12 h-12 mx-auto mb-3 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center border border-amber-500/20">
-                                <span className="text-2xl">⭐</span>
+                                <span className="text-lg font-mono">⭐</span>
                             </div>
                             <div className="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-1">Step 3</div>
-                            <h3 className="font-display font-bold text-white mb-1">Take Action</h3>
+                            <h3 className="font-mono font-bold text-white mb-1">Take Action</h3>
                             <p className="text-xs text-slate-400">Track watchlists & monitor upcoming auctions</p>
                         </div>
                     </div>
 
                     {/* Quick tips */}
-                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700/50">
+                    <div className="bg-slate-800/50 rounded-sm p-4 mb-6 border border-slate-700/50">
                         <div className="flex items-start gap-3">
                             <span className="text-xl">💡</span>
                             <div>
@@ -101,7 +101,7 @@ export default function WelcomeScreen({ user, onDismiss }) {
                     {/* CTA Button */}
                     <button
                         onClick={handleDismiss}
-                        className="w-full py-4 bg-blue-600 text-white font-display font-bold text-lg rounded-xl shadow-lg hover:bg-blue-700 transition-all"
+                        className="w-full py-4 bg-blue-600 text-white font-mono font-bold text-lg rounded-sm shadow-none hover:bg-blue-700 transition-all"
                     >
                         Access Command Center
                     </button>

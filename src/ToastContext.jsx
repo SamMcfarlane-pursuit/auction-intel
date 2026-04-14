@@ -37,11 +37,11 @@ export function ToastProvider({ children }) {
                 {toasts.map(toast => (
                     <div
                         key={toast.id}
-                        className={`pointer-events-auto px-5 py-3 rounded-xl shadow-2xl backdrop-blur-xl border flex items-center gap-3 transform transition-all duration-300 animate-slide-in-right ${toast.type === 'success' ? 'bg-emerald-500/95 text-white border-emerald-400/50' :
-                                toast.type === 'error' ? 'bg-red-500/95 text-white border-red-400/50' :
-                                    toast.type === 'warning' ? 'bg-amber-500/95 text-white border-amber-400/50' :
-                                        'bg-blue-500/95 text-white border-blue-400/50'
-                            }`}
+                        className={`pointer-events-auto px-5 py-3 rounded-sm shadow-none backdrop-blur-xl border flex items-center gap-3 transform transition-all duration-300 animate-slide-in-right ${toast.type === 'success' ? 'bg-emerald-500/95 text-white border-emerald-400/50' :
+ toast.type === 'error' ? 'bg-red-500/95 text-white border-red-400/50' :
+ toast.type === 'warning' ? 'bg-amber-500/95 text-white border-amber-400/50' :
+ 'bg-blue-500/95 text-white border-blue-400/50'
+ }`}
                     >
                         <span className="text-lg">
                             {toast.type === 'success' ? '✓' :

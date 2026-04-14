@@ -186,22 +186,22 @@ function GlobeVisualizer({ height = '450px' }) {
             <div className="absolute inset-0 pointer-events-none p-10 flex flex-col justify-between">
                 <div>
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+                        <div className="w-1 h-1 rounded-sm bg-emerald-500 animate-none shadow-[0_0_8px_#10b981]" />
                         <span className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.4em]">Live Intelligence Sync</span>
                     </div>
-                    <h2 className="text-2xl font-black text-white tracking-tight opacity-90">Global Command</h2>
-                    <div className="h-0.5 w-12 bg-indigo-500/30 mt-3 rounded-full" />
+                    <h2 className="text-lg font-mono font-semibold text-white tracking-tight opacity-90">Global Command</h2>
+                    <div className="h-0.5 w-12 bg-indigo-500/30 mt-3 rounded-sm" />
                 </div>
 
                 <div className="flex justify-between items-end">
                     <div className="flex gap-12">
                         <div>
-                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-1">States</div>
-                            <div className="text-lg font-black text-white/90">50</div>
+                            <div className="text-[8px] text-slate-500 font-semibold uppercase tracking-widest mb-1">States</div>
+                            <div className="text-lg font-semibold text-white/90">50</div>
                         </div>
                         <div>
-                            <div className="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-1">Active Pipeline</div>
-                            <div className="text-lg font-black text-indigo-400">14.2K</div>
+                            <div className="text-[8px] text-slate-500 font-semibold uppercase tracking-widest mb-1">Active Pipeline</div>
+                            <div className="text-lg font-semibold text-indigo-400">14.2K</div>
                         </div>
                     </div>
                     

@@ -49,9 +49,9 @@ const LiveFeed = ({ apiUrl = 'http://localhost:8080/api' }) => {
     };
 
     return (
-        <div className="flex items-center gap-4 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 px-4 py-1.5 rounded-full overflow-hidden max-w-2xl w-full h-9">
+        <div className="flex items-center gap-4 bg-slate-900/50 backdrop-blur-md border border-slate-700/50 px-4 py-1.5 rounded-sm overflow-hidden max-w-2xl w-full h-9">
             <div className="flex items-center gap-2 shrink-0 border-r border-slate-700 pr-3 mr-1">
-                <div className={`w-2 h-2 rounded-full ${status === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                <div className={`w-2 h-2 rounded-sm ${status === 'connected' ? 'bg-emerald-500 animate-none' : 'bg-red-500'}`} />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                     Live Feed
                 </span>
@@ -68,7 +68,7 @@ const LiveFeed = ({ apiUrl = 'http://localhost:8080/api' }) => {
                                 <span className="text-xs font-medium text-slate-200">
                                     {event.data.message || `${event.type}: ${event.data.county || event.data.state}`}
                                 </span>
-                                <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                                <span className="w-1.5 h-1.5 rounded-sm bg-slate-700" />
                             </div>
                         ))
                     )}
