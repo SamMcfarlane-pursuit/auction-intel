@@ -1027,7 +1027,7 @@ export default function AuctionPlatform() {
                         {apiStatus === 'live' ? 'BACKEND API: localhost:8080' : apiStatus === 'connecting' ? 'CONNECTING TO BACKEND...' : 'USING STATIC DATA (BACKEND OFFLINE)'}
                     </div>
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-800/50">
+                        <div className="mt-2 p-2.5 bg-gradient-to-r from-blue-900/30 to-blue-800/30 rounded-lg border border-blue-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">🏠</span>
@@ -1147,7 +1147,7 @@ export default function AuctionPlatform() {
                                         {/* User Info */}
                                         <div className="p-4 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-display font-black text-lg shadow-lg">
+                                                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-700 flex items-center justify-center text-white font-display font-black text-lg shadow-lg">
                                                     {user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -1213,7 +1213,7 @@ export default function AuctionPlatform() {
                                                         <div className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center text-white text-xs font-black">{r.abbr}</div>
                                                         <div className="font-bold text-slate-900 text-sm">{r.state}</div>
                                                     </div>
-                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-purple-600' : 'bg-blue-600'}`}>{auctionInfo.type}</span>}
+                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>{auctionInfo.type}</span>}
                                                 </div>
                                             );
                                         }
@@ -1226,7 +1226,7 @@ export default function AuctionPlatform() {
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-bold text-slate-800 text-sm truncate">{name}, {r.abbr}</span>
-                                                        {isAlpha && <span className="text-[7px] font-black bg-indigo-600 text-white px-1.2 py-0.5 rounded-full animate-pulse tracking-tighter">AI ALPHA</span>}
+                                                        {isAlpha && <span className="text-[7px] font-black bg-blue-600 text-white px-1.2 py-0.5 rounded-full animate-pulse tracking-tighter">AI ALPHA</span>}
                                                     </div>
                                                     <div className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">Tier {tier} Opportunity</div>
                                                 </div>
@@ -1261,12 +1261,12 @@ export default function AuctionPlatform() {
                                             </div>
                                             {/* Auction Type Badge */}
                                             {STATE_AUCTION_INFO[selectedState] && (
-                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-50 border-purple-200' : 'bg-indigo-50 border-indigo-200'}`}>
-                                                    <span className={`w-2.5 h-2.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}></span>
-                                                    <span className={`text-sm font-black uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-900' : 'text-indigo-900'}`}>
+                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-50 border-blue-200' : 'bg-slate-50 border-slate-200'}`}>
+                                                    <span className={`w-2.5 h-2.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}></span>
+                                                    <span className={`text-sm font-black uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-900' : 'text-slate-900'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].type}
                                                     </span>
-                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-500' : 'text-indigo-500'}`}>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-500' : 'text-slate-500'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : ''}
                                                     </span>
                                                 </div>
@@ -1319,7 +1319,7 @@ export default function AuctionPlatform() {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                                     {[
                                         { label: "Housing Value (ZHVI)", value: `$${(selectedCounty[3] / 1000).toFixed(0)}K`, sub: `${selectedCounty[4]}% YoY`, icon: "📈", color: "text-blue-600" },
-                                        { label: "Population", value: `${(selectedCounty[1] / 1000).toFixed(0)}K`, sub: "Residents", icon: "👥", color: "text-indigo-600" },
+                                        { label: "Population", value: `${(selectedCounty[1] / 1000).toFixed(0)}K`, sub: "Residents", icon: "👥", color: "text-blue-600" },
                                         { label: "Median Income", value: `$${(selectedCounty[2] / 1000).toFixed(0)}K`, sub: "Household", icon: "💰", color: "text-slate-900" },
                                         { label: "Days on Market", value: `${selectedCounty[5]}`, sub: "Average", icon: "⏱️", color: "text-amber-600" }
                                     ].map((stat, i) => (
@@ -1349,7 +1349,7 @@ export default function AuctionPlatform() {
                                     if (stateAuctions.length === 0) return null;
 
                                     return (
-                                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-200/50 overflow-hidden">
+                                        <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl border border-blue-200/50 overflow-hidden">
                                             <div className="p-5 border-b border-blue-100/50">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
@@ -1374,7 +1374,7 @@ export default function AuctionPlatform() {
                                                             <div className="min-w-0 flex-1">
                                                                 <div className="flex items-center gap-2 mb-0.5">
                                                                     <span className="font-bold text-slate-900 text-sm">{a.county} County</span>
-                                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black text-white ${a.saleType.includes('Lien') ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                                    <span className={`px-1.5 py-0.5 rounded text-[8px] font-black text-white ${a.saleType.includes('Lien') ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                                         {a.saleType}
                                                                     </span>
                                                                 </div>
@@ -1641,7 +1641,7 @@ export default function AuctionPlatform() {
                                         </button>
                                         <button 
                                             onClick={() => setProMode(true)}
-                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${proMode ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${proMode ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                                         >
                                             Pro 3D Map
                                         </button>
@@ -1763,12 +1763,12 @@ export default function AuctionPlatform() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-5 border border-purple-100">
+                                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-5 border border-blue-100">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center text-white text-lg">⭐</div>
+                                            <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center text-white text-lg">⭐</div>
                                             <div>
-                                                <div className="text-2xl font-display font-black text-purple-700">0</div>
-                                                <div className="text-[9px] font-bold text-purple-600 uppercase tracking-wider">Watchlist Updates</div>
+                                                <div className="text-2xl font-display font-black text-blue-700">0</div>
+                                                <div className="text-[9px] font-bold text-blue-600 uppercase tracking-wider">Watchlist Updates</div>
                                             </div>
                                         </div>
                                     </div>
@@ -1797,11 +1797,11 @@ export default function AuctionPlatform() {
                                         <div className="flex items-center gap-4 mb-1">
                                             <h2 className="text-4xl font-display font-black text-slate-900 tracking-tighter">State Database</h2>
                                             {selectedState && STATE_AUCTION_INFO[selectedState] && (
-                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-100 border border-purple-200' : 'bg-indigo-100 border border-indigo-200'}`}>
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                                                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-100 border border-blue-200' : 'bg-slate-100 border border-slate-200'}`}>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].type}
                                                     </span>
-                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-purple-700' : 'text-indigo-700'}`}>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-700' : 'text-slate-700'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : STATE_AUCTION_INFO[selectedState].redemptionPeriod}
                                                     </span>
                                                 </div>
@@ -2013,7 +2013,7 @@ export default function AuctionPlatform() {
                         ) : view === 'stateinfo' ? (
                             /* State Info View - Lien vs Deed Types */
                             <div className="space-y-6">
-                                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200/50">
+                                <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-2xl p-6 border border-blue-200/50">
                                     <div className="flex items-start justify-between">
                                         <div>
                                             <h2 className="text-2xl font-display font-black text-slate-900 mb-1">🏛️ State Tax Sale Information</h2>
@@ -2027,11 +2027,11 @@ export default function AuctionPlatform() {
                                             >All ({Object.keys(STATE_AUCTION_INFO).length})</button>
                                             <button
                                                 onClick={() => setStateInfoFilter('lien')}
-                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'lien' ? 'bg-purple-600 text-white shadow-lg shadow-purple-200' : 'bg-white text-purple-600 hover:bg-purple-50 border border-purple-200'}`}
+                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'lien' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-200'}`}
                                             >Lien ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length})</button>
                                             <button
                                                 onClick={() => setStateInfoFilter('deed')}
-                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'deed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200'}`}
+                                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${stateInfoFilter === 'deed' ? 'bg-slate-600 text-white shadow-lg shadow-slate-200' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'}`}
                                             >Deed ({Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length})</button>
 
                                             <div className="h-6 w-px bg-slate-300 mx-1"></div>
@@ -2071,13 +2071,13 @@ export default function AuctionPlatform() {
                                     </div>
                                     <div className="mt-4 flex gap-8">
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-purple-600">
+                                            <div className="text-3xl font-display font-black text-blue-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Lien States</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-3xl font-display font-black text-indigo-600">
+                                            <div className="text-3xl font-display font-black text-slate-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Deed States</div>
@@ -2095,21 +2095,21 @@ export default function AuctionPlatform() {
 
                                 {/* Lien vs Deed Explanation */}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-purple-100 rounded-2xl p-5 border border-purple-200">
+                                    <div className="bg-blue-100 rounded-2xl p-5 border border-blue-200">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center text-white font-black">L</div>
-                                            <h3 className="font-display font-black text-purple-900">Tax Lien States</h3>
+                                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black">L</div>
+                                            <h3 className="font-display font-black text-blue-900">Tax Lien States</h3>
                                         </div>
-                                        <p className="text-sm text-purple-800">In lien states, you purchase a <strong>lien certificate</strong> on the property. The owner has a redemption period to pay back the lien plus interest. If they don't redeem, you can foreclose.</p>
-                                        <div className="mt-3 text-xs font-bold text-purple-600">✓ Earn interest on investment • ✓ Lower risk • ✓ Passive income potential</div>
+                                        <p className="text-sm text-blue-800">In lien states, you purchase a <strong>lien certificate</strong> on the property. The owner has a redemption period to pay back the lien plus interest. If they don't redeem, you can foreclose.</p>
+                                        <div className="mt-3 text-xs font-bold text-blue-600">✓ Earn interest on investment • ✓ Lower risk • ✓ Passive income potential</div>
                                     </div>
-                                    <div className="bg-indigo-100 rounded-2xl p-5 border border-indigo-200">
+                                    <div className="bg-slate-100 rounded-2xl p-5 border border-slate-200">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black">D</div>
-                                            <h3 className="font-display font-black text-indigo-900">Tax Deed States</h3>
+                                            <div className="w-10 h-10 bg-slate-600 rounded-xl flex items-center justify-center text-white font-black">D</div>
+                                            <h3 className="font-display font-black text-slate-900">Tax Deed States</h3>
                                         </div>
-                                        <p className="text-sm text-indigo-800">In deed states, you bid on the <strong>property itself</strong> at auction. Winning bidder receives title to the property (subject to redemption period in some states).</p>
-                                        <div className="mt-3 text-xs font-bold text-indigo-600">✓ Direct property ownership • ✓ Faster acquisition • ✓ Property value upside</div>
+                                        <p className="text-sm text-slate-800">In deed states, you bid on the <strong>property itself</strong> at auction. Winning bidder receives title to the property (subject to redemption period in some states).</p>
+                                        <div className="mt-3 text-xs font-bold text-slate-600">✓ Direct property ownership • ✓ Faster acquisition • ✓ Property value upside</div>
                                     </div>
                                 </div>
 
