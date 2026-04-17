@@ -78,7 +78,7 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
         return (
             <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-12 text-center">
                 <div className="w-20 h-20 mx-auto mb-6 bg-slate-900 rounded-md flex items-center justify-center text-2xl font-mono">⭐</div>
-                <h2 className="text-xl font-mono font-mono font-semibold text-slate-100 tracking-tighter mb-3">Your Watchlist is Empty</h2>
+                <h2 className="text-xl font-mono font-semibold text-slate-100 tracking-tighter mb-3">Your Watchlist is Empty</h2>
                 <p className="text-slate-500 mb-6 max-w-md mx-auto">Start building your investment portfolio by adding counties from the State Database.</p>
                 <button onClick={() => onSelectState(null)} className="bg-blue-600 text-white px-6 py-3 rounded-sm font-mono font-bold hover:bg-blue-700 transition-all shadow-none shadow-blue-600/20">📊 Browse State Database</button>
             </div>
@@ -90,7 +90,7 @@ function WatchlistView({ onSelectState, onSelectCounty, TIERS }) {
             <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800">
                 <div>
                     <div className="flex items-center gap-3 mb-1 flex-wrap">
-                        <h2 className="text-xl font-mono md:text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">My Watchlist</h2>
+                        <h2 className="text-xl font-mono md:text-2xl font-mono font-semibold text-slate-100 tracking-tighter">My Watchlist</h2>
                         <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-sm text-sm font-bold">{stats.total} saved</span>
                         {stats.highPriority > 0 && <span className="bg-red-100 text-red-700 px-2 py-1 rounded-sm text-xs font-bold">🔥 {stats.highPriority} high priority</span>}
                     </div>
@@ -1027,7 +1027,7 @@ export default function AuctionPlatform() {
                         {apiStatus === 'live' ? 'BACKEND API: localhost:8080' : apiStatus === 'connecting' ? 'CONNECTING TO BACKEND...' : 'USING STATIC DATA (BACKEND OFFLINE)'}
                     </div>
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-blue-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900/30 rounded-lg border border-blue-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">🏠</span>
@@ -1038,7 +1038,7 @@ export default function AuctionPlatform() {
                         </div>
                     )}
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-red-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900/30 rounded-lg border border-red-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">📈</span>
@@ -1049,7 +1049,7 @@ export default function AuctionPlatform() {
                         </div>
                     )}
                     {apiStatus === 'live' && (
-                        <div className="mt-2 p-2.5 bg-slate-900 /30 /30 rounded-lg border border-green-800/50">
+                        <div className="mt-2 p-2.5 bg-slate-900/30 rounded-lg border border-green-800/50">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-base">💰</span>
@@ -1253,7 +1253,7 @@ export default function AuctionPlatform() {
                                             <span className="uppercase tracking-[0.15em] text-[9px] font-semibold">Return to {STATE_NAMES[selectedState]}</span>
                                         </button>
                                         <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-                                            <h1 className="text-lg font-mono md:text-3xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">{selectedCounty[0]}</h1>
+                                            <h1 className="text-lg font-mono md:text-3xl font-mono font-semibold text-slate-100 tracking-tighter">{selectedCounty[0]}</h1>
                                             <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-sm shadow-none border border-slate-800">
                                                 <span className="w-2.5 h-2.5 rounded-sm" style={{ background: TIERS[selectedCounty[6]].color }}></span>
                                                 <span className="text-sm font-semibold text-slate-100 uppercase tracking-tight">{TIERS[selectedCounty[6]].name}</span>
@@ -1261,12 +1261,12 @@ export default function AuctionPlatform() {
                                             </div>
                                             {/* Auction Type Badge */}
                                             {STATE_AUCTION_INFO[selectedState] && (
-                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-sm shadow-none border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-50 border-blue-200' : 'bg-slate-900 border-slate-700'}`}>
+                                                <div className={`flex items-center gap-2 px-4 py-2 rounded-sm shadow-none border ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-950/40 border-blue-900/50' : 'bg-slate-900 border-slate-700'}`}>
                                                     <span className={`w-2.5 h-2.5 rounded-sm ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}></span>
-                                                    <span className={`text-sm font-semibold uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-900' : 'text-slate-100'}`}>
+                                                    <span className={`text-sm font-semibold uppercase tracking-tight ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-400' : 'text-slate-100'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].type}
                                                     </span>
-                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-500' : 'text-slate-500'}`}>
+                                                    <span className={`text-xs font-bold ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'text-blue-600' : 'text-slate-500'}`}>
                                                         {STATE_AUCTION_INFO[selectedState].interestRate !== 'N/A' ? STATE_AUCTION_INFO[selectedState].interestRate : ''}
                                                     </span>
                                                 </div>
@@ -1328,7 +1328,7 @@ export default function AuctionPlatform() {
                                                 <span className="text-slate-400 text-[8px] md:text-[9px] font-semibold tracking-widest uppercase">{stat.label}</span>
                                                 <span className="text-lg md:text-xl">{stat.icon}</span>
                                             </div>
-                                            <div className={`text-xl md:text-xl font-mono font-mono font-semibold tracking-tighter ${stat.color}`}>{stat.value}</div>
+                                            <div className={`text-xl md:text-xl font-mono font-semibold tracking-tighter ${stat.color}`}>{stat.value}</div>
                                             <div className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase mt-1">{stat.sub}</div>
                                         </div>
                                     ))}
@@ -1349,8 +1349,8 @@ export default function AuctionPlatform() {
                                     if (stateAuctions.length === 0) return null;
 
                                     return (
-                                        <div className="bg-slate-900 rounded-md border border-blue-200/50 overflow-hidden">
-                                            <div className="p-5 border-b border-blue-100/50">
+                                        <div className="bg-slate-900 rounded-md border border-slate-800 overflow-hidden">
+                                            <div className="p-5 border-b border-slate-800">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         <span className="w-2 h-2 bg-red-500 rounded-sm animate-none"></span>
@@ -1365,7 +1365,7 @@ export default function AuctionPlatform() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="divide-y divide-blue-100/50">
+                                            <div className="divide-y divide-slate-800">
                                                 {stateAuctions.map(a => {
                                                     const days = Math.ceil((new Date(a.saleDate) - new Date()) / (1000 * 60 * 60 * 24));
                                                     const isUrgent = days <= 7;
@@ -1452,10 +1452,10 @@ export default function AuctionPlatform() {
                                         )}
                                     </div>
 
-                                    <div className="p-4 bg-emerald-50 border-b border-emerald-100">
-                                        <p className="text-xs text-emerald-700 font-medium flex items-center gap-2">
+                                    <div className="p-4 bg-slate-950 border-b border-slate-800">
+                                        <p className="text-xs text-emerald-500/80 font-medium flex items-center gap-2">
                                             <span className="w-2 h-2 bg-emerald-500 rounded-sm animate-none"></span>
-                                            <strong>Live Data:</strong> Real-time HUD, Fannie Mae, and Freddie Mac foreclosure listings from official sources.
+                                            <strong className="text-emerald-400">Live Data:</strong> Real-time HUD, Fannie Mae, and Freddie Mac foreclosure listings from official sources.
                                             {listingsLoading && <span className="text-slate-500 ml-2">(Loading...)</span>}
                                         </p>
                                     </div>
@@ -1498,10 +1498,10 @@ export default function AuctionPlatform() {
                                                         <td className="px-6 py-4 text-right text-slate-600">{p.sqft?.toLocaleString()} sqft</td>
                                                         <td className="px-6 py-4"><span className="px-2 py-1 bg-slate-900 rounded text-[9px] font-semibold text-slate-500 uppercase">{p.property_type}</span></td>
                                                         <td className="px-6 py-4">
-                                                            <span className={`px-2 py-1 rounded text-[9px] font-semibold uppercase ${p.source === 'HUD' ? 'bg-blue-100 text-blue-700' :
- p.source === 'Fannie Mae' ? 'bg-purple-100 text-purple-700' :
- 'bg-amber-100 text-amber-700'
- }`}>{p.source}</span>
+                                                            <span className={`px-2 py-1 rounded-sm text-[9px] font-semibold uppercase ${p.source === 'HUD' ? 'bg-blue-900/50 text-blue-400 border border-blue-800' :
+                                                                p.source === 'Fannie Mae' ? 'bg-slate-800 text-slate-300 border border-slate-700' :
+                                                                'bg-slate-900 text-slate-400'
+                                                                }`}>{p.source}</span>
                                                         </td>
                                                         <td className="px-6 py-4 text-center">
                                                             <span className={`px-3 py-1 rounded-sm text-[8px] font-semibold uppercase ${p.status === 'Available' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'
@@ -1629,7 +1629,7 @@ export default function AuctionPlatform() {
                             <div className="h-full overflow-hidden flex flex-col">
                                 <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">📊</div>
+                                        <div className="w-8 h-8 rounded-sm bg-slate-900 flex items-center justify-center text-blue-400 border border-slate-800">📊</div>
                                         <h2 className="text-xl font-semibold text-slate-100 tracking-tight">National Market Intelligence</h2>
                                     </div>
                                     <div className="flex bg-slate-900 p-1 rounded-sm">
@@ -1735,7 +1735,7 @@ export default function AuctionPlatform() {
                             <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-8 h-full overflow-auto">
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
-                                        <h2 className="text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">My Alerts</h2>
+                                        <h2 className="text-2xl font-mono font-semibold text-slate-100 tracking-tighter">My Alerts</h2>
                                         <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-1">Stay updated on your investments</p>
                                     </div>
                                     <button className="bg-blue-600 text-white px-4 py-2 rounded-sm font-mono font-bold text-sm shadow-none hover:bg-blue-700 transition-all flex items-center gap-2">
@@ -1749,7 +1749,7 @@ export default function AuctionPlatform() {
                                         <div className="flex items-center gap-3 mb-3">
                                             <div className="w-10 h-10 bg-green-500 rounded-sm flex items-center justify-center text-white text-lg">💰</div>
                                             <div>
-                                                <div className="text-lg font-mono font-mono font-semibold text-green-700">0</div>
+                                                <div className="text-lg font-mono font-semibold text-green-700">0</div>
                                                 <div className="text-[9px] font-bold text-green-600 uppercase tracking-wider">Price Drops</div>
                                             </div>
                                         </div>
@@ -1758,7 +1758,7 @@ export default function AuctionPlatform() {
                                         <div className="flex items-center gap-3 mb-3">
                                             <div className="w-10 h-10 bg-amber-500 rounded-sm flex items-center justify-center text-white text-lg">📅</div>
                                             <div>
-                                                <div className="text-lg font-mono font-mono font-semibold text-amber-700">0</div>
+                                                <div className="text-lg font-mono font-semibold text-amber-700">0</div>
                                                 <div className="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Auction Reminders</div>
                                             </div>
                                         </div>
@@ -1767,7 +1767,7 @@ export default function AuctionPlatform() {
                                         <div className="flex items-center gap-3 mb-3">
                                             <div className="w-10 h-10 bg-blue-500 rounded-sm flex items-center justify-center text-white text-lg">⭐</div>
                                             <div>
-                                                <div className="text-lg font-mono font-mono font-semibold text-blue-700">0</div>
+                                                <div className="text-lg font-mono font-semibold text-blue-700">0</div>
                                                 <div className="text-[9px] font-bold text-blue-600 uppercase tracking-wider">Watchlist Updates</div>
                                             </div>
                                         </div>
@@ -1795,7 +1795,7 @@ export default function AuctionPlatform() {
                                 <div className="p-8 flex items-center justify-between">
                                     <div>
                                         <div className="flex items-center gap-4 mb-1">
-                                            <h2 className="text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">State Database</h2>
+                                            <h2 className="text-2xl font-mono font-semibold text-slate-100 tracking-tighter">State Database</h2>
                                             {selectedState && STATE_AUCTION_INFO[selectedState] && (
                                                 <div className={`flex items-center gap-2 px-3 py-1.5 rounded-sm ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-100 border border-blue-200' : 'bg-slate-900 border border-slate-700'}`}>
                                                     <span className={`px-2 py-0.5 rounded text-[9px] font-semibold text-white ${STATE_AUCTION_INFO[selectedState].type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
@@ -1892,7 +1892,7 @@ export default function AuctionPlatform() {
                                 ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center p-16 text-center">
                                         <div className="w-24 h-24 bg-slate-900 rounded-md flex items-center justify-center text-2xl font-mono mb-6 opacity-30">🌐</div>
-                                        <h3 className="text-lg font-mono font-mono font-semibold text-slate-200 uppercase">Select a State</h3>
+                                        <h3 className="text-lg font-mono font-semibold text-slate-200 uppercase">Select a State</h3>
                                         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">Choose from the state buttons above</p>
                                     </div>
                                 )}
@@ -1901,7 +1901,7 @@ export default function AuctionPlatform() {
                             /* Tier Detection Algorithm View */
                             <div className="space-y-6">
                                 <div className="bg-slate-950 rounded-md p-6 shadow-none border border-slate-800">
-                                    <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-2">🎯 Tier Detection Algorithm</h2>
+                                    <h2 className="text-lg font-mono font-semibold text-slate-100 mb-2">🎯 Tier Detection Algorithm</h2>
                                     <p className="text-slate-500">Automatically classify any US county into investment tiers using quantitative metrics.</p>
                                 </div>
 
@@ -1964,11 +1964,11 @@ export default function AuctionPlatform() {
                             /* Data Sources View */
                             <div className="space-y-6">
                                 <div className="bg-slate-900 rounded-md p-6 border border-green-200/50">
-                                    <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-1">100% Free Data Sources</h2>
+                                    <h2 className="text-lg font-mono font-semibold text-slate-100 mb-1">100% Free Data Sources</h2>
                                     <p className="text-slate-500">All tier detection uses publicly available, free data APIs</p>
                                     <div className="mt-4 flex gap-6">
                                         <div className="text-center">
-                                            <div className="text-xl font-mono font-mono font-semibold text-blue-600">{FREE_DATA_SOURCES.length}</div>
+                                            <div className="text-xl font-mono font-semibold text-blue-600">{FREE_DATA_SOURCES.length}</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Data Sources</div>
                                         </div>
                                     </div>
@@ -2016,7 +2016,7 @@ export default function AuctionPlatform() {
                                 <div className="bg-slate-900 rounded-md p-6 border border-blue-200/50">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <h2 className="text-lg font-mono font-mono font-semibold text-slate-100 mb-1">🏛️ State Tax Sale Information</h2>
+                                            <h2 className="text-lg font-mono font-semibold text-slate-100 mb-1">🏛️ State Tax Sale Information</h2>
                                             <p className="text-slate-500">Comprehensive guide to lien vs deed sales, interest rates, and redemption periods</p>
                                         </div>
                                         {/* Filter Toggle Buttons */}
@@ -2071,23 +2071,23 @@ export default function AuctionPlatform() {
                                     </div>
                                     <div className="mt-4 flex gap-8">
                                         <div className="text-center">
-                                            <div className="text-xl font-mono font-mono font-semibold text-blue-600">
+                                            <div className="text-xl font-mono font-semibold text-blue-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Lien States</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-xl font-mono font-mono font-semibold text-slate-600">
+                                            <div className="text-xl font-mono font-semibold text-slate-600">
                                                 {Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}
                                             </div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Deed States</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-xl font-mono font-mono font-semibold text-green-600">24%</div>
+                                            <div className="text-xl font-mono font-semibold text-green-600">24%</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Highest Rate (IA)</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-xl font-mono font-mono font-semibold text-amber-600">4 yr</div>
+                                            <div className="text-xl font-mono font-semibold text-amber-600">4 yr</div>
                                             <div className="text-[10px] font-bold text-slate-500 uppercase">Longest Redemption</div>
                                         </div>
                                     </div>
@@ -2267,13 +2267,13 @@ export default function AuctionPlatform() {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-6">
                                                         <div className="w-20 h-20 bg-slate-950/10 rounded-md flex items-center justify-center backdrop-blur-sm border border-white/20">
-                                                            <span className="text-2xl font-mono font-mono font-semibold text-white">{selectedStateInfo.abbr}</span>
+                                                            <span className="text-2xl font-mono font-semibold text-white">{selectedStateInfo.abbr}</span>
                                                         </div>
                                                         <div>
                                                             <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">
                                                                 {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien State' : '📜 Tax Deed State'}
                                                             </div>
-                                                            <h2 className="text-2xl font-mono font-mono font-semibold text-white tracking-tight">
+                                                            <h2 className="text-2xl font-mono font-semibold text-white tracking-tight">
                                                                 {STATE_NAMES[selectedStateInfo.abbr] || selectedStateInfo.abbr}
                                                             </h2>
                                                         </div>
@@ -2297,11 +2297,11 @@ export default function AuctionPlatform() {
                                                         <div className="grid grid-cols-2 gap-3">
                                                             <div className="bg-slate-900 border border-green-200 rounded-md p-4">
                                                                 <div className="text-[10px] font-semibold text-green-600 uppercase tracking-widest mb-1">💰 Interest Rate</div>
-                                                                <div className="text-lg font-mono font-mono font-semibold text-green-900">{selectedStateInfo.interestRate}</div>
+                                                                <div className="text-lg font-mono font-semibold text-green-900">{selectedStateInfo.interestRate}</div>
                                                             </div>
                                                             <div className="bg-slate-900 border border-blue-200 rounded-md p-4">
                                                                 <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-widest mb-1">⏱️ Redemption</div>
-                                                                <div className="text-lg font-mono font-mono font-semibold text-blue-900">{selectedStateInfo.redemptionPeriod}</div>
+                                                                <div className="text-lg font-mono font-semibold text-blue-900">{selectedStateInfo.redemptionPeriod}</div>
                                                             </div>
                                                         </div>
 
@@ -2475,7 +2475,7 @@ export default function AuctionPlatform() {
                             <div className="space-y-6 overflow-auto max-h-[calc(100vh-180px)]">
                                 {/* Header */}
                                 <div className="bg-slate-900 rounded-md p-6 border border-emerald-200/50">
-                                    <h2 className="text-xl font-mono font-mono font-semibold text-slate-100 mb-2">📚 User Guide</h2>
+                                    <h2 className="text-xl font-mono font-semibold text-slate-100 mb-2">📚 User Guide</h2>
                                     <p className="text-slate-500">Master the platform for optimal tax lien/deed investment research</p>
                                 </div>
 
@@ -2603,19 +2603,19 @@ export default function AuctionPlatform() {
                                 {/* Key Stats */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="bg-slate-900 rounded-md p-5 text-white">
-                                        <div className="text-xl font-mono font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
+                                        <div className="text-xl font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Lien States</div>
                                     </div>
                                     <div className="bg-slate-900 rounded-md p-5 text-white">
-                                        <div className="text-xl font-mono font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
+                                        <div className="text-xl font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deed States</div>
                                     </div>
                                     <div className="bg-slate-900 rounded-md p-5 text-white">
-                                        <div className="text-xl font-mono font-mono font-semibold">{totalCounties}</div>
+                                        <div className="text-xl font-mono font-semibold">{totalCounties}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Total Counties</div>
                                     </div>
                                     <div className="bg-slate-900 rounded-md p-5 text-white">
-                                        <div className="text-xl font-mono font-mono font-semibold">{totalT123}</div>
+                                        <div className="text-xl font-mono font-semibold">{totalT123}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Prime Counties</div>
                                     </div>
                                 </div>

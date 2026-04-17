@@ -103,42 +103,41 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
             <div className="p-6 md:p-8 border-b border-slate-800">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-lg font-mono md:text-xl font-mono font-mono font-semibold text-slate-100 tracking-tighter mb-1">
-                            🗺️ Investment Heat Map
+                        <h2 className="text-lg font-mono md:text-xl font-semibold text-slate-100 tracking-tighter mb-1 uppercase">
+                            Market Opportunity Heat Map
                         </h2>
-                        <p className="text-xs md:text-sm text-slate-500">
-                            States ranked by investment opportunity score • Higher = Better returns
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            Jurisdictions ranked by aggregate investment signal • HIGHER = ALPHA_TARGET
                         </p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                         {['all', 'lien', 'deed'].map(f => (
                             <button key={f}
                                 onClick={() => setSelectedFilter(f)}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all ${selectedFilter === f
- ? 'bg-slate-900 text-white'
- : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
- }`}>
-                                {f === 'all' ? 'All States' : `${f} States`}
+                                className={`px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${selectedFilter === f
+                                    ? 'bg-blue-600 text-white shadow-none'
+                                    : 'bg-slate-900 text-slate-500 border border-slate-800 hover:text-slate-300'
+                                    }`}>
+                                {f === 'all' ? 'All_Feeds' : `${f}_Only`}
                             </button>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* Legend */}
-            <div className="px-6 py-4 bg-slate-900 to-white border-b border-slate-800">
-                <div className="flex flex-wrap items-center gap-3 text-xs">
-                    <span className="font-bold text-slate-500">Score Legend:</span>
+            <div className="px-6 py-4 bg-slate-950 border-b border-slate-800">
+                <div className="flex flex-wrap items-center gap-6 text-[10px] uppercase font-bold tracking-widest text-slate-500">
+                    <span className="text-slate-400">SIGNAL_RTG</span>
                     {[
                         { min: 85, label: 'Excellent', color: '#22c55e' },
-                        { min: 70, label: 'Very Good', color: '#84cc16' },
-                        { min: 55, label: 'Good', color: '#eab308' },
-                        { min: 40, label: 'Moderate', color: '#f97316' },
-                        { min: 25, label: 'Low', color: '#ef4444' },
+                        { min: 70, label: 'Strong', color: '#84cc16' },
+                        { min: 55, label: 'Moderate', color: '#eab308' },
+                        { min: 40, label: 'Low', color: '#f97316' },
+                        { min: 25, label: 'Weak', color: '#ef4444' },
                     ].map(item => (
-                        <div key={item.label} className="flex items-center gap-1.5">
-                            <div className="w-4 h-4 rounded" style={{ background: item.color }}></div>
-                            <span className="text-slate-600">{item.min}+ {item.label}</span>
+                        <div key={item.label} className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: item.color }}></div>
+                            <span className="text-slate-500">{item.min}+ {item.label}</span>
                         </div>
                     ))}
                 </div>
@@ -163,28 +162,28 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                                         onClick={() => onStateSelect?.(abbr)}
                                         onMouseEnter={() => setHoveredState(abbr)}
                                         onMouseLeave={() => setHoveredState(null)}
-                                        className={`flex items-center gap-3 p-3 rounded-sm cursor-pointer transition-all ${hoveredState === abbr ? 'bg-blue-50 scale-[1.02]' : 'bg-slate-900 hover:bg-slate-900'
- }`}>
-                                        <div className="w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm"
-                                            style={{ background: color.bg, color: color.text }}>
+                                        className={`flex items-center gap-3 p-3 rounded-sm cursor-pointer transition-all border-l-2 ${hoveredState === abbr ? 'bg-slate-900 border-blue-500 scale-[1.01]' : 'bg-slate-950 border-transparent hover:bg-slate-900'
+                                            }`}>
+                                        <div className="w-8 h-8 rounded-sm flex items-center justify-center font-mono font-bold text-sm bg-slate-900 border border-slate-800"
+                                            style={{ color: color.bg }}>
                                             {idx + 1}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-slate-100">{abbr}</span>
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${data.type === 'Lien' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
- }`}>
+                                                <span className="font-mono font-bold text-slate-100 uppercase tracking-tighter">{abbr}</span>
+                                                <span className={`px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider ${data.type === 'Lien' ? 'bg-blue-900/30 text-blue-400 border border-blue-900/40' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                                    }`}>
                                                     {data.type}
                                                 </span>
                                                 {data.interestRate > 0 && (
-                                                    <span className="text-xs font-bold text-emerald-600">{data.interestRate}%</span>
+                                                    <span className="text-[10px] font-bold text-emerald-500 font-mono">+{data.interestRate}%</span>
                                                 )}
                                             </div>
-                                            <div className="text-[10px] text-slate-500 truncate">{data.highlight}</div>
+                                            <div className="text-[10px] text-slate-500 truncate font-medium uppercase tracking-widest">{data.highlight}</div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="font-semibold text-lg" style={{ color: color.bg }}>{data.score}</div>
-                                            <div className="text-[9px] text-slate-400 uppercase">{color.label}</div>
+                                            <div className="font-mono font-semibold text-lg" style={{ color: color.bg }}>{data.score}</div>
+                                            <div className="text-[9px] text-slate-400 uppercase tracking-widest font-bold">{color.label}</div>
                                         </div>
                                     </div>
                                 );
@@ -207,12 +206,12 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                                             onClick={() => onStateSelect?.(abbr)}
                                             onMouseEnter={() => setHoveredState(abbr)}
                                             onMouseLeave={() => setHoveredState(null)}
-                                            className={`aspect-square rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all ${hoveredState === abbr ? 'scale-110 shadow-none z-10' : 'hover:scale-105'
- }`}
+                                            className={`aspect-square rounded-sm flex flex-col items-center justify-center cursor-pointer transition-all ${hoveredState === abbr ? 'scale-110 shadow-none z-10 brightness-110' : 'opacity-80 hover:opacity-100'
+                                                }`}
                                             style={{ background: color.bg, color: color.text }}
                                             title={`${abbr}: ${data.score} - ${data.highlight}`}>
-                                            <div className="font-semibold text-sm">{abbr}</div>
-                                            <div className="text-[10px] opacity-80">{data.score}</div>
+                                            <div className="font-mono font-bold text-xs">{abbr}</div>
+                                            <div className="text-[9px] font-mono tracking-tighter">{data.score}</div>
                                         </div>
                                     );
                                 })}

@@ -169,13 +169,13 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Tax Sale Calendar</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <button onClick={goToday} className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all">
+                            <button onClick={goToday} className="px-3 py-1.5 bg-blue-600 text-white rounded-sm text-xs font-bold hover:bg-blue-700 transition-all">
                                 Today
                             </button>
-                            <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-200 text-slate-600 font-bold transition-all">
+                            <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-sm bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-100 font-bold transition-all">
                                 ←
                             </button>
-                            <button onClick={goNext} className="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-200 text-slate-600 font-bold transition-all">
+                            <button onClick={goNext} className="w-9 h-9 flex items-center justify-center rounded-sm bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-100 font-bold transition-all">
                                 →
                             </button>
                         </div>
@@ -188,26 +188,26 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 <button
                                     key={type}
                                     onClick={() => setTypeFilter(type)}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all capitalize ${typeFilter === type
- ? (type === 'lien' ? 'bg-blue-600 text-white shadow-none shadow-blue-200' : type === 'deed' ? 'bg-slate-600 text-white shadow-none shadow-slate-200' : 'bg-slate-900 text-white shadow-none')
- : 'bg-slate-900 text-slate-500 hover:bg-slate-200'
- }`}
+                                    className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-all capitalize ${typeFilter === type
+                                        ? (type === 'lien' ? 'bg-blue-600 text-white shadow-none' : type === 'deed' ? 'bg-slate-700 text-white shadow-none' : 'bg-slate-900 text-white shadow-none')
+                                        : 'bg-slate-900 text-slate-500 hover:text-slate-300'
+                                    }`}
                                 >
                                     {type === 'all' ? 'All Types' : type}
                                 </button>
                             ))}
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold">
+                            <span className="px-3 py-1.5 bg-blue-950/40 text-blue-400 border border-blue-900/50 rounded-sm text-xs font-semibold">
                                 {monthStats.totalAuctions} auctions
                             </span>
                             {monthStats.lienCount > 0 && (
-                                <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-semibold">
+                                <span className="px-2.5 py-1 bg-blue-900/20 text-blue-500 border border-blue-800/30 rounded-sm text-[10px] font-semibold">
                                     {monthStats.lienCount} Lien
                                 </span>
                             )}
                             {monthStats.deedCount > 0 && (
-                                <span className="px-2.5 py-1 bg-slate-900 text-slate-300 rounded-lg text-[10px] font-semibold">
+                                <span className="px-2.5 py-1 bg-slate-900 text-slate-400 border border-slate-700/50 rounded-sm text-[10px] font-semibold">
                                     {monthStats.deedCount} Deed
                                 </span>
                             )}
@@ -237,17 +237,17 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                             <div
                                 key={i}
                                 onClick={() => cell.currentMonth && cell.date && setSelectedDay(cell.date === selectedDay ? null : cell.date)}
-                                className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-800 transition-all relative ${!cell.currentMonth ? 'bg-slate-900/50' :
- isSelected ? 'bg-blue-50 ring-2 ring-blue-500 ring-inset z-10' :
- hasEvents ? 'bg-slate-950 hover:bg-blue-50/50 cursor-pointer' :
- 'bg-slate-950'
- }`}
+                                className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-800 transition-all relative ${!cell.currentMonth ? 'bg-slate-900/20' :
+                                    isSelected ? 'bg-blue-900/20 ring-1 ring-blue-500/50 ring-inset z-10' :
+                                        hasEvents ? 'bg-slate-950 hover:bg-slate-900/50 cursor-pointer' :
+                                            'bg-slate-950'
+                                    }`}
                             >
-                                <div className={`text-sm font-bold mb-1 ${!cell.currentMonth ? 'text-slate-300' :
- isToday ? 'text-white' :
- isSelected ? 'text-blue-700' :
- 'text-slate-300'
- }`}>
+                                <div className={`text-sm font-bold mb-1 ${!cell.currentMonth ? 'text-slate-600' :
+                                    isToday ? 'text-blue-400' :
+                                        isSelected ? 'text-white' :
+                                            'text-slate-100'
+                                    }`}>
                                     {isToday ? (
                                         <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-600 rounded-sm text-white text-xs font-semibold">
                                             {cell.day}

@@ -129,7 +129,7 @@ export default function PortfolioManager({ onBack }) {
                 <div>
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-lg font-mono">💼</span>
-                        <h2 className="text-xl font-mono font-mono font-semibold tracking-tighter">Fund Manager</h2>
+                        <h2 className="text-xl font-mono font-semibold tracking-tighter">Fund Manager</h2>
                     </div>
                     <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">
                         Portfolio Capital Allocation & Risk Aggregation

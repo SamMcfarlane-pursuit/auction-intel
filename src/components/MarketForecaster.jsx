@@ -85,7 +85,7 @@ export default function MarketForecaster({ county, onBack }) {
                 <div>
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-lg font-mono">🔮</span>
-                        <h2 className="text-xl font-mono font-mono font-semibold tracking-tighter">AI Alpha Forecaster</h2>
+                        <h2 className="text-xl font-mono font-semibold tracking-tighter">AI Alpha Forecaster</h2>
                     </div>
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
                         Predictive Analysis for {county?.name || "Target Market"}
@@ -147,7 +147,7 @@ export default function MarketForecaster({ county, onBack }) {
 
                     <div className="bg-slate-900 rounded-sm p-6 text-white shadow-none border border-slate-800">
                         <div className="text-[9px] font-semibold text-slate-400 uppercase mb-1">Projected 12M Yield</div>
-                        <div className="text-xl font-mono font-mono font-semibold text-emerald-400">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
+                        <div className="text-xl font-mono font-semibold text-emerald-400">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
                         <div className="text-[10px] text-slate-400 mt-2">
                            Forecasted equity gain based on {county?.name} momentum and current economic cooling factors.
                         </div>

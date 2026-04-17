@@ -54,7 +54,28 @@ function getStateColorLight(isLien) {
 
 const getStars = (r) => '★'.repeat(r) + '☆'.repeat(5 - r);
 
-function TooltipCard({ data, position }) {
+function TooltipCard({ data }) {
+    const tooltipRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (!data) return;
+
+        const handleMouseMove = (e) => {
+            if (tooltipRef.current) {
+                const isRightHalf = e.clientX > window.innerWidth / 2;
+                const isBottomHalf = e.clientY > window.innerHeight - 100;
+                
+                tooltipRef.current.style.left = isRightHalf ? '' : `${e.clientX + 16}px`;
+                tooltipRef.current.style.right = isRightHalf ? `${window.innerWidth - e.clientX + 16}px` : '';
+                tooltipRef.current.style.top = isBottomHalf ? '' : `${e.clientY + 16}px`;
+                tooltipRef.current.style.bottom = isBottomHalf ? `${window.innerHeight - e.clientY + 16}px` : '';
+            }
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, [data]);
+
     if (!data) return null;
     
     const abbr = STATE_ABBREV[data.name];
@@ -67,15 +88,9 @@ function TooltipCard({ data, position }) {
 
     return (
         <div
-            className="fixed z-[99999] pointer-events-none transition-all duration-150 ease-out"
-            style={{
-                left: position.isRightHalf ? undefined : position.x + 16,
-                right: position.isRightHalf ? (window.innerWidth - position.x + 16) : undefined,
-                top: position.isBottomHalf ? undefined : position.y + 16,
-                bottom: position.isBottomHalf ? (window.innerHeight - position.y + 16) : undefined,
-                opacity: data ? 1 : 0,
-                transform: `scale(${data ? 1 : 0.95})`,
-            }}
+            ref={tooltipRef}
+            className="fixed z-[99999] pointer-events-none transition-opacity duration-150 ease-out"
+            style={{ opacity: 1, transform: 'scale(1)' }}
         >
             <div className="flex items-center gap-3 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 shadow-none rounded-sm px-4 py-2 whitespace-nowrap overflow-hidden">
                 {/* Status Beacon */}
@@ -116,16 +131,6 @@ function TooltipCard({ data, position }) {
 
 function USChoropleth({ onStateClick, selectedState, height = '100%' }) {
     const [hoveredGeo, setHoveredGeo] = useState(null);
-    const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0, isRightHalf: false, isBottomHalf: false });
-
-    const handleMouseMove = useCallback((e) => {
-        setTooltipPos({ 
-            x: e.clientX, 
-            y: e.clientY,
-            isRightHalf: e.clientX > window.innerWidth / 2,
-            isBottomHalf: e.clientY > window.innerHeight - 100
-        });
-    }, []);
 
     return (
         <div 
@@ -137,7 +142,6 @@ function USChoropleth({ onStateClick, selectedState, height = '100%' }) {
                 borderRadius: '1rem',
                 overflow: 'hidden'
             }}
-            onMouseMove={handleMouseMove}
         >
             <ComposableMap
                 projection="geoAlbersUsa"
@@ -218,7 +222,6 @@ function USChoropleth({ onStateClick, selectedState, height = '100%' }) {
             {/* Hover Tooltip */}
             <TooltipCard 
                 data={hoveredGeo ? { name: hoveredGeo.properties.name } : null} 
-                position={tooltipPos} 
             />
 
 

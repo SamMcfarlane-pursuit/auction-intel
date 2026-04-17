@@ -162,39 +162,39 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
             <div className="bg-slate-950 rounded-sm shadow-none border border-slate-700 p-4 md:p-5">
                 <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
                     <div>
-                        <h2 className="text-xl md:text-lg font-mono font-mono font-semibold text-gray-900 tracking-tight">Upcoming Auctions</h2>
-                        <p className="text-sm text-gray-500 mt-0.5">Live auction sales across all states</p>
+                        <h2 className="text-xl md:text-lg font-mono font-semibold text-slate-100 uppercase tracking-tighter">Upcoming Auctions</h2>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Live Institutional Inventory</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setViewMode('grouped')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'grouped' ? 'bg-slate-900 text-white' : 'bg-slate-900 text-slate-500 hover:bg-slate-200'}`}
+                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'grouped' ? 'bg-blue-600 text-white shadow-none' : 'bg-slate-900 text-slate-500 border border-slate-700 hover:text-slate-300'}`}
                         >
-                            📋 By State
+                            By State
                         </button>
                         <button
                             onClick={() => setViewMode('cards')}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'cards' ? 'bg-slate-900 text-white' : 'bg-slate-900 text-slate-500 hover:bg-slate-200'}`}
+                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'cards' ? 'bg-blue-600 text-white shadow-none' : 'bg-slate-900 text-slate-500 border border-slate-700 hover:text-slate-300'}`}
                         >
-                            🃏 Cards
+                            Matrix Mode
                         </button>
                     </div>
                 </div>
 
                 {/* Stats bar */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-red-50 rounded-sm border border-red-100">
-                        <span className="w-2 h-2 bg-red-500 rounded-sm animate-none"></span>
-                        <span className="text-xs font-semibold text-red-700">{stats.thisWeek} This Week</span>
+                <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-red-950/20 rounded-sm border border-red-900/30">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-sm"></span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">{stats.thisWeek} URGENT</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-sm border border-amber-100">
-                        <span className="text-xs font-semibold text-amber-700">{stats.thisMonth} This Month</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-950/20 rounded-sm border border-amber-900/30">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500">{stats.thisMonth} MTM_WINDOW</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-sm border border-blue-100">
-                        <span className="text-xs font-semibold text-blue-700">{stats.total} Total</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-950/20 rounded-sm border border-blue-900/30">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">{stats.total} TOTAL_FEEDS</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 rounded-sm border border-emerald-100">
-                        <span className="text-xs font-semibold text-emerald-700">{stats.totalProperties.toLocaleString()} Properties</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/20 rounded-sm border border-emerald-900/30">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500">{stats.totalProperties.toLocaleString()} ASSETS_IN_QUEUE</span>
                     </div>
                 </div>
 
@@ -203,9 +203,9 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                     <select
                         value={stateFilter}
                         onChange={(e) => setStateFilter(e.target.value)}
-                        className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                        className="px-3 py-1.5 text-[10px] bg-slate-900 text-slate-300 border border-slate-700 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold uppercase tracking-widest"
                     >
-                        <option value="all">All States ({states.length})</option>
+                        <option value="all">ALL_JURISDICTIONS ({states.length})</option>
                         {states.map(s => (
                             <option key={s} value={s}>{STATE_NAMES[s] || s}</option>
                         ))}
@@ -214,9 +214,9 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                        className="px-3 py-1.5 text-[10px] bg-slate-900 text-slate-300 border border-slate-700 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold uppercase tracking-widest"
                     >
-                        <option value="all">All Types</option>
+                        <option value="all">STRAT_TYPES_ALL</option>
                         {saleTypes.map(t => (
                             <option key={t} value={t}>{t}</option>
                         ))}
@@ -253,28 +253,26 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-mono font-semibold text-slate-100">{STATE_NAMES[state]}</span>
                                                         {stateInfo && (
-                                                            <span className={`px-2 py-0.5 rounded text-[9px] font-semibold text-white ${stateInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-600'}`}>
-                                                                {stateInfo.type}
+                                                        <span className={`px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider text-white ${stateInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                                                            {stateInfo.type}
+                                                        </span>
+                                                    )}
+                                                    {(() => {
+                                                        const ig = getInvestmentGrade(state);
+                                                        return (
+                                                            <span
+                                                                className="px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider border"
+                                                                style={{ backgroundColor: `${ig.color}20`, color: ig.color, borderColor: `${ig.color}40` }}
+                                                            >
+                                                                RTG_{ig.grade}
                                                             </span>
-                                                        )}
-                                                        {/* Investment Grade Badge */}
-                                                        {(() => {
-                                                            const ig = getInvestmentGrade(state);
-                                                            return (
-                                                                <span
-                                                                    className="px-2 py-0.5 rounded text-[9px] font-semibold"
-                                                                    style={{ backgroundColor: ig.bg, color: ig.color, border: `1px solid ${ig.color}30` }}
-                                                                >
-                                                                    {ig.grade}
-                                                                </span>
-                                                            );
-                                                        })()}
-                                                        {urgency.pulse && (
-                                                            <span className="flex items-center gap-1 px-2 py-0.5 bg-red-500 text-white rounded text-[9px] font-semibold">
-                                                                <span className="w-1.5 h-1.5 bg-slate-950 rounded-sm animate-none"></span>
-                                                                {urgency.label}
-                                                            </span>
-                                                        )}
+                                                        );
+                                                    })()}
+                                                    {urgency.pulse && (
+                                                        <span className="flex items-center gap-1 px-2 py-0.5 bg-red-600 text-white rounded-sm text-[8px] font-bold uppercase tracking-wider">
+                                                            CRITICAL_{urgency.label.replace(' ', '_')}
+                                                        </span>
+                                                    )}
                                                     </div>
                                                     <div className="flex items-center gap-3 mt-0.5">
                                                         <span className="text-xs text-slate-500">{auctions.length} {auctions.length === 1 ? 'sale' : 'sales'}</span>

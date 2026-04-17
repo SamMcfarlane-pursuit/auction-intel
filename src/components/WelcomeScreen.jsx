@@ -57,31 +57,31 @@ export default function WelcomeScreen({ user, onDismiss }) {
 
                     {/* Feature cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center border border-blue-500/20">
-                                <span className="text-lg font-mono">🗺️</span>
+                        <div className="bg-slate-950 border border-slate-800 rounded-sm p-6 text-center hover:bg-slate-900 transition-all group">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-blue-900/20 text-blue-400 rounded-sm flex items-center justify-center border border-blue-900/30 group-hover:border-blue-500/50 transition-colors">
+                                <span className="text-xl font-mono">D_01</span>
                             </div>
-                            <div className="text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-1">Step 1</div>
-                            <h3 className="font-mono font-bold text-white mb-1">Discover</h3>
-                            <p className="text-xs text-slate-400">Explore tax lien opportunities across all 50 states</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-blue-500 font-bold mb-1">STATEDATA_DISCOVERY</div>
+                            <h3 className="font-mono font-bold text-slate-100 text-sm mb-2 uppercase tracking-tighter">DISCOVER</h3>
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Cross-jurisdictional tax lien inventory scanning</p>
                         </div>
 
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center border border-emerald-500/20">
-                                <span className="text-lg font-mono">📊</span>
+                        <div className="bg-slate-950 border border-slate-800 rounded-sm p-6 text-center hover:bg-slate-900 transition-all group">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-emerald-900/20 text-emerald-400 rounded-sm flex items-center justify-center border border-emerald-900/30 group-hover:border-emerald-500/50 transition-colors">
+                                <span className="text-xl font-mono">A_02</span>
                             </div>
-                            <div className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold mb-1">Step 2</div>
-                            <h3 className="font-mono font-bold text-white mb-1">Analyze</h3>
-                            <p className="text-xs text-slate-400">Research interest rates, redemption periods & ROI</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-emerald-500 font-bold mb-1">ALPHA_GENERATION</div>
+                            <h3 className="font-mono font-bold text-slate-100 text-sm mb-2 uppercase tracking-tighter">ANALYZE</h3>
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Yield modeling, redemption tracking & asset ROI</p>
                         </div>
 
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-sm p-5 text-center hover:bg-slate-800 transition-all">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-amber-500/20 text-amber-500 rounded-lg flex items-center justify-center border border-amber-500/20">
-                                <span className="text-lg font-mono">⭐</span>
+                        <div className="bg-slate-950 border border-slate-800 rounded-sm p-6 text-center hover:bg-slate-900 transition-all group">
+                            <div className="w-12 h-12 mx-auto mb-4 bg-amber-900/20 text-amber-500 rounded-sm flex items-center justify-center border border-amber-900/30 group-hover:border-amber-500/50 transition-colors">
+                                <span className="text-xl font-mono">T_03</span>
                             </div>
-                            <div className="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-1">Step 3</div>
-                            <h3 className="font-mono font-bold text-white mb-1">Take Action</h3>
-                            <p className="text-xs text-slate-400">Track watchlists & monitor upcoming auctions</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mb-1">TERMINAL_EXECUTION</div>
+                            <h3 className="font-mono font-bold text-slate-100 text-sm mb-2 uppercase tracking-tighter">ACTION</h3>
+                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Monitor watchlists & execute auction strategies</p>
                         </div>
                     </div>
 

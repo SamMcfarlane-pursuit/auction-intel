@@ -66,20 +66,23 @@ export function ValuationSources({ property }) {
             </div>
 
             {/* Average Value */}
-            <div className="bg-emerald-50 border border-emerald-200 rounded-sm p-3 mb-4">
-                <div className="text-xs text-emerald-600 font-bold uppercase mb-1">Average Estimate</div>
-                <div className="text-xl font-mono font-semibold text-emerald-700">${avgValue.toLocaleString()}</div>
-                <div className="text-xs text-emerald-600 mt-1">
-                    Range: ${minValue.toLocaleString()} - ${maxValue.toLocaleString()}
+            <div className="bg-slate-950 border border-emerald-900/50 rounded-sm p-4 mb-4">
+                <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-1">Average Estimate</div>
+                <div className="flex items-baseline gap-2">
+                    <div className="text-2xl font-mono font-semibold text-white/90">${avgValue.toLocaleString()}</div>
+                    <div className="text-[10px] text-emerald-600 font-bold uppercase">Weighted AVM</div>
+                </div>
+                <div className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">
+                    Volatility: ${minValue.toLocaleString()} - ${maxValue.toLocaleString()}
                 </div>
             </div>
 
             {/* Individual Sources */}
             <div className="space-y-2">
                 {estimates.map((est, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-2 bg-slate-950 rounded-lg border border-slate-800 hover:border-slate-700 transition-all">
-                        <div className="flex items-center gap-2">
-                            <div className={`w-8 h-8 ${est.color} rounded-lg flex items-center justify-center text-white text-sm`}>
+                    <div key={idx} className="flex items-center justify-between p-3 bg-slate-950 rounded-sm border border-slate-800 hover:border-slate-700 transition-all">
+                        <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-sm bg-slate-900 border border-slate-700 flex items-center justify-center text-sm`}>
                                 {est.icon}
                             </div>
                             <div>
@@ -123,24 +126,24 @@ export function DueDiligenceChecklist({ onUpdate }) {
     const progress = Math.round((completedCount / checklist.length) * 100);
 
     const priorityColors = {
-        high: 'border-red-200 bg-red-50',
-        medium: 'border-amber-200 bg-amber-50',
-        low: 'border-slate-700 bg-slate-900',
+        high: 'border-red-900/50 bg-red-950/20',
+        medium: 'border-amber-900/50 bg-amber-950/20',
+        low: 'border-slate-800 bg-slate-900/50',
     };
 
     return (
         <div className="bg-slate-950 rounded-md border border-slate-700 p-4">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-100 flex items-center gap-2">
-                    ✅ Due Diligence Checklist
+                <h3 className="font-mono font-semibold text-slate-100 uppercase tracking-tight text-sm">
+                    ✅ Due Diligence Matrix
                 </h3>
-                <div className="text-xs font-bold text-emerald-600">{progress}% Complete</div>
+                <div className="text-[10px] font-bold text-emerald-500 tracking-widest uppercase">{progress}% RESOLVED</div>
             </div>
 
             {/* Progress Bar */}
-            <div className="h-2 bg-slate-900 rounded-sm mb-4 overflow-hidden">
+            <div className="h-1 bg-slate-900 rounded-none mb-6 overflow-hidden border border-slate-800">
                 <div
-                    className="h-full bg-slate-900 transition-all duration-500"
+                    className="h-full bg-emerald-500 transition-all duration-700 ease-out"
                     style={{ width: `${progress}%` }}
                 />
             </div>
@@ -150,8 +153,8 @@ export function DueDiligenceChecklist({ onUpdate }) {
                 {checklist.map(item => (
                     <label
                         key={item.id}
-                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all border ${item.checked ? 'bg-emerald-50 border-emerald-200' : priorityColors[item.priority]
- }`}
+                        className={`flex items-center gap-3 p-3 rounded-sm cursor-pointer transition-all border ${item.checked ? 'bg-emerald-950/30 border-emerald-900/50 shadow-none' : priorityColors[item.priority]
+                        }`}
                     >
                         <input
                             type="checkbox"
@@ -160,16 +163,16 @@ export function DueDiligenceChecklist({ onUpdate }) {
                             className="w-4 h-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500"
                         />
                         <div className="flex-1 min-w-0">
-                            <div className={`text-sm font-semibold ${item.checked ? 'text-emerald-700 line-through' : 'text-slate-200'}`}>
+                            <div className={`text-sm font-semibold tracking-tight ${item.checked ? 'text-slate-500 line-through' : 'text-slate-200'}`}>
                                 {item.label}
                             </div>
-                            <div className="text-[10px] text-slate-500">{item.description}</div>
+                            <div className="text-[10px] text-slate-500 font-medium">{item.description}</div>
                         </div>
                         {!item.checked && (
-                            <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${item.priority === 'high' ? 'bg-red-100 text-red-600' :
- item.priority === 'medium' ? 'bg-amber-100 text-amber-600' :
- 'bg-slate-900 text-slate-500'
- }`}>
+                            <span className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded-sm ${item.priority === 'high' ? 'bg-red-500/10 text-red-500 border border-red-900/50' :
+                                item.priority === 'medium' ? 'bg-amber-500/10 text-amber-500 border border-amber-900/50' :
+                                'bg-slate-800 text-slate-500'
+                                }`}>
                                 {item.priority}
                             </span>
                         )}
@@ -227,19 +230,19 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                 <div className="bg-slate-900 p-6 text-white">
                     <div className="flex items-start justify-between">
                         <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className={`${catInfo.color} text-xs font-bold px-2 py-0.5 rounded`}>
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <span className={`${catInfo.color} text-[9px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider text-white`}>
                                     {catInfo.label}
                                 </span>
-                                <span className="bg-emerald-500 text-xs font-bold px-2 py-0.5 rounded">
-                                    T{tier}
+                                <span className="bg-blue-600 text-[9px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider text-white">
+                                    TERM_TIER_{tier}
                                 </span>
-                                <span className="bg-amber-500 text-xs font-bold px-2 py-0.5 rounded">
-                                    {discount}% Below Value
+                                <span className="bg-slate-800 text-[9px] font-bold border border-slate-700 px-2 py-1 rounded-sm uppercase tracking-wider text-white">
+                                    {discount}% DELTA_PRICE
                                 </span>
                             </div>
-                            <h2 className="text-lg font-mono font-semibold mb-1">{address}</h2>
-                            <p className="text-slate-300">{city}, {state} {zip} • {county} County</p>
+                            <h2 className="text-2xl font-mono font-semibold text-white tracking-tighter mb-1 uppercase">{address}</h2>
+                            <p className="text-slate-400 font-mono text-[11px] uppercase tracking-widest">{city}, {state} {zip} • {county} County</p>
                         </div>
                         <button
                             onClick={onClose}
@@ -251,19 +254,19 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-slate-900 px-6 py-2 flex gap-2 border-b border-slate-700">
+                <div className="bg-slate-900/50 px-6 py-2 flex gap-2 border-b border-slate-800">
                     {[
-                        { id: 'overview', label: '📋 Overview' },
-                        { id: 'valuations', label: '💰 Valuations' },
-                        { id: 'diligence', label: '✅ Due Diligence' },
+                        { id: 'overview', label: 'Overview' },
+                        { id: 'valuations', label: 'Valuations' },
+                        { id: 'diligence', label: 'Due Diligence' },
                     ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === tab.id
- ? 'bg-slate-950 text-slate-100 shadow'
- : 'text-slate-600 hover:bg-slate-950/50'
- }`}
+                            className={`px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === tab.id
+                                ? 'bg-slate-950 text-blue-400 border border-blue-900/50'
+                                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-950/30'
+                            }`}
                         >
                             {tab.label}
                         </button>
@@ -276,55 +279,44 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Property Details */}
                             <div className="bg-slate-900 rounded-md p-4">
-                                <h3 className="font-bold text-slate-100 mb-3">🏠 Property Details</h3>
+                                <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Property Intelligence Matrix</h3>
                                 <div className="grid grid-cols-2 gap-3 text-sm">
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Type</div>
-                                        <div className="font-bold text-slate-100">{propertyType}</div>
-                                    </div>
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Year Built</div>
-                                        <div className="font-bold text-slate-100">{yearBuilt}</div>
-                                    </div>
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Bedrooms</div>
-                                        <div className="font-bold text-slate-100">{bedrooms}</div>
-                                    </div>
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Bathrooms</div>
-                                        <div className="font-bold text-slate-100">{bathrooms}</div>
-                                    </div>
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Square Feet</div>
-                                        <div className="font-bold text-slate-100">{sqft.toLocaleString()}</div>
-                                    </div>
-                                    <div className="bg-slate-950 rounded-lg p-2">
-                                        <div className="text-slate-500 text-xs">Price/SqFt</div>
-                                        <div className="font-bold text-slate-100">${Math.round(openingBid / sqft)}</div>
-                                    </div>
+                                    {[
+                                        { label: 'Asset Type', val: propertyType },
+                                        { label: 'Erection Yr', val: yearBuilt },
+                                        { label: 'Beds', val: bedrooms },
+                                        { label: 'Baths', val: bathrooms },
+                                        { label: 'Internal Area', val: `${sqft.toLocaleString()} SQFT` },
+                                        { label: 'Price/SQFT', val: `$${Math.round(openingBid / sqft)}` }
+                                    ].map((field, fidx) => (
+                                        <div key={fidx} className="bg-slate-950 rounded-sm border border-slate-800 p-3">
+                                            <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider mb-1">{field.label}</div>
+                                            <div className="font-mono font-semibold text-slate-100 text-xs">{field.val}</div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
                             {/* Auction Info */}
-                            <div className="bg-emerald-50 rounded-md p-4 border border-emerald-100">
-                                <h3 className="font-bold text-emerald-900 mb-3">📅 Auction Details</h3>
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-700">Opening Bid</span>
-                                        <span className="text-lg font-mono font-semibold text-emerald-700">${openingBid.toLocaleString()}</span>
+                            <div className="bg-slate-950 rounded-md p-6 border border-emerald-900/30">
+                                <h3 className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6">Auction Financials</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center bg-slate-900/50 p-3 border-l-2 border-emerald-500">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400">Opening Bid</span>
+                                        <span className="text-xl font-mono font-semibold text-white/90">${openingBid.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-700">Est. Value</span>
-                                        <span className="text-lg font-bold text-slate-400 line-through">${estimatedValue.toLocaleString()}</span>
+                                    <div className="flex justify-between items-center px-3">
+                                        <span className="text-[10px] uppercase font-bold text-slate-500">Est. AVM Value</span>
+                                        <span className="text-lg font-mono font-medium text-slate-600 line-through">${estimatedValue.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-emerald-700">Potential Equity</span>
-                                        <span className="text-lg font-bold text-emerald-700">${(estimatedValue - openingBid).toLocaleString()}</span>
+                                    <div className="flex justify-between items-center bg-slate-900/50 p-3 border-l-2 border-emerald-500">
+                                        <span className="text-[10px] uppercase font-bold text-slate-400">Projected Equity</span>
+                                        <span className="text-xl font-mono font-semibold text-emerald-500">${(estimatedValue - openingBid).toLocaleString()}</span>
                                     </div>
-                                    <div className="border-t border-emerald-200 pt-3 mt-3">
-                                        <div className="text-sm text-emerald-600">Auction Date</div>
-                                        <div className="text-xl font-semibold text-emerald-800">
-                                            {new Date(auctionDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                    <div className="border-t border-slate-800 pt-6 mt-6">
+                                        <div className="text-[9px] uppercase font-bold text-slate-500 tracking-[0.2em] mb-2">Event Timestamp</div>
+                                        <div className="text-base font-mono font-semibold text-white/90">
+                                            {new Date(auctionDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase()}
                                         </div>
                                     </div>
                                 </div>
@@ -332,20 +324,20 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
 
                             {/* Mortgage Info */}
                             {mortgageBalance && (
-                                <div className="bg-red-50 rounded-md p-4 border border-red-100 md:col-span-2">
-                                    <h3 className="font-bold text-red-900 mb-3">🏦 Mortgage Information</h3>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <div className="text-sm text-red-600">Mortgage Balance</div>
-                                            <div className="text-xl font-semibold text-red-800">${mortgageBalance?.toLocaleString()}</div>
+                                <div className="bg-slate-950 rounded-md p-6 border border-red-900/30 md:col-span-2">
+                                    <h3 className="text-[10px] font-bold text-red-500 uppercase tracking-[0.2em] mb-6">Financial Encumbrances</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="bg-slate-900/50 p-4 border-l-2 border-red-500">
+                                            <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Mortgage Balance</div>
+                                            <div className="text-xl font-mono font-semibold text-white/90">${mortgageBalance?.toLocaleString()}</div>
                                         </div>
-                                        <div>
-                                            <div className="text-sm text-red-600">Equity</div>
-                                            <div className="text-xl font-semibold text-emerald-700">${equity?.toLocaleString()}</div>
+                                        <div className="bg-slate-900/50 p-4 border-l-2 border-emerald-500">
+                                            <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Asset Equity</div>
+                                            <div className="text-xl font-mono font-semibold text-emerald-500">${equity?.toLocaleString()}</div>
                                         </div>
-                                        <div>
-                                            <div className="text-sm text-red-600">Lender</div>
-                                            <div className="text-xl font-semibold text-red-800">{lender}</div>
+                                        <div className="bg-slate-900/50 p-4 border-l-2 border-slate-500">
+                                            <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Lead Lender</div>
+                                            <div className="text-base font-mono font-semibold text-white/90 truncate">{lender}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -370,21 +362,21 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                     >
                         Close
                     </button>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                         <button
                             onClick={() => onOpenDueDiligence?.(property)}
-                            className="px-6 py-2 rounded-sm bg-slate-900 text-white font-bold hover: hover: transition-all"
+                            className="px-6 py-2 rounded-sm bg-slate-900 border border-slate-700 text-slate-100 font-mono font-bold text-xs hover:bg-slate-800 transition-all uppercase tracking-widest"
                         >
-                            🔍 Full Due Diligence
+                            Audit File
                         </button>
-                        <button className="px-6 py-2 rounded-sm bg-blue-500 text-white font-bold hover:bg-blue-600 transition-all">
-                            🗺️ View on Map
+                        <button className="px-6 py-2 rounded-sm bg-blue-600 border border-blue-500 text-white font-mono font-bold text-xs hover:bg-blue-700 transition-all uppercase tracking-widest">
+                            Geospatial
                         </button>
                         <button
                             onClick={() => onAddToWatchlist?.(property)}
-                            className="px-6 py-2 rounded-sm bg-amber-500 text-white font-bold hover:bg-amber-600 transition-all"
+                            className="px-6 py-2 rounded-sm bg-amber-600 border border-amber-500 text-white font-mono font-bold text-xs hover:bg-amber-700 transition-all uppercase tracking-widest"
                         >
-                            ⭐ Add to Watchlist
+                            Watch Asset
                         </button>
                     </div>
                 </div>

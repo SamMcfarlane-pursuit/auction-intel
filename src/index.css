@@ -19,7 +19,21 @@
 
 @layer base {
     body {
-        @apply bg-slate-50 text-slate-900 font-sans antialiased;
+        @apply bg-slate-950 text-slate-400 font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden;
+    }
+
+    /* Professional Terminal Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-slate-950;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-slate-800 border-2 border-slate-950 hover:bg-slate-700;
     }
 
     h1,
@@ -27,13 +41,17 @@
     h3,
     h4,
     .font-display {
-        @apply font-display tracking-tight text-slate-900;
+        @apply font-mono tracking-tighter text-slate-100 uppercase;
+    }
+
+    input, select, textarea {
+        @apply focus:ring-1 focus:ring-blue-500 focus:outline-none;
     }
 }
 
 @layer utilities {
     .glass-morphism {
-        @apply bg-white/5 backdrop-blur-xl border border-white/10;
+        @apply bg-slate-950/80 backdrop-blur-xl border border-slate-800;
     }
 
     .pulse-glow {
@@ -89,15 +107,15 @@
 
 @layer components {
     .glass {
-        @apply bg-white/70 backdrop-blur-md border border-white/20;
+        @apply bg-slate-900/70 backdrop-blur-md border border-slate-700/50;
     }
 
     .premium-shadow {
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        box-shadow: none;
     }
 
     .premium-card {
-        @apply bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-300 hover:shadow-md hover:border-slate-300;
+        @apply bg-slate-950 rounded-sm border border-slate-800 shadow-none transition-all duration-300 hover:border-slate-700 hover:bg-slate-900;
     }
 
     .scrollbar-hide::-webkit-scrollbar {

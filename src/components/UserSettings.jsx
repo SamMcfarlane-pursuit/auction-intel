@@ -76,7 +76,7 @@ export default function UserSettings({ onClose }) {
             <div className="p-6 md:p-8 border-b border-slate-800">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-mono md:text-2xl font-mono font-mono font-semibold text-slate-100 tracking-tighter">Settings</h2>
+                        <h2 className="text-xl font-mono md:text-2xl font-mono font-semibold text-slate-100 tracking-tighter">Settings</h2>
                         <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-1">Manage your account</p>
                     </div>
                     <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-sm bg-slate-900 hover:bg-slate-200 text-slate-600 transition-all">

@@ -567,7 +567,7 @@ const TierDetectionPlatform = () => {
         {/* Sources Tab */}
         {activeTab === 'sources' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 /30 /30 rounded-sm p-6 border border-green-500/30">
+            <div className="bg-slate-900/30 rounded-sm p-6 border border-green-500/30">
               <h2 className="text-xl font-bold mb-2">100% Free Data Sources</h2>
               <p className="text-gray-400">All tier detection uses publicly available, free data</p>
             </div>
