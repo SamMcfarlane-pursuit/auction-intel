@@ -2048,20 +2048,27 @@ async fn get_all_schedules_handler() -> Json<AllSchedulesResponse> {
 
 #[tokio::main]
 async fn main() {
-    // Security: Restrict CORS to known domains only
-    let allowed_origins = [
-        "https://auction-intel.vercel.app".parse().unwrap(),
-        "http://localhost:5173".parse().unwrap(), // Vite dev server
-        "http://localhost:5180".parse().unwrap(), // My dev port
-        "http://localhost:3000".parse().unwrap(), // Alt dev port
-        "http://localhost:3005".parse().unwrap(), // Current dev port
-        "http://127.0.0.1:5173".parse().unwrap(),
-        "http://127.0.0.1:3005".parse().unwrap(),
-    ];
+    // CORS: accept the primary production domain + all Vercel preview URLs for this project,
+    // plus any localhost:* and 127.0.0.1:* for local development. Additional origins can be
+    // supplied via CORS_EXTRA_ORIGINS (comma-separated) without a rebuild.
+    let extra = std::env::var("CORS_EXTRA_ORIGINS").unwrap_or_default();
+    let extra_origins: Vec<String> = extra
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect();
 
     let cors = CorsLayer::new()
-        .allow_origin(AllowOrigin::list(allowed_origins))
-        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_origin(AllowOrigin::predicate(move |origin, _req| {
+            let o = match origin.to_str() { Ok(s) => s, Err(_) => return false };
+            // Production frontend (custom + Vercel previews)
+            if o == "https://auction-intel.vercel.app" { return true; }
+            if o.starts_with("https://auction-intel-") && o.ends_with(".vercel.app") { return true; }
+            // Local dev on any port
+            if o.starts_with("http://localhost:") || o.starts_with("http://127.0.0.1:") { return true; }
+            // Extra origins supplied via env
+            extra_origins.iter().any(|e| e == o)
+        }))
         .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
         .allow_headers([header::CONTENT_TYPE, header::ACCEPT, header::AUTHORIZATION]);
 

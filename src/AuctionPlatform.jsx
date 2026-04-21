@@ -7,6 +7,9 @@ import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyR
 import USChoropleth from './components/USChoropleth';
 // USMap (MapLibre GL + Supercluster, ~1.2 MB) is lazy-loaded: fetched only when user opens the Map view.
 const USMap = lazy(() => import('./USMap'));
+// Hover/focus prefetch — warms the map-engine chunk cache before the user actually clicks.
+// Idempotent: repeat calls are free because the browser caches the module resolution.
+const prefetchMap = () => { import('./USMap'); };
 import UpcomingAuctions from './UpcomingAuctions';
 import ROICalculator from './components/ROICalculator';
 import AuctionCalendar from './components/AuctionCalendar';
@@ -781,6 +784,43 @@ export default function AuctionPlatform() {
 
     const parcels = realListings; // Now using real API data
 
+    // Normalize a backend ForeclosureProperty (HUD/Fannie/Freddie) into the shape USMap expects.
+    // Key behavior: preserves backend-supplied lat/lng so markers land on exact city centroids;
+    // falls back to resolvePropertyCoords' deterministic jitter when either is missing.
+    const foreclosureToProperty = (p, idx) => {
+        const categoryBySource = { HUD: 'mortgage', 'Fannie Mae': 'mortgage', 'Freddie Mac': 'mortgage' };
+        return {
+            id: `${p.state}-${p.city}-${p.address}-${idx}`.replace(/\s+/g, '-'),
+            address: p.address,
+            city: p.city,
+            state: p.state,
+            zip: p.zip,
+            county: '',
+            propertyType: p.property_type || 'Single Family',
+            bedrooms: p.bedrooms,
+            bathrooms: p.bathrooms,
+            sqft: p.sqft,
+            yearBuilt: 0,
+            auctionDate: p.listing_date,
+            openingBid: p.price,
+            estimatedValue: Math.round((p.price || 0) * 1.35),
+            category: categoryBySource[p.source] || 'other',
+            tier: 2,
+            source: p.source,
+            lat: p.lat ?? null,
+            lng: p.lng ?? null,
+        };
+    };
+
+    // Source of truth for the Map view: prefer live backend listings for the selected state,
+    // otherwise fall back to the in-repo SAMPLE_PROPERTIES so the map is never empty.
+    const mapProperties = useMemo(() => {
+        if (Array.isArray(realListings) && realListings.length > 0) {
+            return realListings.map(foreclosureToProperty);
+        }
+        return SAMPLE_PROPERTIES;
+    }, [realListings]);
+
     // Get county details if available (for NY)
     const getCountyDetails = (countyName) => {
         return NY_COUNTY_DETAILS[countyName] || null;
@@ -931,7 +971,10 @@ export default function AuctionPlatform() {
                                 { id: 'auctions', label: 'Live Auctions', icon: '🔨' },
                                 { id: 'properties', label: 'Properties', icon: '🏠' },
                             ].map(item => (
-                                <button key={item.id} onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                <button key={item.id}
+                                    onClick={() => { setView(item.id); setSelectedCounty(null); }}
+                                    onMouseEnter={item.id === 'map' ? prefetchMap : undefined}
+                                    onFocus={item.id === 'map' ? prefetchMap : undefined}
                                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${view === item.id ? 'bg-indigo-600 text-white font-bold shadow-none' : 'hover:bg-slate-100 text-slate-600 hover:text-white'}`}>
                                     <span className="text-sm">{item.icon}</span>
                                     <span className="text-xs font-semibold">{item.label}</span>
@@ -1534,7 +1577,7 @@ export default function AuctionPlatform() {
                                             <USMap
                                                 onStateClick={(abbr) => setSelectedState(abbr)}
                                                 selectedState={selectedState}
-                                                properties={SAMPLE_PROPERTIES}
+                                                properties={mapProperties}
                                                 onPropertyClick={(p) => setSelectedPropertyForModal(p)}
                                             />
                                         </Suspense>

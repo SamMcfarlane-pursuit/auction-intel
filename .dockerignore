@@ -1,10 +1,37 @@
+# Build context exclusions. Dockerfile only copies backend/Cargo.* and backend/src/,
+# so everything else is dead weight that slows up-loads to remote builders.
 node_modules
 dist
-.git
-.gitignore
-*.md
-.env*
-.vscode
-.idea
+.vite
+coverage
 *.log
 .DS_Store
+
+# Rust: we compile fresh inside the builder stage
+target
+backend/target
+
+# VCS / editors / CI
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.swp
+
+# Frontend bundler output & Vercel artefacts
+.vercel
+public/sw.js
+
+# Scripts & docs not needed at runtime
+scripts
+*.md
+docs
+
+# Secrets — keep the example but never ship real env files
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example

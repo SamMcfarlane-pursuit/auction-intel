@@ -1,0 +1,52 @@
+# Fly.io configuration for the Rust/Axum API server.
+# Deploy with:   fly deploy --remote-only
+# Launch (first time only): fly launch --no-deploy --copy-config
+#
+# App name matches the host referenced by .env.production:
+#   VITE_API_URL=https://auction-intel-api.fly.dev/api
+app = "auction-intel-api"
+primary_region = "iad"   # us-east-1 — low latency for East Coast + closest to Vercel edge
+
+kill_signal  = "SIGINT"
+kill_timeout = "5s"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  RUST_LOG = "auction_intel_backend=info,tower_http=info"
+  # DATABASE_URL for SQLite on a persistent volume (see [[mounts]] below).
+  DATABASE_URL = "sqlite:/data/auction_intel.db?mode=rwc"
+
+# Persistent volume for the SQLite file. Create once with:
+#   fly volumes create auction_intel_data --region iad --size 1
+[[mounts]]
+  source      = "auction_intel_data"
+  destination = "/data"
+
+[http_service]
+  internal_port       = 8080
+  force_https         = true
+  auto_stop_machines  = "stop"     # scale to zero when idle to save cost
+  auto_start_machines = true
+  min_machines_running = 0
+  processes           = ["app"]
+
+  [http_service.concurrency]
+    type       = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    grace_period  = "10s"
+    interval      = "30s"
+    method        = "GET"
+    timeout       = "5s"
+    path          = "/api/health"
+
+[[vm]]
+  size      = "shared-cpu-1x"   # 256 MB — matches the ~100 MB idle footprint
+  memory    = "512mb"
+  cpu_kind  = "shared"
+  cpus      = 1
