@@ -26,6 +26,12 @@ pub struct ForeclosureProperty {
     pub source: String,
     pub listing_date: String,
     pub status: String,
+    // Resolved from the offline geocoder (city centroid → state centroid fallback).
+    // Omitted from JSON when unresolved so the frontend falls back to deterministic jitter.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub lat: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub lng: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -70,7 +76,7 @@ pub fn get_hud_sample_data(state: &str) -> Vec<ForeclosureProperty> {
     let state_upper = state.to_uppercase();
     let today = chrono::Utc::now().format("%Y-%m-%d").to_string();
 
-    // Helper to create property
+    // Helper to create property (attaches lat/lng via offline geocoder: city → state centroid)
     let prop = |addr: &str,
                 city: &str,
                 st: &str,
@@ -81,6 +87,8 @@ pub fn get_hud_sample_data(state: &str) -> Vec<ForeclosureProperty> {
                 sqft: i32,
                 ptype: &str,
                 src: &str| {
+        let coords = crate::geocoding::geocode_city(st, city)
+            .or_else(|| crate::geocoding::geocode_state(st));
         ForeclosureProperty {
             address: addr.to_string(),
             city: city.to_string(),
@@ -94,6 +102,8 @@ pub fn get_hud_sample_data(state: &str) -> Vec<ForeclosureProperty> {
             source: src.to_string(),
             listing_date: today.clone(),
             status: "Available".to_string(),
+            lat: coords.map(|c| c.0),
+            lng: coords.map(|c| c.1),
         }
     };
 

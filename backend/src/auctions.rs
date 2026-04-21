@@ -1292,3 +1292,39 @@ pub fn get_state_schedule(state: &str) -> Option<StateAuctionSchedule> {
 pub fn get_all_schedules() -> Vec<StateAuctionSchedule> {
     STATE_SCHEDULES.values().cloned().collect()
 }
+
+// ============================================================================
+// GEOCODED OUTPUT (lat/lng attached for frontend map rendering)
+// ============================================================================
+
+// Wire format returned from `/api/auctions`. Flattens `AuctionListing` fields at the
+// top level and adds `lat` / `lng` resolved from the county centroid table in
+// `geocoding.rs`. `None` values are omitted from JSON so the frontend's
+// `resolvePropertyCoords` deterministic-jitter fallback kicks in.
+#[derive(Debug, Clone, Serialize)]
+pub struct AuctionListingOut {
+    #[serde(flatten)]
+    pub listing: AuctionListing,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lat: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lng: Option<f64>,
+}
+
+fn attach_coords(listing: AuctionListing) -> AuctionListingOut {
+    let coords = crate::geocoding::geocode_county(&listing.state, &listing.county)
+        .or_else(|| crate::geocoding::geocode_state(&listing.state));
+    AuctionListingOut {
+        lat: coords.map(|c| c.0),
+        lng: coords.map(|c| c.1),
+        listing,
+    }
+}
+
+pub fn get_upcoming_auctions_with_coords() -> Vec<AuctionListingOut> {
+    get_upcoming_auctions().into_iter().map(attach_coords).collect()
+}
+
+pub fn get_state_auctions_with_coords(state: &str) -> Vec<AuctionListingOut> {
+    get_state_auctions(state).into_iter().map(attach_coords).collect()
+}

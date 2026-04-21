@@ -16,6 +16,7 @@ mod db;
 mod deal_finder;
 mod foreclosure;
 mod fred_api;
+mod geocoding;
 mod price_tracker;
 mod realtime;
 mod scoring;
@@ -1982,11 +1983,11 @@ async fn get_foreclosure_trends_handler() -> Json<foreclosure::NationalTrends> {
 struct AuctionsResponse {
     updated: String,
     total: usize,
-    auctions: Vec<auctions::AuctionListing>,
+    auctions: Vec<auctions::AuctionListingOut>,
 }
 
 async fn get_all_auctions() -> Json<AuctionsResponse> {
-    let auction_list = auctions::get_upcoming_auctions();
+    let auction_list = auctions::get_upcoming_auctions_with_coords();
     Json(AuctionsResponse {
         updated: chrono::Utc::now().to_rfc3339(),
         total: auction_list.len(),
@@ -1995,7 +1996,7 @@ async fn get_all_auctions() -> Json<AuctionsResponse> {
 }
 
 async fn get_state_auctions_handler(Path(state): Path<String>) -> Json<AuctionsResponse> {
-    let auction_list = auctions::get_state_auctions(&state);
+    let auction_list = auctions::get_state_auctions_with_coords(&state);
     Json(AuctionsResponse {
         updated: chrono::Utc::now().to_rfc3339(),
         total: auction_list.len(),

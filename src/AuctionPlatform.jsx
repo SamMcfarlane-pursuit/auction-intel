@@ -1,11 +1,12 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
 import { useAuth } from './AuthContext';
 import { useWatchlist } from './WatchlistContext';
 import { useToast } from './ToastContext';
 import { TIERS, COUNTIES as STATIC_COUNTIES, STATE_NAMES, STATE_PATHS, STATE_LABEL_COORDS, TIER_CRITERIA, FREE_DATA_SOURCES, NY_COUNTY_DETAILS, PYTHON_QUICK_START, STATE_AUCTION_INFO as STATIC_STATE_AUCTION_INFO, getStateByZip, UPCOMING_AUCTIONS } from './data';
 import { exportToCSV, copyToClipboard, tableToText, printReport, generateCountyReportHTML, generateStateReportHTML } from './exportUtils';
 import USChoropleth from './components/USChoropleth';
-import USMap from './USMap';
+// USMap (MapLibre GL + Supercluster, ~1.2 MB) is lazy-loaded: fetched only when user opens the Map view.
+const USMap = lazy(() => import('./USMap'));
 import UpcomingAuctions from './UpcomingAuctions';
 import ROICalculator from './components/ROICalculator';
 import AuctionCalendar from './components/AuctionCalendar';
@@ -1522,12 +1523,21 @@ export default function AuctionPlatform() {
                                 <div className={isMapExpanded ? "fixed inset-0 z-50 bg-canvas animate-in fade-in duration-300" : "flex-1 w-full h-full min-h-[60vh] md:min-h-[700px] relative rounded-md overflow-hidden bg-canvas border border-slate-200 shadow-none transition-all duration-300"}>
                                     {/* Base UI layer (MapLibre GL — vector tiles, satellite toggle, property markers) */}
                                     <div className="absolute inset-0" style={{ zIndex: 1 }}>
-                                        <USMap
-                                            onStateClick={(abbr) => setSelectedState(abbr)}
-                                            selectedState={selectedState}
-                                            properties={SAMPLE_PROPERTIES}
-                                            onPropertyClick={(p) => setSelectedPropertyForModal(p)}
-                                        />
+                                        <Suspense fallback={
+                                            <div className="w-full h-full flex items-center justify-center bg-canvas">
+                                                <div className="flex flex-col items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full border-2 border-slate-200 border-t-indigo-600 animate-spin" />
+                                                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Loading map engine…</div>
+                                                </div>
+                                            </div>
+                                        }>
+                                            <USMap
+                                                onStateClick={(abbr) => setSelectedState(abbr)}
+                                                selectedState={selectedState}
+                                                properties={SAMPLE_PROPERTIES}
+                                                onPropertyClick={(p) => setSelectedPropertyForModal(p)}
+                                            />
+                                        </Suspense>
                                     </div>
                                     
                                     {/* Glass Overlay Layer: Top HUD */}
