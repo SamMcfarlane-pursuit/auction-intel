@@ -14,7 +14,7 @@ export default function MobileNav({ activeView, onNavigate }) {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-900 /95 border-t border-slate-700/50 backdrop-blur-xl md:hidden safe-area-pb">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-surface /95 border-t border-slate-300/60 backdrop-blur-xl md:hidden safe-area-pb">
             <div className="flex items-center justify-around px-2 py-1">
                 {navItems.map((item) => {
                     const isActive = activeView === item.id ||
@@ -25,18 +25,18 @@ export default function MobileNav({ activeView, onNavigate }) {
                             key={item.id}
                             onClick={() => onNavigate(item.id)}
                             className={`flex flex-col items-center justify-center py-2 px-3 rounded-sm transition-all min-w-[56px] ${isActive
- ? 'bg-slate-900 /20 /20 text-blue-400'
- : 'text-slate-400 hover:text-slate-200 active:scale-95'
+ ? 'bg-surface /20 /20 text-indigo-500'
+ : 'text-slate-600 hover:text-slate-800 active:scale-95'
  }`}
                         >
                             <span className={`text-xl transition-transform ${isActive ? 'scale-110' : ''}`}>
                                 {item.icon}
                             </span>
-                            <span className={`text-[10px] font-bold mt-0.5 ${isActive ? 'text-blue-400' : 'text-slate-500'}`}>
+                            <span className={`text-[10px] font-bold mt-0.5 ${isActive ? 'text-indigo-500' : 'text-slate-500'}`}>
                                 {item.label}
                             </span>
                             {isActive && (
-                                <div className="absolute bottom-0 w-8 h-0.5 bg-slate-900 rounded-sm" />
+                                <div className="absolute bottom-0 w-8 h-0.5 bg-surface rounded-sm" />
                             )}
                         </button>
                     );

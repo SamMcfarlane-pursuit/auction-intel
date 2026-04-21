@@ -187,7 +187,7 @@ function GlobeVisualizer({ height = '450px' }) {
                 <div>
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-1 h-1 rounded-sm bg-emerald-500 animate-none shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.4em]">Live Intelligence Sync</span>
+                        <span className="text-[8px] text-slate-600 font-bold uppercase tracking-[0.4em]">Live Intelligence Sync</span>
                     </div>
                     <h2 className="text-lg font-mono font-semibold text-white tracking-tight opacity-90">Global Command</h2>
                     <div className="h-0.5 w-12 bg-indigo-500/30 mt-3 rounded-sm" />

@@ -62,14 +62,15 @@ class GlobeErrorBoundary extends Component {
             return (
                 <div style={{
                     width: '100%', height: this.props.height || '100%',
-                    background: '#020617', borderRadius: '1rem',
+                    background: '#F1EEE8', borderRadius: '1rem',
+                    border: '1px solid #E5E1D8',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px'
                 }}>
                     <div style={{ fontSize: '3rem' }}>🌐</div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                    <div style={{ color: '#0F172A', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
                         Globe Unavailable
                     </div>
-                    <div style={{ color: '#475569', fontSize: '0.65rem', maxWidth: '280px', textAlign: 'center' }}>
+                    <div style={{ color: '#475569', fontSize: '0.75rem', maxWidth: '280px', textAlign: 'center' }}>
                         WebGL is not supported in this environment.
                         Switch to Map mode for full functionality.
                     </div>
@@ -197,7 +198,7 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="w-1.5 h-1.5 rounded-sm bg-emerald-500 animate-none shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">Live Intelligence</span>
+                        <span className="text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em]">Live Intelligence</span>
                     </div>
                     <h2 className="text-xl font-semibold text-white/90 tracking-tight">Global Command</h2>
                 </div>
@@ -221,13 +222,13 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50"
                 >
-                    <div className="bg-slate-950/90 backdrop-blur-2xl border border-white/10 rounded-md p-5 shadow-none min-w-[220px]">
+                    <div className="bg-canvas/90 backdrop-blur-2xl border border-white/10 rounded-md p-5 shadow-none min-w-[220px]">
                         <div className="flex items-center justify-between mb-3">
                             <div className="text-sm font-semibold text-white">{hoveredPoint.name}</div>
                             <div className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded-sm border ${
  hoveredPoint.type === 'lien' 
  ? 'text-violet-300 bg-violet-500/10 border-violet-500/20' 
- : 'text-blue-300 bg-blue-500/10 border-blue-500/20'
+ : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20'
  }`}>
                                 {hoveredPoint.type}
                             </div>
@@ -243,7 +244,7 @@ function MarketGlobeInner({ height = '100%', onStateClick }) {
                             </div>
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Cap Rate</div>
-                                <div className="text-sm font-semibold text-emerald-400">{hoveredPoint.capRate}</div>
+                                <div className="text-sm font-semibold text-emerald-600">{hoveredPoint.capRate}</div>
                             </div>
                             <div>
                                 <div className="text-[7px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Score</div>

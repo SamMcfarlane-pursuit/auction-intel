@@ -55,13 +55,13 @@ const getInvestmentGrade = (state) => {
 
 // Get urgency info
 const getUrgencyInfo = (days) => {
-    if (days < 0) return { label: 'PASSED', color: '#94a3b8', bg: 'bg-slate-900', pulse: false };
+    if (days < 0) return { label: 'PASSED', color: '#94a3b8', bg: 'bg-surface', pulse: false };
     if (days === 0) return { label: 'TODAY', color: '#dc2626', bg: 'bg-red-50', pulse: true };
     if (days <= 3) return { label: `${days}d LEFT`, color: '#dc2626', bg: 'bg-red-50', pulse: true };
     if (days <= 7) return { label: `${days} days`, color: '#ea580c', bg: 'bg-orange-50', pulse: false };
     if (days <= 14) return { label: `${days} days`, color: '#f59e0b', bg: 'bg-amber-50', pulse: false };
     if (days <= 30) return { label: `${days} days`, color: '#059669', bg: 'bg-emerald-50', pulse: false };
-    return { label: `${days} days`, color: '#2563eb', bg: 'bg-blue-50', pulse: false };
+    return { label: `${days} days`, color: '#2563eb', bg: 'bg-indigo-50', pulse: false };
 };
 
 export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectState }) {
@@ -159,22 +159,22 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
     return (
         <div className="h-full flex flex-col gap-4">
             {/* Header */}
-            <div className="bg-slate-950 rounded-sm shadow-none border border-slate-700 p-4 md:p-5">
+            <div className="bg-canvas rounded-sm shadow-none border border-slate-300 p-4 md:p-5">
                 <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
                     <div>
-                        <h2 className="text-xl md:text-lg font-mono font-semibold text-slate-100 uppercase tracking-tighter">Upcoming Auctions</h2>
+                        <h2 className="text-xl md:text-lg font-mono font-semibold text-slate-900 uppercase tracking-tighter">Upcoming Auctions</h2>
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Live Institutional Inventory</p>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setViewMode('grouped')}
-                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'grouped' ? 'bg-blue-600 text-white shadow-none' : 'bg-slate-900 text-slate-500 border border-slate-700 hover:text-slate-300'}`}
+                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'grouped' ? 'bg-indigo-600 text-white shadow-none' : 'bg-surface text-slate-500 border border-slate-300 hover:text-slate-700'}`}
                         >
                             By State
                         </button>
                         <button
                             onClick={() => setViewMode('cards')}
-                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'cards' ? 'bg-blue-600 text-white shadow-none' : 'bg-slate-900 text-slate-500 border border-slate-700 hover:text-slate-300'}`}
+                            className={`px-3 py-1.5 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all ${viewMode === 'cards' ? 'bg-indigo-600 text-white shadow-none' : 'bg-surface text-slate-500 border border-slate-300 hover:text-slate-700'}`}
                         >
                             Matrix Mode
                         </button>
@@ -184,16 +184,16 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                 {/* Stats bar */}
                 <div className="flex flex-wrap gap-2 mb-6">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-red-950/20 rounded-sm border border-red-900/30">
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-sm"></span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">{stats.thisWeek} URGENT</span>
+                        <span className="w-1.5 h-1.5 bg-rose-500 rounded-sm"></span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600">{stats.thisWeek} URGENT</span>
                     </div>
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-950/20 rounded-sm border border-amber-900/30">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500">{stats.thisMonth} MTM_WINDOW</span>
                     </div>
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-950/20 rounded-sm border border-blue-900/30">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">{stats.total} TOTAL_FEEDS</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-500">{stats.total} TOTAL_FEEDS</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/20 rounded-sm border border-emerald-900/30">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/20 rounded-sm border border-emerald-200">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-500">{stats.totalProperties.toLocaleString()} ASSETS_IN_QUEUE</span>
                     </div>
                 </div>
@@ -203,7 +203,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                     <select
                         value={stateFilter}
                         onChange={(e) => setStateFilter(e.target.value)}
-                        className="px-3 py-1.5 text-[10px] bg-slate-900 text-slate-300 border border-slate-700 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold uppercase tracking-widest"
+                        className="px-3 py-1.5 text-[10px] bg-surface text-slate-700 border border-slate-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold uppercase tracking-widest"
                     >
                         <option value="all">ALL_JURISDICTIONS ({states.length})</option>
                         {states.map(s => (
@@ -214,7 +214,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="px-3 py-1.5 text-[10px] bg-slate-900 text-slate-300 border border-slate-700 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold uppercase tracking-widest"
+                        className="px-3 py-1.5 text-[10px] bg-surface text-slate-700 border border-slate-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold uppercase tracking-widest"
                     >
                         <option value="all">STRAT_TYPES_ALL</option>
                         {saleTypes.map(t => (
@@ -238,22 +238,22 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                             const totalProps = auctions.reduce((s, a) => s + a.propertyCount, 0);
 
                             return (
-                                <div key={state} className="bg-slate-950 rounded-sm shadow-none border border-slate-700 overflow-hidden">
+                                <div key={state} className="bg-canvas rounded-sm shadow-none border border-slate-300 overflow-hidden">
                                     {/* State Header */}
                                     <div
                                         onClick={() => toggleState(state)}
-                                        className={`p-4 cursor-pointer transition-all hover:bg-slate-900 ${urgency.bg}`}
+                                        className={`p-4 cursor-pointer transition-all hover:bg-slate-100 ${urgency.bg}`}
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-slate-900 rounded-sm flex items-center justify-center text-white font-mono font-semibold text-sm">
+                                                <div className="w-10 h-10 bg-surface rounded-sm flex items-center justify-center text-white font-mono font-semibold text-sm">
                                                     {state}
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-mono font-semibold text-slate-100">{STATE_NAMES[state]}</span>
+                                                        <span className="font-mono font-semibold text-slate-900">{STATE_NAMES[state]}</span>
                                                         {stateInfo && (
-                                                        <span className={`px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider text-white ${stateInfo.type === 'Lien' ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                                                        <span className={`px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-wider text-white ${stateInfo.type === 'Lien' ? 'bg-indigo-600' : 'bg-panel-2'}`}>
                                                             {stateInfo.type}
                                                         </span>
                                                     )}
@@ -276,11 +276,11 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                     </div>
                                                     <div className="flex items-center gap-3 mt-0.5">
                                                         <span className="text-xs text-slate-500">{auctions.length} {auctions.length === 1 ? 'sale' : 'sales'}</span>
-                                                        <span className="text-xs text-slate-400">•</span>
+                                                        <span className="text-xs text-slate-600">•</span>
                                                         <span className="text-xs text-slate-500">{totalProps.toLocaleString()} properties</span>
                                                         {stateInfo && stateInfo.interestRate !== 'N/A' && (
                                                             <>
-                                                                <span className="text-xs text-slate-400">•</span>
+                                                                <span className="text-xs text-slate-600">•</span>
                                                                 <span className="text-xs font-bold text-emerald-600">{stateInfo.interestRate}</span>
                                                             </>
                                                         )}
@@ -293,7 +293,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                         Next: {urgency.label}
                                                     </span>
                                                 )}
-                                                <span className={`text-slate-400 transition-transform text-lg ${isExpanded ? 'rotate-90' : ''}`}>›</span>
+                                                <span className={`text-slate-600 transition-transform text-lg ${isExpanded ? 'rotate-90' : ''}`}>›</span>
                                             </div>
                                         </div>
                                     </div>
@@ -313,11 +313,11 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                             onSelectState?.(auction.state);
                                                             onSelectCounty?.(auction.county);
                                                         }}
-                                                        className="p-4 border-b border-gray-50 last:border-0 hover:bg-blue-50/30 cursor-pointer transition-all flex items-center justify-between gap-4"
+                                                        className="p-4 border-b border-gray-50 last:border-0 hover:bg-indigo-50/30 cursor-pointer transition-all flex items-center justify-between gap-4"
                                                     >
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center gap-2 mb-1">
-                                                                <span className="font-bold text-slate-100">{auction.county} County</span>
+                                                                <span className="font-bold text-slate-900">{auction.county} County</span>
                                                                 <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: typeColor.bg }}>
                                                                     {auction.saleType}
                                                                 </span>
@@ -335,7 +335,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                                 })()}
                                                             </div>
                                                             <div className="flex items-center gap-3 text-xs text-slate-500">
-                                                                <span className="font-semibold text-blue-600">{formatDate(auction.saleDate)}</span>
+                                                                <span className="font-semibold text-indigo-600">{formatDate(auction.saleDate)}</span>
                                                                 <span>•</span>
                                                                 <span>{auction.propertyCount}+ properties</span>
                                                                 <span>•</span>
@@ -344,7 +344,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                                 <span>{auction.platform}</span>
                                                             </div>
                                                             {auction.notes && (
-                                                                <p className="text-[11px] text-slate-400 mt-1 truncate">{auction.notes}</p>
+                                                                <p className="text-[11px] text-slate-600 mt-1 truncate">{auction.notes}</p>
                                                             )}
                                                         </div>
                                                         <div className="flex items-center gap-2 shrink-0">
@@ -376,7 +376,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                             return (
                                 <div
                                     key={auction.id}
-                                    className={`bg-slate-950 rounded-sm border shadow-none hover:shadow-md transition-all cursor-pointer overflow-hidden group ${urgency.pulse ? 'border-red-300 hover:border-red-400' : 'border-slate-700 hover:border-slate-300'
+                                    className={`bg-canvas rounded-sm border shadow-none hover:shadow-md transition-all cursor-pointer overflow-hidden group ${urgency.pulse ? 'border-red-300 hover:border-red-400' : 'border-slate-300 hover:border-slate-300'
  }`}
                                     onClick={() => {
                                         onSelectState?.(auction.state);
@@ -384,7 +384,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                     }}
                                 >
                                     {/* Top Banner */}
-                                    <div className="relative h-20 bg-slate-900 flex items-end justify-between p-3">
+                                    <div className="relative h-20 bg-surface flex items-end justify-between p-3">
                                         <div className="flex items-center gap-2">
                                             <span className="font-mono font-semibold text-white text-lg">{auction.state}</span>
                                             <span className="px-2 py-0.5 rounded text-[9px] font-bold text-white" style={{ backgroundColor: typeColor.bg }}>
@@ -399,8 +399,8 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                         </span>
                                         {urgency.pulse && (
                                             <div className="absolute top-2 right-2 flex items-center gap-1">
-                                                <span className="w-2 h-2 bg-red-500 rounded-sm animate-ping"></span>
-                                                <span className="text-[8px] font-semibold text-red-300 uppercase">Live Soon</span>
+                                                <span className="w-2 h-2 bg-rose-500 rounded-sm animate-ping"></span>
+                                                <span className="text-[8px] font-semibold text-rose-500 uppercase">Live Soon</span>
                                             </div>
                                         )}
                                     </div>
@@ -410,7 +410,7 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                         <h3 className="text-base font-bold text-gray-900 mb-1">
                                             {auction.county} County
                                         </h3>
-                                        <div className="text-blue-600 font-semibold text-sm mb-2">
+                                        <div className="text-indigo-600 font-semibold text-sm mb-2">
                                             {formatDate(auction.saleDate)}
                                         </div>
 
@@ -421,18 +421,18 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                                                     : `${auction.propertyCount}+ Props`
                                                 }
                                             </span>
-                                            <span className="px-2 py-0.5 bg-slate-900 text-slate-600 rounded text-[10px] font-bold">
+                                            <span className="px-2 py-0.5 bg-surface text-slate-600 rounded text-[10px] font-bold">
                                                 ${auction.deposit.toLocaleString()} dep.
                                             </span>
                                         </div>
 
                                         {auction.notes && (
-                                            <p className="text-xs text-gray-400 italic line-clamp-2">{auction.notes}</p>
+                                            <p className="text-xs text-slate-600 italic line-clamp-2">{auction.notes}</p>
                                         )}
 
                                         {stateInfo && stateInfo.interestRate !== 'N/A' && (
                                             <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between text-xs">
-                                                <span className="text-gray-500">Interest Rate</span>
+                                                <span className="text-slate-500">Interest Rate</span>
                                                 <span className="font-bold text-emerald-600">{stateInfo.interestRate}</span>
                                             </div>
                                         )}
@@ -446,12 +446,12 @@ export default function UpcomingAuctions({ auctions, onSelectCounty, onSelectSta
                 {/* Empty State */}
                 {filteredAuctions.length === 0 && (
                     <div className="flex-1 flex items-center justify-center py-16">
-                        <div className="text-center text-gray-400">
+                        <div className="text-center text-slate-600">
                             <div className="text-2xl font-mono mb-3">🔍</div>
                             <p className="text-lg font-medium">No upcoming auctions match your filters</p>
                             <button
                                 onClick={() => { setStateFilter('all'); setTypeFilter('all'); }}
-                                className="mt-3 text-blue-600 hover:underline font-medium"
+                                className="mt-3 text-indigo-600 hover:underline font-medium"
                             >
                                 Clear filters
                             </button>

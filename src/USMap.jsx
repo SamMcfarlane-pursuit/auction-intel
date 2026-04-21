@@ -1,8 +1,39 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { STATE_AUCTION_INFO } from './data';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import Supercluster from 'supercluster';
+import { resolvePropertyCoords } from './mapData';
+import { getStyleConfig } from './mapStyles';
+import MapStyleSwitcher from './map/MapStyleSwitcher';
+import MapSearchBar from './map/MapSearchBar';
+import StreetViewModal from './map/StreetViewModal';
+import './map/USMap.css';
+
+const INITIAL_VIEW = { center: [-98.5, 39.5], zoom: 3.6, pitch: 0, bearing: 0 };
+const MAX_BOUNDS = [[-170, 15], [-50, 72]];
+const US_STATES_URL = '/us-states.json';
+const LIEN_COLOR = '#4F46E5';
+const DEED_COLOR = '#0D9488';
+const SELECTED_COLOR = '#F59E0B';
+const HOVER_COLOR = '#8B5CF6';
+const STATE_SOURCE = 'us-states';
+
+function featureColorExpr(selectedAbbr, hoveredAbbr) {
+    return [
+        'case',
+        ['==', ['get', 'abbr'], selectedAbbr || ''], SELECTED_COLOR,
+        ['==', ['get', 'abbr'], hoveredAbbr || ''], HOVER_COLOR,
+        ['==', ['get', 'type'], 'Lien'], LIEN_COLOR,
+        DEED_COLOR
+    ];
+}
+
+function clusterRadius(points) {
+    if (points >= 200) return 38;
+    if (points >= 50) return 32;
+    if (points >= 10) return 26;
+    return 22;
+}
 
 const LIEN_STATES = new Set([
     "Alabama", "Arizona", "Colorado", "Connecticut", "Florida", "Georgia",
@@ -26,225 +57,304 @@ const STATE_ABBREV = {
     "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"
 };
 
-const getStars = (r) => '★'.repeat(r) + '☆'.repeat(5 - r);
+export default function USMap({
+    onStateClick,
+    selectedState,
+    hoveredState,
+    onHoverState,
+    properties = [],
+    onPropertyClick
+}) {
+    const containerRef = useRef(null);
+    const mapRef = useRef(null);
+    const geoDataRef = useRef(null);
+    const propertyMarkersRef = useRef([]);
+    const clusterIndexRef = useRef(null);
+    const [styleId, setStyleId] = useState(() => localStorage.getItem('aim.mapStyle') || 'streets');
+    const [ready, setReady] = useState(false);
+    const [view, setView] = useState({ zoom: INITIAL_VIEW.zoom, lng: INITIAL_VIEW.center[0], lat: INITIAL_VIEW.center[1] });
+    const [cursor, setCursor] = useState(null);
+    const [streetView, setStreetView] = useState(null);
+    const [showHint, setShowHint] = useState(() => !localStorage.getItem('aim.mapHintSeen'));
 
-function StateLabels({ geoData }) {
-    const map = useMap();
-    const labelsRef = useRef([]);
+    const styleDark = getStyleConfig(styleId).dark;
 
     useEffect(() => {
-        labelsRef.current.forEach(m => map.removeLayer(m));
-        labelsRef.current = [];
-        if (!geoData) return;
-        geoData.features.forEach(f => {
-            const abbr = STATE_ABBREV[f.properties.name];
-            if (!abbr) return;
-            const center = L.geoJSON(f).getBounds().getCenter();
-            const label = L.marker(center, {
-                icon: L.divIcon({ 
-                    className: 'state-label-premium', 
-                    html: `<div class="flex flex-col items-center">
-                            <span class="abbr">${abbr}</span>
-                           </div>`, 
-                    iconSize: [40, 20], 
-                    iconAnchor: [20, 10] 
-                }),
-                interactive: false
-            });
-            label.addTo(map);
-            labelsRef.current.push(label);
+        if (!containerRef.current) return;
+        const cfg = getStyleConfig(styleId);
+        const map = new maplibregl.Map({
+            container: containerRef.current,
+            style: cfg.url || cfg.style,
+            center: INITIAL_VIEW.center,
+            zoom: INITIAL_VIEW.zoom,
+            pitch: INITIAL_VIEW.pitch,
+            bearing: INITIAL_VIEW.bearing,
+            maxBounds: MAX_BOUNDS,
+            minZoom: 2.5,
+            maxZoom: 19,
+            attributionControl: { compact: true },
+            dragRotate: true,
+            pitchWithRotate: true,
+            touchPitch: true
         });
-        return () => labelsRef.current.forEach(m => map.removeLayer(m));
-    }, [map, geoData]);
-    return null;
-}
+        mapRef.current = map;
 
-function MapIntegrityHandler({ onHoverState }) {
-    const map = useMap();
-    useEffect(() => {
-        // Fix Leaflet sizing artifacts (like the gray box issue)
-        setTimeout(() => map.invalidateSize(), 200);
-        
-        const handleResize = () => map.invalidateSize();
-        const container = map.getContainer();
-        const handleMouseLeave = () => { if (onHoverState) onHoverState(null); };
+        map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showCompass: true }), 'bottom-right');
+        map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'imperial' }), 'bottom-left');
+        map.addControl(new maplibregl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: false,
+            showUserLocation: true,
+            fitBoundsOptions: { maxZoom: 14 }
+        }), 'top-right');
 
-        window.addEventListener('resize', handleResize);
-        container.addEventListener('mouseleave', handleMouseLeave);
-        
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            container.removeEventListener('mouseleave', handleMouseLeave);
+        const onMove = () => {
+            const c = map.getCenter();
+            setView({ zoom: map.getZoom(), lng: c.lng, lat: c.lat });
         };
-    }, [map, onHoverState]);
-    return null;
-}
+        const onMouseMove = (e) => setCursor({ lat: e.lngLat.lat, lng: e.lngLat.lng });
+        const onMouseOut = () => setCursor(null);
+        map.on('move', onMove);
+        map.on('mousemove', onMouseMove);
+        map.on('mouseout', onMouseOut);
+        map.on('load', () => setReady(true));
+        map.on('style.load', () => { setReady(true); addDataLayers(map); });
+        map.on('contextmenu', (e) => {
+            setStreetView({ lat: e.lngLat.lat, lng: e.lngLat.lng, label: null });
+        });
 
-export default function USMap({ onStateClick, selectedState, hoveredState, onHoverState }) {
-    const [geoData, setGeoData] = useState(null);
-    const layersRef = useRef({});
-    const activeTooltipRef = useRef(null);
+        const onKey = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === 'r' || e.key === 'R') map.easeTo({ pitch: 0, bearing: 0, duration: 600 });
+            if (e.key === 'h' || e.key === 'H') map.flyTo({ ...INITIAL_VIEW, duration: 900, essential: true });
+        };
+        window.addEventListener('keydown', onKey);
 
-    useEffect(() => {
-        fetch('/us-states.json').then(r => r.json()).then(setGeoData).catch(console.error);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            map.remove();
+            mapRef.current = null;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        Object.entries(layersRef.current).forEach(([abbr, layer]) => {
-            const name = Object.keys(STATE_ABBREV).find(n => STATE_ABBREV[n] === abbr);
-            if (!name) return;
-            const isLien = LIEN_STATES.has(name);
-            const isSelected = selectedState === abbr;
-            const isHovered = hoveredState === abbr;
-
-            layer.setStyle({
-                fillColor: isLien ? '#8b5cf6' : '#3b82f6',
-                weight: isSelected ? 3 : isHovered ? 2 : 0.8,
-                color: isSelected ? '#ffffff' : isHovered ? '#60a5fa' : '#334155',
-                fillOpacity: isSelected ? 0.85 : isHovered ? 0.7 : 0.35
+        let cancelled = false;
+        fetch(US_STATES_URL).then(r => r.json()).then(data => {
+            if (cancelled) return;
+            data.features = data.features.map(f => {
+                const abbr = STATE_ABBREV[f.properties.name] || '';
+                const type = LIEN_STATES.has(f.properties.name) ? 'Lien' : 'Deed';
+                return { ...f, properties: { ...f.properties, abbr, type } };
             });
+            geoDataRef.current = data;
+            if (mapRef.current && mapRef.current.isStyleLoaded()) addDataLayers(mapRef.current);
+        }).catch(console.error);
+        return () => { cancelled = true; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-            if (isHovered) {
-                if (activeTooltipRef.current && activeTooltipRef.current !== layer) {
-                    activeTooltipRef.current.closeTooltip();
+    const addDataLayers = useCallback((map) => {
+        if (!geoDataRef.current) return;
+        const src = map.getSource(STATE_SOURCE);
+        if (!src) {
+            map.addSource(STATE_SOURCE, { type: 'geojson', data: geoDataRef.current });
+        } else {
+            src.setData(geoDataRef.current);
+        }
+        const darkBg = getStyleConfig(styleId).dark;
+        const fillOpacity = [
+            'interpolate', ['linear'], ['zoom'],
+            3, 0.42, 5, 0.36, 7, 0.24, 9, 0.14, 11, 0.06, 13, 0.02
+        ];
+        if (!map.getLayer('state-fill')) {
+            map.addLayer({
+                id: 'state-fill', type: 'fill', source: STATE_SOURCE,
+                paint: {
+                    'fill-color': featureColorExpr(selectedState, hoveredState),
+                    'fill-opacity': fillOpacity
                 }
-                layer.openTooltip();
-                activeTooltipRef.current = layer;
-            } else if (activeTooltipRef.current === layer && !hoveredState) {
-                layer.closeTooltip();
-                activeTooltipRef.current = null;
-            }
-        });
+            });
+            map.addLayer({
+                id: 'state-outline', type: 'line', source: STATE_SOURCE,
+                paint: {
+                    'line-color': darkBg ? '#E2E8F0' : '#334155',
+                    'line-width': ['interpolate', ['linear'], ['zoom'], 3, 0.6, 7, 1.1, 11, 1.4],
+                    'line-opacity': ['interpolate', ['linear'], ['zoom'], 3, 0.6, 9, 0.32, 13, 0.1]
+                }
+            });
+            map.on('mousemove', 'state-fill', (e) => {
+                map.getCanvas().style.cursor = 'pointer';
+                const abbr = e.features?.[0]?.properties?.abbr;
+                if (abbr && onHoverState) onHoverState(abbr);
+            });
+            map.on('mouseleave', 'state-fill', () => {
+                map.getCanvas().style.cursor = '';
+                if (onHoverState) onHoverState(null);
+            });
+            map.on('click', 'state-fill', (e) => {
+                const feature = e.features?.[0];
+                if (!feature) return;
+                const abbr = feature.properties.abbr;
+                if (onStateClick) onStateClick(abbr);
+                const [lng, lat] = e.lngLat.toArray();
+                map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 5.5), duration: 800, essential: true });
+            });
+        } else {
+            map.setPaintProperty('state-outline', 'line-color', darkBg ? '#E2E8F0' : '#334155');
+        }
+    }, [styleId, selectedState, hoveredState, onStateClick, onHoverState]);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map || !map.getLayer('state-fill')) return;
+        map.setPaintProperty('state-fill', 'fill-color', featureColorExpr(selectedState, hoveredState));
     }, [selectedState, hoveredState]);
 
-    const getStyle = useCallback((feature) => {
-        const name = feature.properties.name;
-        const isLien = LIEN_STATES.has(name);
-        return {
-            fillColor: isLien ? '#8b5cf6' : '#3b82f6',
-            weight: 0.8,
-            color: '#334155',
-            fillOpacity: 0.35
-        };
+    const geoProperties = useMemo(() => {
+        if (!Array.isArray(properties) || properties.length === 0) return [];
+        const out = [];
+        for (const p of properties) {
+            const coord = resolvePropertyCoords(p);
+            if (!coord) continue;
+            out.push({
+                type: 'Feature',
+                properties: { ...p },
+                geometry: { type: 'Point', coordinates: [coord[1], coord[0]] }
+            });
+        }
+        return out;
+    }, [properties]);
+
+    useEffect(() => {
+        const index = new Supercluster({ radius: 56, maxZoom: 16, minPoints: 2 });
+        index.load(geoProperties);
+        clusterIndexRef.current = index;
+        if (mapRef.current && mapRef.current.isStyleLoaded()) refreshPropertyLayer(mapRef.current);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [geoProperties]);
+
+    const refreshPropertyLayer = useCallback((map) => {
+        if (!map) map = mapRef.current;
+        if (!map || !clusterIndexRef.current) return;
+        propertyMarkersRef.current.forEach(m => m.remove());
+        propertyMarkersRef.current = [];
+        const b = map.getBounds();
+        const bbox = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+        const zoom = Math.floor(map.getZoom());
+        const clusters = clusterIndexRef.current.getClusters(bbox, zoom);
+        clusters.forEach(c => {
+            const [lng, lat] = c.geometry.coordinates;
+            const el = document.createElement('div');
+            if (c.properties.cluster) {
+                const count = c.properties.point_count;
+                const r = clusterRadius(count);
+                el.className = 'aim-cluster';
+                el.style.width = `${r}px`; el.style.height = `${r}px`;
+                el.innerHTML = `<span>${c.properties.point_count_abbreviated}</span>`;
+                el.addEventListener('click', () => {
+                    const expZoom = clusterIndexRef.current.getClusterExpansionZoom(c.properties.cluster_id);
+                    map.flyTo({ center: [lng, lat], zoom: expZoom + 0.4, duration: 700, essential: true });
+                });
+            } else {
+                const p = c.properties;
+                const tier = p.tier || 2;
+                const cat = p.category || 'other';
+                el.className = `aim-marker tier-${tier} cat-${cat}`;
+                el.innerHTML = `<span class="aim-marker-dot"></span><span class="aim-marker-label">$${Math.round((p.openingBid || 0) / 1000)}k</span>`;
+                el.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    if (onPropertyClick) onPropertyClick(p);
+                });
+                el.addEventListener('contextmenu', (ev) => {
+                    ev.preventDefault();
+                    setStreetView({ lat, lng, label: `${p.address || ''}, ${p.city || ''}`.replace(/^,\s*/, '') });
+                });
+            }
+            const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map);
+            propertyMarkersRef.current.push(marker);
+        });
+    }, [onPropertyClick]);
+
+    useEffect(() => {
+        const map = mapRef.current;
+        if (!map) return;
+        const handler = () => refreshPropertyLayer(map);
+        map.on('moveend', handler);
+        map.on('zoomend', handler);
+        if (ready) handler();
+        return () => { map.off('moveend', handler); map.off('zoomend', handler); };
+    }, [refreshPropertyLayer, ready]);
+
+    const changeStyle = useCallback((id) => {
+        const map = mapRef.current;
+        if (!map) return;
+        const cfg = getStyleConfig(id);
+        setStyleId(id);
+        localStorage.setItem('aim.mapStyle', id);
+        map.setStyle(cfg.url || cfg.style);
     }, []);
 
-    const onEachState = useCallback((feature, layer) => {
-        const name = feature.properties.name;
-        const abbr = STATE_ABBREV[name];
-        const isLien = LIEN_STATES.has(name);
-        const type = isLien ? 'Lien State' : 'Deed State';
-        const info = STATE_AUCTION_INFO[abbr];
-
-        layersRef.current[abbr] = layer;
-
-        let html;
-        if (info) {
-            const stars = getStars(info.investorRating || 3);
-            html = `
-                <div class="glass-tooltip">
-                    <div class="header">
-                        <span class="state-name">${name}</span>
-                        <span class="badge ${isLien ? 'lien' : 'deed'}">${type}</span>
-                    </div>
-                    <div class="rating">${stars}</div>
-                    <div class="grid">
-                        <div class="stat-item"><span class="label">INT RATE</span><span class="val highlight">${info.interestRate}</span></div>
-                        <div class="stat-item"><span class="label">REDEMPTION</span><span class="val uppercase">${info.redemptionPeriod}</span></div>
-                        <div class="stat-item"><span class="label">AUCTION</span><span class="val">${info.biddingType || 'Varies'}</span></div>
-                        <div class="stat-item"><span class="label">ONLINE</span><span class="val ${info.onlineAuctions ? 'text-emerald-400' : 'text-red-400'}">${info.onlineAuctions ? 'AVAILABLE' : 'OFFLINE'}</span></div>
-                    </div>
-                    <div class="footer-hint">Click state for detailed county analysis</div>
-                </div>
-            `;
+    const handleSearchSelect = useCallback(({ lat, lng, bbox }) => {
+        const map = mapRef.current;
+        if (!map) return;
+        if (bbox && bbox.length === 4) {
+            const [s, n, w, e] = bbox.map(parseFloat);
+            map.fitBounds([[w, s], [e, n]], { padding: 80, duration: 900, maxZoom: 15, essential: true });
         } else {
-            html = `<div class="glass-tooltip-simple"><strong>${name}</strong><br/>${type}</div>`;
+            map.flyTo({ center: [lng, lat], zoom: 14, duration: 900, essential: true });
         }
+    }, []);
 
-        layer.bindTooltip(html, {
-            direction: 'auto',
-            className: 'premium-leaflet-tooltip',
-            permanent: false,
-            sticky: false,
-            offset: [0, -10]
-        });
-
-        layer.on({
-            click: () => onStateClick && onStateClick(abbr),
-            mouseover: () => onHoverState && onHoverState(abbr),
-            mouseout: () => onHoverState && onHoverState(null)
-        });
-    }, [onStateClick, onHoverState]);
-
-    if (!geoData) return <div className="w-full h-full flex items-center justify-center bg-slate-950 rounded-md"><span className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest animate-none">Initializing Neural Map...</span></div>;
+    const dismissHint = () => { setShowHint(false); localStorage.setItem('aim.mapHintSeen', '1'); };
 
     return (
-        <>
-            <style>{`
-                .premium-leaflet-tooltip {
-                    background: transparent !important;
-                    border: none !important;
-                    box-shadow: none !important;
-                    padding: 0 !important;
-                    pointer-events: none !important;
-                }
-                
-                .glass-tooltip {
-                    background: rgba(15, 23, 42, 0.95) !important;
-                    backdrop-filter: blur(16px) !important;
-                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                    border-radius: 20px !important;
-                    padding: 18px !important;
-                    min-width: 250px !important;
-                    color: white !important;
-                    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
-                    pointer-events: none !important;
-                }
-                
-                .glass-tooltip .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-                .glass-tooltip .state-name { font-size: 16px; font-weight: 900; letter-spacing: -0.02em; }
-                .glass-tooltip .badge { font-size: 8px; font-weight: 900; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.1em; }
-                .glass-tooltip .badge.lien { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
-                .glass-tooltip .badge.deed { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
-                .glass-tooltip .rating { color: #fbbf24; font-size: 14px; margin-bottom: 12px; letter-spacing: 2px; }
-                
-                .glass-tooltip .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
-                .glass-tooltip .stat-item { display: flex; flex-direction: column; }
-                .glass-tooltip .label { font-size: 7px; font-weight: 900; color: rgba(255, 255, 255, 0.4); letter-spacing: 0.1em; margin-bottom: 2px; }
-                .glass-tooltip .val { font-size: 10px; font-weight: 700; color: f8fafc; }
-                .glass-tooltip .val.highlight { color: #34d399; }
-                
-                .glass-tooltip .footer-hint { font-size: 8px; font-weight: 700; color: #64748b; margin-top: 14px; text-align: center; text-transform: uppercase; letter-spacing: 0.1em; }
-                
-                .state-label-premium {
-                    pointer-events: none !important;
-                }
-                
-                .state-label-premium .abbr { 
-                    font-size: 10px; 
-                    font-weight: 900; 
-                    color: rgba(255, 255, 255, 0.4); 
-                    text-transform: uppercase;
-                    pointer-events: none;
-                }
-                
-                .leaflet-container { background: #020617 !important; cursor: crosshair !important; border-radius: 24px !important; }
-            `}</style>
-            <MapContainer
-                center={[39.5, -98.5]}
-                zoom={4}
-                minZoom={3}
-                maxZoom={8}
-                maxBounds={[[20, -130], [55, -60]]}
-                maxBoundsViscosity={1.0}
-                style={{ width: '100%', height: '100%', borderRadius: '24px', background: '#020617' }}
-                scrollWheelZoom={true}
-                zoomControl={false}
-            >
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png" attribution="" />
-                <GeoJSON data={geoData} style={getStyle} onEachFeature={onEachState} />
-                <StateLabels geoData={geoData} />
-                <MapIntegrityHandler onHoverState={onHoverState} />
-            </MapContainer>
-        </>
+        <div className={`usmap-root ${styleDark ? 'is-dark' : 'is-light'}`}>
+            <div ref={containerRef} className="usmap-canvas" />
+
+            <div className="usmap-overlay top-left">
+                <MapSearchBar onSelect={handleSearchSelect} />
+            </div>
+
+            <div className="usmap-overlay top-right">
+                <MapStyleSwitcher value={styleId} onChange={changeStyle} />
+            </div>
+
+            <div className="usmap-hud">
+                <span className="hud-dot" />
+                <span>Z{view.zoom.toFixed(1)}</span>
+                <span className="hud-sep">·</span>
+                <span>
+                    {cursor
+                        ? `${cursor.lat.toFixed(4)}°, ${cursor.lng.toFixed(4)}°`
+                        : `${view.lat.toFixed(3)}°, ${view.lng.toFixed(3)}°`}
+                </span>
+                <span className="hud-sep">·</span>
+                <span className="hud-hint">Right-click for Street View</span>
+            </div>
+
+            {showHint && (
+                <div className="usmap-kbd-hint">
+                    <div className="kbd-title">Map Navigation</div>
+                    <ul>
+                        <li><kbd>Scroll</kbd> zoom</li>
+                        <li><kbd>Drag</kbd> pan · <kbd>Right-drag</kbd> tilt / rotate</li>
+                        <li><kbd>R</kbd> reset pitch · <kbd>H</kbd> home view</li>
+                        <li><kbd>Right-click</kbd> open Street View</li>
+                    </ul>
+                    <button type="button" onClick={dismissHint}>Got it</button>
+                </div>
+            )}
+
+            {streetView && (
+                <StreetViewModal
+                    lat={streetView.lat}
+                    lng={streetView.lng}
+                    label={streetView.label}
+                    onClose={() => setStreetView(null)}
+                />
+            )}
+        </div>
     );
 }
+

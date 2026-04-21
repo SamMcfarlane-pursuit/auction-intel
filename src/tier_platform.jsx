@@ -100,7 +100,7 @@ const tierCriteria = {
     name: "Strong / Selective",
     color: "#3B82F6",
     bgColor: "bg-blue-900/30",
-    borderColor: "border-blue-500",
+    borderColor: "border-indigo-500",
     criteria: {
       population: "200,000 - 500,000",
       medianIncome: "$60,000 - $80,000",
@@ -236,25 +236,25 @@ const TierDetectionPlatform = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-surface text-white">
       {/* Header */}
-      <div className="bg-slate-900 border-b border-gray-700 p-4">
+      <div className="bg-surface border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-mono font-bold bg-slate-900 bg-clip-text text-transparent">
+            <h1 className="text-lg font-mono font-bold bg-surface bg-clip-text text-transparent">
               🗺️ Property Tax Auction Intelligence Platform
             </h1>
-            <p className="text-gray-400 text-sm">Free Data • Tier Detection • All 50 States</p>
+            <p className="text-slate-600 text-sm">Free Data • Tier Detection • All 50 States</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <div className="text-xs text-gray-500">Data Cost</div>
+              <div className="text-xs text-slate-500">Data Cost</div>
               <div className="text-lg font-bold text-green-400">$0/month</div>
             </div>
-            <div className="h-8 w-px bg-gray-700"></div>
+            <div className="h-8 w-px bg-panel-2"></div>
             <div className="text-right">
-              <div className="text-xs text-gray-500">Counties Analyzed</div>
-              <div className="text-lg font-bold text-blue-400">{nyCountyData.length}</div>
+              <div className="text-xs text-slate-500">Counties Analyzed</div>
+              <div className="text-lg font-bold text-indigo-500">{nyCountyData.length}</div>
             </div>
           </div>
         </div>
@@ -269,8 +269,8 @@ const TierDetectionPlatform = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-lg font-medium transition-all ${
  activeTab === tab 
- ? 'bg-slate-900 text-white' 
- : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+ ? 'bg-surface text-white' 
+ : 'bg-panel text-slate-600 hover:bg-panel-2'
  }`}
             >
               {tab === 'map' && '🗺️ '}
@@ -286,7 +286,7 @@ const TierDetectionPlatform = () => {
         {activeTab === 'map' && (
           <div className="space-y-6">
             {/* US State Map */}
-            <div className="bg-gray-800 rounded-sm p-6">
+            <div className="bg-panel rounded-sm p-6">
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
                 <span>🇺🇸</span> United States - Select a State
               </h2>
@@ -302,9 +302,9 @@ const TierDetectionPlatform = () => {
                       style={{ gridRow: pos.row + 1, gridColumn: pos.col + 1 }}
                       className={`
  w-12 h-10 rounded flex items-center justify-center text-xs font-bold cursor-pointer transition-all
- ${isSelected ? 'bg-slate-900 scale-110 z-10' : ''}
+ ${isSelected ? 'bg-surface scale-110 z-10' : ''}
  ${hasData && !isSelected ? 'bg-green-700 hover:bg-green-600' : ''}
- ${!hasData && !isSelected ? 'bg-gray-700 hover:bg-gray-600' : ''}
+ ${!hasData && !isSelected ? 'bg-panel-2 hover:bg-slate-300' : ''}
  `}
                       title={state?.name}
                     >
@@ -316,22 +316,22 @@ const TierDetectionPlatform = () => {
               <div className="flex gap-4 mt-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded bg-green-700"></div>
-                  <span className="text-gray-400">Data Available</span>
+                  <span className="text-slate-600">Data Available</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gray-700"></div>
-                  <span className="text-gray-400">Coming Soon</span>
+                  <div className="w-4 h-4 rounded bg-panel-2"></div>
+                  <span className="text-slate-600">Coming Soon</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-slate-900"></div>
-                  <span className="text-gray-400">Selected</span>
+                  <div className="w-4 h-4 rounded bg-surface"></div>
+                  <span className="text-slate-600">Selected</span>
                 </div>
               </div>
             </div>
 
             {/* State Detail */}
             {selectedState && (
-              <div className="bg-gray-800 rounded-sm p-6">
+              <div className="bg-panel rounded-sm p-6">
                 <h2 className="text-xl font-bold mb-4">
                   {usStates.find(s => s.abbr === selectedState)?.name}
                   {selectedState === 'NY' && <span className="ml-2 text-green-400 text-sm">✓ Data Available</span>}
@@ -356,7 +356,7 @@ const TierDetectionPlatform = () => {
                           <div className="text-lg font-mono font-bold" style={{ color: getTierColor(tier) }}>
                             {tierStats[tier]}
                           </div>
-                          <div className="text-xs text-gray-400">Tier {tier}</div>
+                          <div className="text-xs text-slate-600">Tier {tier}</div>
                         </button>
                       ))}
                     </div>
@@ -367,7 +367,7 @@ const TierDetectionPlatform = () => {
                         <div
                           key={county.rank}
                           onClick={() => setSelectedCounty(county)}
-                          className="bg-gray-700/50 rounded-lg p-3 cursor-pointer hover:bg-gray-700 transition-all"
+                          className="bg-panel-2/50 rounded-lg p-3 cursor-pointer hover:bg-panel-2 transition-all"
                           style={{ borderLeft: `4px solid ${getTierColor(county.tier)}` }}
                         >
                           <div className="flex items-center justify-between mb-1">
@@ -382,7 +382,7 @@ const TierDetectionPlatform = () => {
                               T{county.tier}
                             </span>
                           </div>
-                          <div className="text-xs text-gray-500">Rank #{county.rank}</div>
+                          <div className="text-xs text-slate-500">Rank #{county.rank}</div>
                         </div>
                       ))}
                     </div>
@@ -391,10 +391,10 @@ const TierDetectionPlatform = () => {
                   <div className="text-center py-12">
                     <div className="text-6xl mb-4">🚧</div>
                     <h3 className="text-xl font-bold mb-2">Coming Soon</h3>
-                    <p className="text-gray-400 mb-4">
+                    <p className="text-slate-600 mb-4">
                       County tier rankings for {usStates.find(s => s.abbr === selectedState)?.name} are in development.
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-500">
                       Use the Tier Detection algorithm to analyze any county with free data sources.
                     </p>
                   </div>
@@ -405,7 +405,7 @@ const TierDetectionPlatform = () => {
             {/* Selected County Detail */}
             {selectedCounty && (
               <div 
-                className="bg-gray-800 rounded-sm p-6 border-l-4"
+                className="bg-panel rounded-sm p-6 border-l-4"
                 style={{ borderLeftColor: getTierColor(selectedCounty.tier) }}
               >
                 <div className="flex justify-between items-start mb-4">
@@ -421,21 +421,21 @@ const TierDetectionPlatform = () => {
                       >
                         Tier {selectedCounty.tier} - {tierCriteria[`tier${selectedCounty.tier}`].name}
                       </span>
-                      <span className="text-gray-400">Rank #{selectedCounty.rank}</span>
+                      <span className="text-slate-600">Rank #{selectedCounty.rank}</span>
                     </div>
                   </div>
                   <button 
                     onClick={() => setSelectedCounty(null)}
-                    className="text-gray-500 hover:text-white"
+                    className="text-slate-500 hover:text-white"
                   >✕</button>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <h4 className="text-sm text-gray-500 uppercase mb-2">Investor Focus</h4>
+                    <h4 className="text-sm text-slate-500 uppercase mb-2">Investor Focus</h4>
                     <p className="text-white">{selectedCounty.investorFocus}</p>
                   </div>
                   <div>
-                    <h4 className="text-sm text-gray-500 uppercase mb-2">Lifestyle Score</h4>
+                    <h4 className="text-sm text-slate-500 uppercase mb-2">Lifestyle Score</h4>
                     <p className="text-white">{selectedCounty.lifestyle}</p>
                   </div>
                 </div>
@@ -446,14 +446,14 @@ const TierDetectionPlatform = () => {
 
         {/* Counties Tab */}
         {activeTab === 'counties' && (
-          <div className="bg-gray-800 rounded-sm overflow-hidden">
+          <div className="bg-panel rounded-sm overflow-hidden">
             <div className="p-4 border-b border-gray-700">
               <h2 className="text-xl font-bold">New York County Rankings</h2>
-              <p className="text-gray-400 text-sm">Hybrid Investor & Lifestyle Model</p>
+              <p className="text-slate-600 text-sm">Hybrid Investor & Lifestyle Model</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700">
+                <thead className="bg-panel-2">
                   <tr>
                     <th className="px-4 py-3 text-left text-sm">Rank</th>
                     <th className="px-4 py-3 text-left text-sm">County</th>
@@ -466,7 +466,7 @@ const TierDetectionPlatform = () => {
                   {nyCountyData.map(county => (
                     <tr 
                       key={county.rank}
-                      className="border-t border-gray-700/50 hover:bg-gray-700/50 cursor-pointer"
+                      className="border-t border-gray-700/50 hover:bg-panel-2/50 cursor-pointer"
                       onClick={() => setSelectedCounty(county)}
                     >
                       <td className="px-4 py-3 font-bold">{county.rank}</td>
@@ -482,8 +482,8 @@ const TierDetectionPlatform = () => {
                           Tier {county.tier}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">{county.investorFocus}</td>
-                      <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">{county.lifestyle}</td>
+                      <td className="px-4 py-3 text-sm text-slate-700 max-w-xs truncate">{county.investorFocus}</td>
+                      <td className="px-4 py-3 text-sm text-slate-700 max-w-xs truncate">{county.lifestyle}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -495,9 +495,9 @@ const TierDetectionPlatform = () => {
         {/* Detection Tab */}
         {activeTab === 'detection' && (
           <div className="space-y-6">
-            <div className="bg-gray-800 rounded-sm p-6">
+            <div className="bg-panel rounded-sm p-6">
               <h2 className="text-xl font-bold mb-4">🎯 Tier Detection Algorithm</h2>
-              <p className="text-gray-400 mb-6">
+              <p className="text-slate-600 mb-6">
                 Automatically classify any US county into investment tiers using free data sources.
               </p>
               
@@ -516,13 +516,13 @@ const TierDetectionPlatform = () => {
                       </div>
                       <div>
                         <h3 className="font-bold" style={{ color: tier.color }}>{tier.name}</h3>
-                        <p className="text-sm text-gray-400">{tier.description}</p>
+                        <p className="text-sm text-slate-600">{tier.description}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3 text-sm">
                       {Object.entries(tier.criteria).map(([metric, value]) => (
-                        <div key={metric} className="bg-gray-900/50 rounded-lg p-2">
-                          <div className="text-gray-500 text-xs capitalize">
+                        <div key={metric} className="bg-surface/50 rounded-lg p-2">
+                          <div className="text-slate-500 text-xs capitalize">
                             {metric.replace(/([A-Z])/g, ' $1').trim()}
                           </div>
                           <div className="font-mono text-white">{value}</div>
@@ -535,14 +535,14 @@ const TierDetectionPlatform = () => {
             </div>
 
             {/* Detection Formula */}
-            <div className="bg-gray-800 rounded-sm p-6">
+            <div className="bg-panel rounded-sm p-6">
               <h3 className="text-lg font-bold mb-4">📐 Scoring Formula</h3>
-              <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm">
+              <div className="bg-surface rounded-lg p-4 font-mono text-sm">
                 <div className="text-green-400 mb-2">// Tier Score Calculation (0-100)</div>
-                <div className="text-blue-300">
+                <div className="text-indigo-400">
                   tier_score = (
                 </div>
-                <div className="pl-4 text-gray-300">
+                <div className="pl-4 text-slate-700">
                   population_score × 0.15 +<br/>
                   income_score × 0.15 +<br/>
                   home_value_growth × 0.20 +<br/>
@@ -550,9 +550,9 @@ const TierDetectionPlatform = () => {
                   transaction_volume × 0.15 +<br/>
                   employment_rate × 0.15
                 </div>
-                <div className="text-blue-300">)</div>
+                <div className="text-indigo-400">)</div>
                 <div className="mt-4 text-yellow-400">// Tier Assignment</div>
-                <div className="text-gray-300">
+                <div className="text-slate-700">
                   if (tier_score &gt;= 80) → Tier 1<br/>
                   if (tier_score &gt;= 60) → Tier 2<br/>
                   if (tier_score &gt;= 40) → Tier 3<br/>
@@ -567,30 +567,30 @@ const TierDetectionPlatform = () => {
         {/* Sources Tab */}
         {activeTab === 'sources' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/30 rounded-sm p-6 border border-green-500/30">
+            <div className="bg-white/50 rounded-sm p-6 border border-green-500/30">
               <h2 className="text-xl font-bold mb-2">100% Free Data Sources</h2>
-              <p className="text-gray-400">All tier detection uses publicly available, free data</p>
+              <p className="text-slate-600">All tier detection uses publicly available, free data</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               {freeDataSources.map(source => (
-                <div key={source.name} className="bg-gray-800 rounded-sm p-4">
+                <div key={source.name} className="bg-panel rounded-sm p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-bold">{source.name}</h3>
                     <span className="text-green-400 text-sm font-bold">FREE</span>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-3">
                     {source.metrics.map(m => (
-                      <span key={m} className="px-2 py-0.5 bg-gray-700 rounded text-xs">{m}</span>
+                      <span key={m} className="px-2 py-0.5 bg-panel-2 rounded text-xs">{m}</span>
                     ))}
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Weight: {(source.weight * 100).toFixed(0)}%</span>
+                    <span className="text-slate-500">Weight: {(source.weight * 100).toFixed(0)}%</span>
                     <a 
                       href={`https://${source.url}`} 
                       target="_blank" 
                       rel="noreferrer"
-                      className="text-blue-400 hover:underline"
+                      className="text-indigo-500 hover:underline"
                     >
                       {source.url}
                     </a>
@@ -600,9 +600,9 @@ const TierDetectionPlatform = () => {
             </div>
 
             {/* Python Example */}
-            <div className="bg-gray-800 rounded-sm p-6">
+            <div className="bg-panel rounded-sm p-6">
               <h3 className="text-lg font-bold mb-4">🐍 Quick Start: Fetch Tier Data</h3>
-              <pre className="bg-gray-900 p-4 rounded-lg text-sm overflow-x-auto">
+              <pre className="bg-surface p-4 rounded-lg text-sm overflow-x-auto">
                 <code className="text-green-400">{`import requests
 import pandas as pd
 

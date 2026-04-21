@@ -51,12 +51,12 @@ export function AlertSettings({ onClose }) {
     };
 
     return (
-        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden max-w-2xl mx-auto">
+        <div className="bg-canvas rounded-md shadow-none border border-slate-200 overflow-hidden max-w-2xl mx-auto">
             {/* Header */}
-            <div className="bg-slate-900 p-6 text-white">
+            <div className="bg-surface p-6 text-white">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-slate-950/20 rounded-sm flex items-center justify-center text-lg font-mono">
+                        <div className="w-12 h-12 bg-slate-100/70 rounded-sm flex items-center justify-center text-lg font-mono">
                             🔔
                         </div>
                         <div>
@@ -72,34 +72,34 @@ export function AlertSettings({ onClose }) {
 
             <div className="p-6 space-y-6">
                 {/* Master Toggle */}
-                <div className="flex items-center justify-between p-4 bg-slate-900 rounded-md">
+                <div className="flex items-center justify-between p-4 bg-surface rounded-md">
                     <div>
-                        <div className="font-bold text-slate-100">Enable Alerts</div>
+                        <div className="font-bold text-slate-900">Enable Alerts</div>
                         <div className="text-sm text-slate-500">Receive notifications for auction opportunities</div>
                     </div>
                     <button
                         onClick={() => updateSetting('enabled', !settings.enabled)}
                         className={`w-14 h-8 rounded-sm transition-all ${settings.enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
                     >
-                        <div className={`w-6 h-6 bg-slate-950 rounded-sm shadow transition-all ${settings.enabled ? 'ml-7' : 'ml-1'}`} />
+                        <div className={`w-6 h-6 bg-canvas rounded-sm shadow transition-all ${settings.enabled ? 'ml-7' : 'ml-1'}`} />
                     </button>
                 </div>
 
                 {/* Email Input */}
                 <div>
-                    <label className="block text-sm font-bold text-slate-300 mb-2">Email Address</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
                     <input
                         type="email"
                         value={settings.email}
                         onChange={(e) => updateSetting('email', e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full px-4 py-3 border border-slate-700 rounded-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                        className="w-full px-4 py-3 border border-slate-300 rounded-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
                     />
                 </div>
 
                 {/* Alert Types */}
                 <div>
-                    <h3 className="font-bold text-slate-100 mb-3">Alert Types</h3>
+                    <h3 className="font-bold text-slate-900 mb-3">Alert Types</h3>
                     <div className="space-y-2">
                         {[
                             { key: 'watchlistAuctions', label: '⭐ Watchlist Auctions', desc: 'When items in your watchlist have upcoming sales' },
@@ -107,7 +107,7 @@ export function AlertSettings({ onClose }) {
                             { key: 'priceDrops', label: '📉 Price Drops', desc: 'When property prices decrease' },
                             { key: 'newListings', label: '🏠 New Listings', desc: 'New properties in watched states' },
                         ].map(type => (
-                            <label key={type.key} className="flex items-center gap-3 p-3 hover:bg-slate-900 rounded-sm cursor-pointer">
+                            <label key={type.key} className="flex items-center gap-3 p-3 hover:bg-slate-100 rounded-sm cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={settings.alertTypes[type.key]}
@@ -115,7 +115,7 @@ export function AlertSettings({ onClose }) {
                                     className="w-5 h-5 rounded border-slate-300 text-amber-500 focus:ring-amber-500"
                                 />
                                 <div>
-                                    <div className="font-semibold text-slate-200">{type.label}</div>
+                                    <div className="font-semibold text-slate-800">{type.label}</div>
                                     <div className="text-xs text-slate-500">{type.desc}</div>
                                 </div>
                             </label>
@@ -125,13 +125,13 @@ export function AlertSettings({ onClose }) {
 
                 {/* Timing */}
                 <div>
-                    <h3 className="font-bold text-slate-100 mb-3">Reminder Timing</h3>
+                    <h3 className="font-bold text-slate-900 mb-3">Reminder Timing</h3>
                     <div className="flex items-center gap-3">
                         <span className="text-sm text-slate-600">Alert me</span>
                         <select
                             value={settings.timing.daysBeforeAuction}
                             onChange={(e) => updateSetting('timing.daysBeforeAuction', parseInt(e.target.value))}
-                            className="px-3 py-2 border border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500"
+                            className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500"
                         >
                             <option value={14}>14 days</option>
                             <option value={7}>7 days</option>
@@ -144,13 +144,13 @@ export function AlertSettings({ onClose }) {
 
                 {/* Tier Filter */}
                 <div>
-                    <h3 className="font-bold text-slate-100 mb-3">Tier Filter</h3>
+                    <h3 className="font-bold text-slate-900 mb-3">Tier Filter</h3>
                     <div className="flex items-center gap-3">
                         <span className="text-sm text-slate-600">Only alert for</span>
                         <select
                             value={settings.filters.minTier}
                             onChange={(e) => updateSetting('filters.minTier', parseInt(e.target.value))}
-                            className="px-3 py-2 border border-slate-700 rounded-lg"
+                            className="px-3 py-2 border border-slate-300 rounded-lg"
                         >
                             {[1, 2, 3, 4, 5].map(t => <option key={t} value={t}>T{t}</option>)}
                         </select>
@@ -158,7 +158,7 @@ export function AlertSettings({ onClose }) {
                         <select
                             value={settings.filters.maxTier}
                             onChange={(e) => updateSetting('filters.maxTier', parseInt(e.target.value))}
-                            className="px-3 py-2 border border-slate-700 rounded-lg"
+                            className="px-3 py-2 border border-slate-300 rounded-lg"
                         >
                             {[1, 2, 3, 4, 5].map(t => <option key={t} value={t}>T{t}</option>)}
                         </select>
@@ -167,12 +167,12 @@ export function AlertSettings({ onClose }) {
                 </div>
 
                 {/* Save Button */}
-                <div className="pt-4 border-t border-slate-800">
+                <div className="pt-4 border-t border-slate-200">
                     <button
                         onClick={saveSettings}
                         className={`w-full py-4 rounded-sm font-bold text-white transition-all ${saved
  ? 'bg-emerald-500'
- : 'bg-slate-900 hover: hover:'
+ : 'bg-surface hover: hover:'
  }`}
                     >
                         {saved ? '✓ Settings Saved!' : '💾 Save Alert Settings'}
@@ -216,41 +216,41 @@ export function NotificationBell({ onClick }) {
         <div className="relative">
             <button
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="relative p-2 rounded-lg hover:bg-slate-900 transition-all"
+                className="relative p-2 rounded-lg hover:bg-slate-100 transition-all"
             >
                 <span className="text-xl">🔔</span>
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-sm flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-sm flex items-center justify-center">
                         {unreadCount}
                     </span>
                 )}
             </button>
 
             {showDropdown && (
-                <div className="absolute right-0 top-12 w-80 bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden z-50">
-                    <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-                        <span className="font-bold text-slate-100">Notifications</span>
-                        <button onClick={markAllRead} className="text-xs text-blue-600 hover:underline">
+                <div className="absolute right-0 top-12 w-80 bg-canvas rounded-md shadow-none border border-slate-200 overflow-hidden z-50">
+                    <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+                        <span className="font-bold text-slate-900">Notifications</span>
+                        <button onClick={markAllRead} className="text-xs text-indigo-600 hover:underline">
                             Mark all read
                         </button>
                     </div>
                     <div className="max-h-80 overflow-y-auto">
                         {alerts.length === 0 ? (
-                            <div className="p-6 text-center text-slate-400">No notifications</div>
+                            <div className="p-6 text-center text-slate-600">No notifications</div>
                         ) : (
                             alerts.map(alert => (
                                 <div
                                     key={alert.id}
-                                    className={`p-4 border-b border-slate-800 hover:bg-slate-900 cursor-pointer ${!alert.read ? 'bg-amber-50' : ''
+                                    className={`p-4 border-b border-slate-200 hover:bg-slate-100 cursor-pointer ${!alert.read ? 'bg-amber-50' : ''
  }`}
                                 >
-                                    <div className="text-sm text-slate-200">{alert.message}</div>
-                                    <div className="text-xs text-slate-400 mt-1">{alert.time}</div>
+                                    <div className="text-sm text-slate-800">{alert.message}</div>
+                                    <div className="text-xs text-slate-600 mt-1">{alert.time}</div>
                                 </div>
                             ))
                         )}
                     </div>
-                    <div className="p-3 border-t border-slate-800">
+                    <div className="p-3 border-t border-slate-200">
                         <button
                             onClick={onClick}
                             className="w-full py-2 text-sm text-amber-600 hover:text-amber-700 font-semibold"

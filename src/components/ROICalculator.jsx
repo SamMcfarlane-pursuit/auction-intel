@@ -80,14 +80,14 @@ export default function ROICalculator({ onClose }) {
     }, [purchasePrice, holdMonths]);
 
     return (
-        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-6 md:p-8">
+        <div className="bg-canvas rounded-md shadow-none border border-slate-200 p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="font-mono font-semibold text-lg font-mono text-slate-100">💰 ROI Calculator</h2>
+                    <h2 className="font-mono font-semibold text-lg font-mono text-slate-900">💰 ROI Calculator</h2>
                     <p className="text-slate-500 text-sm mt-1">Calculate potential returns on tax lien investments</p>
                 </div>
                 {onClose && (
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-lg font-mono">&times;</button>
+                    <button onClick={onClose} className="text-slate-600 hover:text-slate-800 text-lg font-mono">&times;</button>
                 )}
             </div>
 
@@ -95,24 +95,24 @@ export default function ROICalculator({ onClose }) {
                 {/* Input Section */}
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Investment Amount</label>
+                        <label className="block text-xs font-semibold text-slate-600 uppercase mb-2">Investment Amount</label>
                         <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-bold">$</span>
                             <input
                                 type="number"
                                 value={purchasePrice}
                                 onChange={(e) => setPurchasePrice(Number(e.target.value))}
-                                className="w-full pl-8 pr-4 py-3 bg-slate-900 rounded-sm border border-slate-700 font-mono font-semibold text-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-8 pr-4 py-3 bg-surface rounded-sm border border-slate-300 font-mono font-semibold text-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">State</label>
+                        <label className="block text-xs font-semibold text-slate-600 uppercase mb-2">State</label>
                         <select
                             value={selectedState}
                             onChange={(e) => setSelectedState(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-900 rounded-sm border border-slate-700 font-bold focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-surface rounded-sm border border-slate-300 font-bold focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         >
                             {Object.entries(STATE_RATES)
                                 .sort((a, b) => b[1].rate - a[1].rate)
@@ -122,11 +122,11 @@ export default function ROICalculator({ onClose }) {
                                     </option>
                                 ))}
                         </select>
-                        <p className="text-xs text-slate-400 mt-1">{stateInfo.notes}</p>
+                        <p className="text-xs text-slate-600 mt-1">{stateInfo.notes}</p>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase mb-2">Hold Period: {holdMonths} months</label>
+                        <label className="block text-xs font-semibold text-slate-600 uppercase mb-2">Hold Period: {holdMonths} months</label>
                         <input
                             type="range"
                             min="1"
@@ -135,7 +135,7 @@ export default function ROICalculator({ onClose }) {
                             onChange={(e) => setHoldMonths(Number(e.target.value))}
                             className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                         />
-                        <div className="flex justify-between text-xs text-slate-400 mt-1">
+                        <div className="flex justify-between text-xs text-slate-600 mt-1">
                             <span>1 month</span>
                             <span>3 years</span>
                         </div>
@@ -143,24 +143,24 @@ export default function ROICalculator({ onClose }) {
                 </div>
 
                 {/* Results Section */}
-                <div className="bg-slate-900 rounded-md p-6 text-white">
-                    <div className="text-xs font-semibold text-blue-200 uppercase mb-4">Projected Returns</div>
+                <div className="bg-surface rounded-md p-6 text-white">
+                    <div className="text-xs font-semibold text-indigo-400 uppercase mb-4">Projected Returns</div>
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-slate-950/10 rounded-sm p-4">
-                            <div className="text-xs text-blue-200 uppercase font-bold">Interest Earned</div>
+                        <div className="bg-slate-100/60 rounded-sm p-4">
+                            <div className="text-xs text-indigo-400 uppercase font-bold">Interest Earned</div>
                             <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.interest).toLocaleString()}</div>
                         </div>
-                        <div className="bg-slate-950/10 rounded-sm p-4">
-                            <div className="text-xs text-blue-200 uppercase font-bold">Total Return</div>
+                        <div className="bg-slate-100/60 rounded-sm p-4">
+                            <div className="text-xs text-indigo-400 uppercase font-bold">Total Return</div>
                             <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.totalReturn).toLocaleString()}</div>
                         </div>
-                        <div className="bg-slate-950/10 rounded-sm p-4">
-                            <div className="text-xs text-blue-200 uppercase font-bold">ROI ({holdMonths}mo)</div>
+                        <div className="bg-slate-100/60 rounded-sm p-4">
+                            <div className="text-xs text-indigo-400 uppercase font-bold">ROI ({holdMonths}mo)</div>
                             <div className="font-mono font-semibold text-lg font-mono">{calculations.roi}%</div>
                         </div>
-                        <div className="bg-slate-950/10 rounded-sm p-4">
-                            <div className="text-xs text-blue-200 uppercase font-bold">Annualized ROI</div>
+                        <div className="bg-slate-100/60 rounded-sm p-4">
+                            <div className="text-xs text-indigo-400 uppercase font-bold">Annualized ROI</div>
                             <div className="font-mono font-semibold text-lg font-mono text-emerald-300">{calculations.annualizedROI}%</div>
                         </div>
                     </div>
@@ -175,7 +175,7 @@ export default function ROICalculator({ onClose }) {
             <div className="mt-6">
                 <button
                     onClick={() => setShowComparison(!showComparison)}
-                    className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700"
+                    className="flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700"
                 >
                     {showComparison ? '▼' : '▶'} Compare Top 5 Lien States
                 </button>
@@ -183,8 +183,8 @@ export default function ROICalculator({ onClose }) {
                 {showComparison && (
                     <div className="mt-4 overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-slate-900">
-                                <tr className="text-slate-400 text-[10px] font-semibold uppercase">
+                            <thead className="bg-surface">
+                                <tr className="text-slate-600 text-[10px] font-semibold uppercase">
                                     <th className="px-4 py-3">State</th>
                                     <th className="px-4 py-3">Rate</th>
                                     <th className="px-4 py-3 text-right">Interest ({holdMonths}mo)</th>
@@ -193,9 +193,9 @@ export default function ROICalculator({ onClose }) {
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {topStates.map((s, i) => (
-                                    <tr key={s.state} className={`${i === 0 ? 'bg-emerald-50' : ''} hover:bg-slate-900`}>
+                                    <tr key={s.state} className={`${i === 0 ? 'bg-emerald-50' : ''} hover:bg-slate-100`}>
                                         <td className="px-4 py-3 font-mono font-semibold">{s.state} {i === 0 && '🏆'}</td>
-                                        <td className="px-4 py-3 font-bold text-blue-600">{s.rate}%</td>
+                                        <td className="px-4 py-3 font-bold text-indigo-600">{s.rate}%</td>
                                         <td className="px-4 py-3 text-right font-bold text-emerald-600">${Number(s.interest).toLocaleString()}</td>
                                         <td className="px-4 py-3 text-right font-mono font-semibold">${Number(s.total).toLocaleString()}</td>
                                     </tr>

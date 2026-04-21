@@ -96,28 +96,28 @@ function Bar({ position, height, score, label, capRate, deals, onHover }) {
             {/* Interactive Data Card */}
             {hovered && (
                 <Html distanceFactor={10} position={[0.5, height, 0]} zIndexRange={[100, 0]}>
-                    <div className="bg-slate-900/90 backdrop-blur-xl border border-white/20 p-4 rounded-md shadow-none w-48 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-surface/90 backdrop-blur-xl border border-white/20 p-4 rounded-md shadow-none w-48 animate-in fade-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-white font-semibold text-lg">{label}</span>
-                            <span className="text-[10px] bg-slate-950/10 px-2 py-0.5 rounded-sm text-slate-300 font-bold">STATE_{label}</span>
+                            <span className="text-[10px] bg-slate-100/60 px-2 py-0.5 rounded-sm text-slate-700 font-bold">STATE_{label}</span>
                         </div>
                         <div className="space-y-1.5">
                             <div className="flex justify-between items-center">
-                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Liquidity</span>
-                                <span className="text-xs text-emerald-400 font-semibold">{(height * 100).toFixed(0)}%</span>
+                                <span className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">Liquidity</span>
+                                <span className="text-xs text-emerald-600 font-semibold">{(height * 100).toFixed(0)}%</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Avg Cap Rate</span>
-                                <span className="text-xs text-blue-400 font-semibold">{capRate}</span>
+                                <span className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">Avg Cap Rate</span>
+                                <span className="text-xs text-indigo-500 font-semibold">{capRate}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Active Deals</span>
+                                <span className="text-[9px] text-slate-600 font-bold uppercase tracking-wider">Active Deals</span>
                                 <span className="text-xs text-white font-semibold">{deals}</span>
                             </div>
                         </div>
                         <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
                             <div className={`h-1 flex-1 rounded-sm ${score >= 80 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${score}%` }} />
-                            <div className="h-1 flex-1 bg-slate-950/10 rounded-sm" />
+                            <div className="h-1 flex-1 bg-slate-100/60 rounded-sm" />
                         </div>
                     </div>
                 </Html>
@@ -206,14 +206,14 @@ function Market3DMap({ height = "500px" }) {
             {/* Pro-Refined HUD Overlay */}
             <div className="absolute top-10 left-10 pointer-events-none">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="w-1 h-1 rounded-sm bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                    <div className="w-1 h-1 rounded-sm bg-indigo-500 shadow-[0_0_8px_#3b82f6]" />
                     <span className="text-[8px] text-slate-500 font-semibold uppercase tracking-[0.4em]">Visual Projection System</span>
                 </div>
                 <h2 className="text-lg font-mono font-semibold text-white/90 tracking-tight leading-none">Liquidity Matrix</h2>
             </div>
 
             <div className="absolute bottom-10 right-10 pointer-events-none">
-                <div className="bg-slate-950/40 backdrop-blur-2xl border border-white/5 p-5 rounded-[2rem]">
+                <div className="bg-canvas/40 backdrop-blur-2xl border border-white/5 p-5 rounded-[2rem]">
                     <div className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.25em] mb-4 border-b border-white/5 pb-2">Institutional Tiering</div>
                     <div className="flex flex-col gap-3">
                         <LegendItem color="#10b981" label="Tier 1 Elite" />
@@ -233,7 +233,7 @@ function LegendItem({ color, label }) {
     return (
         <div className="flex items-center gap-3">
             <div className="w-3 h-3 rounded-sm shadow-none" style={{ background: color, boxShadow: `0 0 10px ${color}66` }} />
-            <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">{label}</span>
+            <span className="text-[10px] text-slate-700 font-bold uppercase tracking-wider">{label}</span>
         </div>
     );
 }

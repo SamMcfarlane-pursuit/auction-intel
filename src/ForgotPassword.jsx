@@ -45,7 +45,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
             {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-slate-900">
+            <div className="absolute inset-0 bg-surface">
                 <div className="absolute inset-0 opacity-30">
                     <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-500 rounded-sm filter blur-3xl animate-none"></div>
                     <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-sm filter blur-3xl animate-none" style={{ animationDelay: '1s' }}></div>
@@ -57,7 +57,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
             <div className="relative w-full max-w-md animate-fade-in">
                 {/* Logo and branding */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-950/10 backdrop-blur-xl rounded-md mb-4 border border-white/20">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100/60 backdrop-blur-xl rounded-md mb-4 border border-white/20">
                         <span className="text-xl font-mono">🔐</span>
                     </div>
                     <h1 className="font-mono text-xl font-mono font-semibold text-white tracking-tight">
@@ -67,28 +67,28 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                 </div>
 
                 {/* Glass card */}
-                <div className="bg-slate-950/10 backdrop-blur-xl rounded-md border border-white/20 p-8 shadow-none">
+                <div className="bg-slate-100/60 backdrop-blur-xl rounded-md border border-white/20 p-8 shadow-none">
                     {success ? (
                         /* Success state */
                         <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-4 bg-emerald-500/20 rounded-sm flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-emerald-100 rounded-sm flex items-center justify-center">
                                 <span className="text-xl font-mono">✓</span>
                             </div>
                             <h2 className="font-mono text-lg font-mono font-bold text-white mb-2">Password Reset</h2>
-                            <p className="text-slate-300 mb-4">
+                            <p className="text-slate-700 mb-4">
                                 Your temporary password has been generated.
                             </p>
 
                             {/* Show temp password (mock mode) */}
-                            <div className="bg-slate-900/50 border border-slate-700 rounded-sm p-4 mb-6">
-                                <p className="text-[10px] uppercase tracking-wider text-slate-400 mb-1 font-bold">Temporary Password</p>
-                                <p className="font-mono text-xl text-emerald-400 font-bold tracking-wider">{tempPassword}</p>
+                            <div className="bg-white/70 border border-slate-300 rounded-sm p-4 mb-6">
+                                <p className="text-[10px] uppercase tracking-wider text-slate-600 mb-1 font-bold">Temporary Password</p>
+                                <p className="font-mono text-xl text-emerald-600 font-bold tracking-wider">{tempPassword}</p>
                                 <p className="text-xs text-slate-500 mt-2">Use this to sign in, then change your password in settings</p>
                             </div>
 
                             <button
                                 onClick={onNavigateToSignIn}
-                                className="w-full py-3.5 bg-slate-900 text-white font-mono font-bold rounded-sm shadow-none shadow-emerald-500/25 hover:shadow-none hover:shadow-emerald-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                className="w-full py-3.5 bg-surface text-white font-mono font-bold rounded-sm shadow-none shadow-emerald-500/25 hover:shadow-none hover:shadow-emerald-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
                             >
                                 Back to Sign In
                             </button>
@@ -97,21 +97,21 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                         /* Form state */
                         <>
                             <h2 className="font-mono text-lg font-mono font-bold text-white mb-2">Forgot your password?</h2>
-                            <p className="text-slate-300 mb-6">
+                            <p className="text-slate-700 mb-6">
                                 Enter your email address and we'll reset your password.
                             </p>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 {/* Email input */}
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">
                                         Email address
                                     </label>
                                     <input
                                         type="email"
                                         value={email}
                                         onChange={(e) => { setEmail(e.target.value); clearError(); setValidationError(''); }}
-                                        className={`w-full px-4 py-3 bg-slate-950/10 border rounded-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationError || error
+                                        className={`w-full px-4 py-3 bg-slate-100/60 border rounded-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 transition-all ${validationError || error
  ? 'border-red-400 focus:ring-red-400'
  : 'border-white/20 focus:ring-indigo-400 focus:border-transparent'
  }`}
@@ -119,14 +119,14 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                                         autoFocus
                                     />
                                     {validationError && (
-                                        <p className="mt-1.5 text-sm text-red-400">{validationError}</p>
+                                        <p className="mt-1.5 text-sm text-rose-600">{validationError}</p>
                                     )}
                                 </div>
 
                                 {/* Error message from AuthContext */}
                                 {error && (
-                                    <div className="p-3 bg-red-500/20 border border-red-400/30 rounded-sm">
-                                        <p className="text-sm text-red-300 text-center">{error}</p>
+                                    <div className="p-3 bg-rose-100 border border-red-400/30 rounded-sm">
+                                        <p className="text-sm text-rose-500 text-center">{error}</p>
                                     </div>
                                 )}
 
@@ -134,7 +134,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full py-3.5 bg-slate-900 text-white font-mono font-bold rounded-sm shadow-none shadow-indigo-500/25 hover:shadow-none hover:shadow-indigo-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                    className="w-full py-3.5 bg-surface text-white font-mono font-bold rounded-sm shadow-none shadow-indigo-500/25 hover:shadow-none hover:shadow-indigo-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
@@ -153,7 +153,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
 
                 {/* Back to sign in link */}
                 {!success && (
-                    <p className="text-center mt-6 text-slate-300">
+                    <p className="text-center mt-6 text-slate-700">
                         Remember your password?{' '}
                         <button
                             onClick={onNavigateToSignIn}

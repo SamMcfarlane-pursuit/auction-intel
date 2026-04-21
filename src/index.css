@@ -1,66 +1,124 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary-50: oklch(0.97 0.01 247.85);
-    --color-primary-100: oklch(0.93 0.03 247.85);
-    --color-primary-200: oklch(0.87 0.06 247.85);
-    --color-primary-300: oklch(0.79 0.1 247.85);
-    --color-primary-400: oklch(0.69 0.15 247.85);
-    --color-primary-500: oklch(0.57 0.2 247.85);
-    /* Main Blue */
-    --color-primary-600: oklch(0.48 0.18 247.85);
-    --color-primary-700: oklch(0.4 0.15 247.85);
-    --color-primary-800: oklch(0.32 0.12 247.85);
-    --color-primary-900: oklch(0.24 0.1 247.85);
+    /* Semantic surface tokens (warm-paper mix palette) */
+    --color-canvas: #F7F5F0;
+    --color-surface: #FFFFFF;
+    --color-panel: #F1EEE8;
+    --color-panel-2: #E9E4D9;
+    --color-border: #E5E1D8;
+    --color-border-strong: #D1CCC0;
+    --color-ink: #0F172A;
+    --color-ink-soft: #1E293B;
+    --color-muted: #475569;
+    --color-subtle: #78716C;
+
+    /* Accent ramp (indigo primary + teal secondary) */
+    --color-accent-50: #EEF2FF;
+    --color-accent-100: #E0E7FF;
+    --color-accent-200: #C7D2FE;
+    --color-accent-300: #A5B4FC;
+    --color-accent-400: #818CF8;
+    --color-accent-500: #6366F1;
+    --color-accent-600: #4F46E5;
+    --color-accent-700: #4338CA;
+    --color-accent-800: #3730A3;
+    --color-accent-900: #312E81;
+
+    --color-secondary-500: #14B8A6;
+    --color-secondary-600: #0D9488;
+    --color-secondary-700: #0F766E;
+
+    --color-up: #059669;
+    --color-down: #E11D48;
+    --color-warn: #D97706;
+
+    /* Legacy primary-* tokens kept for any downstream references */
+    --color-primary-50: var(--color-accent-50);
+    --color-primary-100: var(--color-accent-100);
+    --color-primary-200: var(--color-accent-200);
+    --color-primary-300: var(--color-accent-300);
+    --color-primary-400: var(--color-accent-400);
+    --color-primary-500: var(--color-accent-500);
+    --color-primary-600: var(--color-accent-600);
+    --color-primary-700: var(--color-accent-700);
+    --color-primary-800: var(--color-accent-800);
+    --color-primary-900: var(--color-accent-900);
 
     --font-sans: "Inter", system-ui, -apple-system, sans-serif;
     --font-display: "Outfit", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+
+    /* Fluid 4K-aware type scale (clamp min / preferred / max) */
+    --text-2xs: clamp(0.6875rem, 0.62vw + 0.56rem, 0.8125rem);
+    --text-xs:  clamp(0.75rem, 0.7vw + 0.6rem, 0.9375rem);
+    --text-sm:  clamp(0.875rem, 0.8vw + 0.7rem, 1.0625rem);
+    --text-base: clamp(1rem, 0.95vw + 0.8rem, 1.25rem);
+    --text-lg:  clamp(1.125rem, 1.1vw + 0.85rem, 1.4375rem);
+    --text-xl:  clamp(1.25rem, 1.4vw + 0.9rem, 1.75rem);
+    --text-2xl: clamp(1.5rem, 1.9vw + 1rem, 2.25rem);
+    --text-3xl: clamp(1.875rem, 2.5vw + 1.1rem, 3rem);
+    --text-4xl: clamp(2.25rem, 3.2vw + 1.2rem, 4rem);
+    --text-5xl: clamp(2.75rem, 4vw + 1.4rem, 5rem);
 }
 
 @layer base {
-    body {
-        @apply bg-slate-950 text-slate-400 font-sans antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden;
+    html {
+        color-scheme: light;
     }
 
-    /* Professional Terminal Scrollbar */
+    body {
+        background-color: var(--color-canvas);
+        color: var(--color-muted);
+        @apply font-sans antialiased selection:bg-indigo-600 selection:text-white overflow-x-hidden;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    }
+
     ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
     }
 
     ::-webkit-scrollbar-track {
-        @apply bg-slate-950;
+        background-color: var(--color-canvas);
     }
 
     ::-webkit-scrollbar-thumb {
-        @apply bg-slate-800 border-2 border-slate-950 hover:bg-slate-700;
+        background-color: var(--color-border-strong);
+        border: 2px solid var(--color-canvas);
+        border-radius: 8px;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    .font-display {
-        @apply font-mono tracking-tighter text-slate-100 uppercase;
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-subtle);
     }
+
+    /* Headings: clean, readable, no blanket uppercase.
+       Use .font-mono-caps for the old terminal feel where wanted. */
+    h1, h2, h3, h4, h5, h6, .font-display {
+        color: var(--color-ink);
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+    }
+
+    h1 { font-size: var(--text-4xl); }
+    h2 { font-size: var(--text-3xl); }
+    h3 { font-size: var(--text-2xl); }
+    h4 { font-size: var(--text-xl); }
+    h5 { font-size: var(--text-lg); }
+    h6 { font-size: var(--text-base); font-weight: 700; }
 
     input, select, textarea {
-        @apply focus:ring-1 focus:ring-blue-500 focus:outline-none;
-    }
-}
-
-@layer utilities {
-    .glass-morphism {
-        @apply bg-slate-950/80 backdrop-blur-xl border border-slate-800;
+        @apply focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 focus:outline-none;
     }
 
-    .pulse-glow {
-        animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    .state-intake {
-        animation: state-intake 0.6s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-    }
+    /* 4K-aware base font size so the whole scale lifts on large displays */
+    @media (min-width: 1920px) { html { font-size: 17px; } }
+    @media (min-width: 2560px) { html { font-size: 18px; } }
+    @media (min-width: 3440px) { html { font-size: 19px; } }
+    @media (min-width: 3840px) { html { font-size: 20px; } }
 }
 
 @keyframes pulse-glow {
@@ -105,23 +163,124 @@
     animation: slide-in-right 0.3s ease-out forwards;
 }
 
+@layer utilities {
+    /* Semantic surface / text utilities (bound to --color-* tokens) */
+    .bg-canvas     { background-color: var(--color-canvas); }
+    .bg-surface    { background-color: var(--color-surface); }
+    .bg-panel      { background-color: var(--color-panel); }
+    .bg-panel-2    { background-color: var(--color-panel-2); }
+    .text-ink      { color: var(--color-ink); }
+    .text-ink-soft { color: var(--color-ink-soft); }
+    .text-muted    { color: var(--color-muted); }
+    .text-subtle   { color: var(--color-subtle); }
+    .border-line         { border-color: var(--color-border); }
+    .border-line-strong  { border-color: var(--color-border-strong); }
+
+    .text-up   { color: var(--color-up); }
+    .text-down { color: var(--color-down); }
+    .text-warn { color: var(--color-warn); }
+    .bg-up   { background-color: var(--color-up); }
+    .bg-down { background-color: var(--color-down); }
+
+    /* Font feature helpers */
+    .font-mono-caps {
+        font-family: var(--font-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+
+    .pulse-glow  { animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .state-intake { animation: state-intake 0.6s cubic-bezier(0.2, 0, 0.2, 1) forwards; }
+}
+
 @layer components {
+    /* Frosted panel on light canvas */
     .glass {
-        @apply bg-slate-900/70 backdrop-blur-md border border-slate-700/50;
+        background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+        backdrop-filter: blur(14px) saturate(1.2);
+        -webkit-backdrop-filter: blur(14px) saturate(1.2);
+        border: 1px solid var(--color-border);
+    }
+
+    .glass-morphism {
+        background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+        backdrop-filter: blur(18px) saturate(1.15);
+        -webkit-backdrop-filter: blur(18px) saturate(1.15);
+        border: 1px solid var(--color-border);
     }
 
     .premium-shadow {
-        box-shadow: none;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
     .premium-card {
-        @apply bg-slate-950 rounded-sm border border-slate-800 shadow-none transition-all duration-300 hover:border-slate-700 hover:bg-slate-900;
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+    }
+    .premium-card:hover {
+        border-color: var(--color-border-strong);
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04), 0 8px 20px rgba(15, 23, 42, 0.06);
     }
 
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
+    .card-pro {
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+        padding: clamp(1rem, 1.4vw, 1.75rem);
     }
 
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        font-size: var(--text-xs);
+        font-weight: 500;
+        background: var(--color-panel);
+        color: var(--color-ink-soft);
+        border: 1px solid var(--color-border);
+    }
+
+    .btn-primary {
+        background-color: var(--color-accent-600);
+        color: #fff;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        font-weight: 500;
+        transition: background-color 150ms ease, transform 150ms ease;
+    }
+    .btn-primary:hover { background-color: var(--color-accent-700); }
+    .btn-primary:active { transform: translateY(1px); }
+
+    .btn-ghost {
+        background-color: transparent;
+        color: var(--color-ink-soft);
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.875rem;
+        font-weight: 500;
+        transition: background-color 150ms ease, border-color 150ms ease;
+    }
+    .btn-ghost:hover { background-color: var(--color-panel); border-color: var(--color-border-strong); }
+
+    /* 4K-aware layout container */
+    .container-pro {
+        width: 100%;
+        margin-inline: auto;
+        padding-inline: clamp(1rem, 3vw, 2.5rem);
+        max-width: 1280px;
+    }
+    @media (min-width: 1536px) { .container-pro { max-width: 1440px; } }
+    @media (min-width: 1920px) { .container-pro { max-width: 1680px; } }
+    @media (min-width: 2560px) { .container-pro { max-width: 2040px; } }
+    @media (min-width: 3440px) { .container-pro { max-width: 2400px; } }
+
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -184,24 +343,7 @@ body {
     overscroll-behavior-y: contain;
 }
 
-/* Mobile-first responsive adjustments */
-@media (max-width: 640px) {
-    .text-3xl {
-        font-size: 1.5rem;
-    }
-
-    .text-2xl {
-        font-size: 1.25rem;
-    }
-
-    .p-6 {
-        padding: 1rem;
-    }
-
-    .gap-6 {
-        gap: 1rem;
-    }
-}
+/* Fluid scale handles mobile sizing via clamp(); no hard overrides needed. */
 
 /* Safe area padding for mobile bottom nav */
 .safe-area-pb {

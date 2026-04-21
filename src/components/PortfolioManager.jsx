@@ -123,9 +123,9 @@ export default function PortfolioManager({ onBack }) {
     };
 
     return (
-        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden h-full flex flex-col">
+        <div className="bg-canvas rounded-md shadow-none border border-slate-200 overflow-hidden h-full flex flex-col">
             {/* Header */}
-            <div className="p-8 bg-slate-900 text-white flex justify-between items-center shrink-0">
+            <div className="p-8 bg-surface text-white flex justify-between items-center shrink-0">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-lg font-mono">💼</span>
@@ -146,29 +146,29 @@ export default function PortfolioManager({ onBack }) {
                         {isGenerating ? '⏳ Compiling PDF...' : '📄 Generate Prospectus'}
                     </button>
                     {onBack && (
-                        <button onClick={onBack} className="bg-slate-950/10 hover:bg-slate-950/20 px-4 py-3 rounded-sm text-xs font-bold transition-all border border-white/20">
+                        <button onClick={onBack} className="bg-slate-100/60 hover:bg-slate-50/20 px-4 py-3 rounded-sm text-xs font-bold transition-all border border-white/20">
                             ← Back
                         </button>
                     )}
                 </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-8 bg-slate-900">
+            <div className="flex-1 overflow-auto p-8 bg-surface">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     {/* Capital Inputs */}
                     <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-slate-950 rounded-md p-8 border border-slate-700 shadow-none">
-                            <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-widest mb-6">Asset Allocation</h3>
+                        <div className="bg-canvas rounded-md p-8 border border-slate-300 shadow-none">
+                            <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-widest mb-6">Asset Allocation</h3>
                             
-                            <label className="block text-xs font-bold text-slate-300 mb-2">Total Liquid Capital Constraint</label>
+                            <label className="block text-xs font-bold text-slate-700 mb-2">Total Liquid Capital Constraint</label>
                             <div className="relative mb-8">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">$</span>
                                 <input 
                                     type="number"
                                     value={liquidCapital}
                                     onChange={(e) => setLiquidCapital(Number(e.target.value))}
-                                    className="w-full pl-8 pr-4 py-4 bg-slate-900 border-2 border-slate-700 rounded-sm text-lg font-semibold text-slate-100 focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
+                                    className="w-full pl-8 pr-4 py-4 bg-surface border-2 border-slate-300 rounded-sm text-lg font-semibold text-slate-900 focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all"
                                 />
                             </div>
 
@@ -178,12 +178,12 @@ export default function PortfolioManager({ onBack }) {
                                     <div className="text-lg font-semibold text-indigo-700">${(metrics.mktCap).toLocaleString()}</div>
                                 </div>
                                 <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-md flex justify-between items-center">
-                                    <div className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Blended Yield Target</div>
+                                    <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-widest">Blended Yield Target</div>
                                     <div className="text-lg font-semibold text-emerald-700">{metrics.avgYield}%</div>
                                 </div>
-                                <div className="p-4 bg-slate-900 border border-slate-700 rounded-md flex justify-between items-center">
+                                <div className="p-4 bg-surface border border-slate-300 rounded-md flex justify-between items-center">
                                     <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest">Tracked Assets</div>
-                                    <div className="text-lg font-semibold text-slate-100">{watchlist.length} Deals</div>
+                                    <div className="text-lg font-semibold text-slate-900">{watchlist.length} Deals</div>
                                 </div>
                             </div>
                         </div>
@@ -191,9 +191,9 @@ export default function PortfolioManager({ onBack }) {
 
                     {/* Yield Projections */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-slate-950 rounded-md p-8 border border-slate-700 shadow-none h-[400px] flex flex-col">
+                        <div className="bg-canvas rounded-md p-8 border border-slate-300 shadow-none h-[400px] flex flex-col">
                             <div className="flex justify-between items-center mb-6 shrink-0">
-                                <h3 className="text-lg font-semibold text-slate-100 tracking-tight">Compounded Equity Growth</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Compounded Equity Growth</h3>
                                 <div className="flex gap-4">
                                     <div className="flex items-center gap-2 text-[10px] font-semibold uppercase text-slate-500"><span className="w-2 h-2 rounded-sm bg-indigo-600"></span> Projected Returns</div>
                                     <div className="flex items-center gap-2 text-[10px] font-semibold uppercase text-slate-500"><span className="w-2 h-2 rounded-sm bg-slate-300"></span> Baseline Capital</div>

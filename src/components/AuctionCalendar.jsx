@@ -158,24 +158,24 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
     return (
         <div className="h-full flex flex-col lg:flex-row gap-4 overflow-hidden">
             {/* Main Calendar */}
-            <div className="flex-1 bg-slate-950 rounded-md shadow-none border border-slate-800 flex flex-col overflow-hidden">
+            <div className="flex-1 bg-canvas rounded-md shadow-none border border-slate-200 flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="p-4 md:p-6 border-b border-slate-800">
+                <div className="p-4 md:p-6 border-b border-slate-200">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h2 className="font-mono font-semibold text-lg font-mono md:text-xl font-mono text-slate-100 tracking-tight">
+                            <h2 className="font-mono font-semibold text-lg font-mono md:text-xl font-mono text-slate-900 tracking-tight">
                                 {MONTH_NAMES[currentMonth]} {currentYear}
                             </h2>
-                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Tax Sale Calendar</p>
+                            <p className="text-slate-600 text-xs font-bold uppercase tracking-widest mt-1">Tax Sale Calendar</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <button onClick={goToday} className="px-3 py-1.5 bg-blue-600 text-white rounded-sm text-xs font-bold hover:bg-blue-700 transition-all">
+                            <button onClick={goToday} className="px-3 py-1.5 bg-indigo-600 text-white rounded-sm text-xs font-bold hover:bg-indigo-700 transition-all">
                                 Today
                             </button>
-                            <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-sm bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-100 font-bold transition-all">
+                            <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-sm bg-surface border border-slate-300 hover:bg-slate-100 text-slate-900 font-bold transition-all">
                                 ←
                             </button>
-                            <button onClick={goNext} className="w-9 h-9 flex items-center justify-center rounded-sm bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-100 font-bold transition-all">
+                            <button onClick={goNext} className="w-9 h-9 flex items-center justify-center rounded-sm bg-surface border border-slate-300 hover:bg-slate-100 text-slate-900 font-bold transition-all">
                                 →
                             </button>
                         </div>
@@ -189,8 +189,8 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                     key={type}
                                     onClick={() => setTypeFilter(type)}
                                     className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-all capitalize ${typeFilter === type
-                                        ? (type === 'lien' ? 'bg-blue-600 text-white shadow-none' : type === 'deed' ? 'bg-slate-700 text-white shadow-none' : 'bg-slate-900 text-white shadow-none')
-                                        : 'bg-slate-900 text-slate-500 hover:text-slate-300'
+                                        ? (type === 'lien' ? 'bg-indigo-600 text-white shadow-none' : type === 'deed' ? 'bg-panel-2 text-white shadow-none' : 'bg-surface text-white shadow-none')
+                                        : 'bg-surface text-slate-500 hover:text-slate-700'
                                     }`}
                                 >
                                     {type === 'all' ? 'All Types' : type}
@@ -198,16 +198,16 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                             ))}
                         </div>
                         <div className="flex items-center gap-3">
-                            <span className="px-3 py-1.5 bg-blue-950/40 text-blue-400 border border-blue-900/50 rounded-sm text-xs font-semibold">
+                            <span className="px-3 py-1.5 bg-blue-950/40 text-indigo-500 border border-indigo-200 rounded-sm text-xs font-semibold">
                                 {monthStats.totalAuctions} auctions
                             </span>
                             {monthStats.lienCount > 0 && (
-                                <span className="px-2.5 py-1 bg-blue-900/20 text-blue-500 border border-blue-800/30 rounded-sm text-[10px] font-semibold">
+                                <span className="px-2.5 py-1 bg-indigo-50 text-indigo-500 border border-blue-800/30 rounded-sm text-[10px] font-semibold">
                                     {monthStats.lienCount} Lien
                                 </span>
                             )}
                             {monthStats.deedCount > 0 && (
-                                <span className="px-2.5 py-1 bg-slate-900 text-slate-400 border border-slate-700/50 rounded-sm text-[10px] font-semibold">
+                                <span className="px-2.5 py-1 bg-surface text-slate-600 border border-slate-300/60 rounded-sm text-[10px] font-semibold">
                                     {monthStats.deedCount} Deed
                                 </span>
                             )}
@@ -216,9 +216,9 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                 </div>
 
                 {/* Day Headers */}
-                <div className="grid grid-cols-7 border-b border-slate-800">
+                <div className="grid grid-cols-7 border-b border-slate-200">
                     {DAY_NAMES.map(d => (
-                        <div key={d} className="py-3 text-center text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+                        <div key={d} className="py-3 text-center text-[10px] font-semibold text-slate-600 uppercase tracking-widest">
                             {d}
                         </div>
                     ))}
@@ -237,19 +237,19 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                             <div
                                 key={i}
                                 onClick={() => cell.currentMonth && cell.date && setSelectedDay(cell.date === selectedDay ? null : cell.date)}
-                                className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-800 transition-all relative ${!cell.currentMonth ? 'bg-slate-900/20' :
-                                    isSelected ? 'bg-blue-900/20 ring-1 ring-blue-500/50 ring-inset z-10' :
-                                        hasEvents ? 'bg-slate-950 hover:bg-slate-900/50 cursor-pointer' :
-                                            'bg-slate-950'
+                                className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-200 transition-all relative ${!cell.currentMonth ? 'bg-surface/20' :
+                                    isSelected ? 'bg-indigo-50 ring-1 ring-indigo-500/50 ring-inset z-10' :
+                                        hasEvents ? 'bg-canvas hover:bg-slate-100/50 cursor-pointer' :
+                                            'bg-canvas'
                                     }`}
                             >
                                 <div className={`text-sm font-bold mb-1 ${!cell.currentMonth ? 'text-slate-600' :
-                                    isToday ? 'text-blue-400' :
+                                    isToday ? 'text-indigo-500' :
                                         isSelected ? 'text-white' :
-                                            'text-slate-100'
+                                            'text-slate-900'
                                     }`}>
                                     {isToday ? (
-                                        <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-600 rounded-sm text-white text-xs font-semibold">
+                                        <span className="inline-flex items-center justify-center w-7 h-7 bg-indigo-600 rounded-sm text-white text-xs font-semibold">
                                             {cell.day}
                                         </span>
                                     ) : cell.day}
@@ -260,25 +260,25 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                     <div className="flex flex-wrap gap-0.5 mt-0.5">
                                         {lienEvents.slice(0, 3).map((e, j) => (
                                             <div key={`l${j}`} className="flex items-center gap-0.5">
-                                                <span className="w-1.5 h-1.5 rounded-sm bg-blue-500 shrink-0"></span>
-                                                <span className="text-[8px] font-semibold text-blue-600 hidden md:inline">{e.state}</span>
+                                                <span className="w-1.5 h-1.5 rounded-sm bg-indigo-500 shrink-0"></span>
+                                                <span className="text-[8px] font-semibold text-indigo-600 hidden md:inline">{e.state}</span>
                                             </div>
                                         ))}
                                         {deedEvents.slice(0, 3).map((e, j) => (
                                             <div key={`d${j}`} className="flex items-center gap-0.5">
-                                                <span className="w-1.5 h-1.5 rounded-sm bg-slate-500 shrink-0"></span>
+                                                <span className="w-1.5 h-1.5 rounded-sm bg-slate-400 shrink-0"></span>
                                                 <span className="text-[8px] font-semibold text-slate-600 hidden md:inline">{e.state}</span>
                                             </div>
                                         ))}
                                         {cell.events.length > 6 && (
-                                            <span className="text-[8px] font-bold text-slate-400">+{cell.events.length - 6}</span>
+                                            <span className="text-[8px] font-bold text-slate-600">+{cell.events.length - 6}</span>
                                         )}
                                     </div>
                                 )}
 
                                 {/* Event count badge */}
                                 {hasEvents && cell.events.length > 0 && (
-                                    <div className="absolute top-1 right-1 w-4 h-4 md:w-5 md:h-5 bg-blue-600 rounded-sm flex items-center justify-center">
+                                    <div className="absolute top-1 right-1 w-4 h-4 md:w-5 md:h-5 bg-indigo-600 rounded-sm flex items-center justify-center">
                                         <span className="text-[8px] md:text-[9px] font-semibold text-white">{cell.events.length}</span>
                                     </div>
                                 )}
@@ -288,17 +288,17 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                 </div>
 
                 {/* Legend */}
-                <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-800 bg-slate-900/50">
+                <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-200 bg-white/70">
                     <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-sm bg-blue-500"></span>
+                        <span className="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span>
                         <span className="text-[10px] font-bold text-slate-500">Lien State</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-sm bg-slate-500"></span>
+                        <span className="w-2.5 h-2.5 rounded-sm bg-slate-400"></span>
                         <span className="text-[10px] font-bold text-slate-500">Deed State</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <span className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center">
+                        <span className="w-5 h-5 bg-indigo-600 rounded-sm flex items-center justify-center">
                             <span className="text-[7px] text-white font-bold">3</span>
                         </span>
                         <span className="text-[10px] font-bold text-slate-500"># of Sales</span>
@@ -310,22 +310,22 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
             <div className="w-full lg:w-96 flex flex-col gap-4 overflow-auto">
                 {/* Selected Day Panel */}
                 {selectedDay ? (
-                    <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 flex flex-col overflow-hidden">
-                        <div className="p-5 border-b border-slate-800">
+                    <div className="bg-canvas rounded-md shadow-none border border-slate-200 flex flex-col overflow-hidden">
+                        <div className="p-5 border-b border-slate-200">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Auction Date</div>
-                                    <div className="font-mono font-semibold text-xl text-slate-100 mt-0.5">
+                                    <div className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest">Auction Date</div>
+                                    <div className="font-mono font-semibold text-xl text-slate-900 mt-0.5">
                                         {new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                                     </div>
                                 </div>
-                                <button onClick={() => setSelectedDay(null)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-200 text-slate-500 font-bold transition-all text-sm">
+                                <button onClick={() => setSelectedDay(null)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface hover:bg-slate-200 text-slate-500 font-bold transition-all text-sm">
                                     ×
                                 </button>
                             </div>
                             {selectedDayEvents.length > 0 && (
                                 <div className="mt-2 flex gap-2">
-                                    <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-semibold">
+                                    <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-semibold">
                                         {selectedDayEvents.length} {selectedDayEvents.length === 1 ? 'sale' : 'sales'}
                                     </span>
                                 </div>
@@ -335,8 +335,8 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                         <div className="flex-1 overflow-auto p-4 space-y-3">
                             {selectedDayEvents.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <div className="w-14 h-14 bg-slate-900 rounded-md flex items-center justify-center text-lg font-mono mb-3">📅</div>
-                                    <p className="text-slate-400 text-sm font-medium">No auctions scheduled</p>
+                                    <div className="w-14 h-14 bg-surface rounded-md flex items-center justify-center text-lg font-mono mb-3">📅</div>
+                                    <p className="text-slate-600 text-sm font-medium">No auctions scheduled</p>
                                 </div>
                             ) : (
                                 selectedDayEvents.map((e, i) => {
@@ -346,29 +346,29 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                         <div
                                             key={i}
                                             onClick={() => onSelectState && onSelectState(e.state)}
-                                            className={`p-4 rounded-md border-2 cursor-pointer transition-all hover:shadow-none hover:scale-[1.01] ${isHighRate ? 'border-amber-200 bg-amber-50/50' : 'border-slate-800 bg-slate-950 hover:border-blue-200'
+                                            className={`p-4 rounded-md border-2 cursor-pointer transition-all hover:shadow-none hover:scale-[1.01] ${isHighRate ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200 bg-canvas hover:border-indigo-200'
  }`}
                                         >
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-mono font-semibold text-lg text-slate-100">{e.state}</span>
-                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-semibold text-white ${isLien ? 'bg-blue-600' : 'bg-slate-600'}`}>
+                                                    <span className="font-mono font-semibold text-lg text-slate-900">{e.state}</span>
+                                                    <span className={`px-2 py-0.5 rounded text-[9px] font-semibold text-white ${isLien ? 'bg-indigo-600' : 'bg-slate-300'}`}>
                                                         {e.type}
                                                     </span>
                                                     {isHighRate && <span className="text-amber-500">🔥</span>}
                                                 </div>
-                                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${e.frequency === 'Monthly' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-900 text-slate-500'}`}>
+                                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${e.frequency === 'Monthly' ? 'bg-emerald-100 text-emerald-700' : 'bg-surface text-slate-500'}`}>
                                                     {e.frequency}
                                                 </span>
                                             </div>
                                             {e.rate && e.rate !== 'N/A' && (
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Rate</span>
+                                                    <span className="text-[9px] font-semibold text-slate-600 uppercase tracking-wider">Rate</span>
                                                     <span className="text-sm font-semibold text-emerald-600">{e.rate}</span>
                                                 </div>
                                             )}
                                             <p className="text-xs text-slate-500">{e.note}</p>
-                                            <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-bold">
+                                            <div className="mt-2 flex items-center gap-1 text-xs text-indigo-600 font-bold">
                                                 <span>Explore State →</span>
                                             </div>
                                         </div>
@@ -379,34 +379,34 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                     </div>
                 ) : (
                     /* Summary Panel when no day is selected */
-                    <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-5">
-                        <h3 className="font-mono font-semibold text-lg text-slate-100 mb-1">📅 Month Summary</h3>
-                        <p className="text-xs text-slate-400 mb-4">Click any day with events to see details</p>
+                    <div className="bg-canvas rounded-md shadow-none border border-slate-200 p-5">
+                        <h3 className="font-mono font-semibold text-lg text-slate-900 mb-1">📅 Month Summary</h3>
+                        <p className="text-xs text-slate-600 mb-4">Click any day with events to see details</p>
 
                         <div className="grid grid-cols-3 gap-3 mb-4">
-                            <div className="bg-blue-50 rounded-sm p-3 text-center">
-                                <div className="font-mono font-semibold text-xl text-blue-700">{monthStats.totalAuctions}</div>
-                                <div className="text-[9px] font-bold text-blue-500 uppercase">Total</div>
+                            <div className="bg-indigo-50 rounded-sm p-3 text-center">
+                                <div className="font-mono font-semibold text-xl text-indigo-700">{monthStats.totalAuctions}</div>
+                                <div className="text-[9px] font-bold text-indigo-500 uppercase">Total</div>
                             </div>
-                            <div className="bg-blue-50/50 rounded-sm p-3 text-center">
-                                <div className="font-mono font-semibold text-xl text-blue-600">{monthStats.lienCount}</div>
-                                <div className="text-[9px] font-bold text-blue-500 uppercase">Lien</div>
+                            <div className="bg-indigo-50/50 rounded-sm p-3 text-center">
+                                <div className="font-mono font-semibold text-xl text-indigo-600">{monthStats.lienCount}</div>
+                                <div className="text-[9px] font-bold text-indigo-500 uppercase">Lien</div>
                             </div>
-                            <div className="bg-slate-900 rounded-sm p-3 text-center">
-                                <div className="font-mono font-semibold text-xl text-slate-300">{monthStats.deedCount}</div>
+                            <div className="bg-surface rounded-sm p-3 text-center">
+                                <div className="font-mono font-semibold text-xl text-slate-700">{monthStats.deedCount}</div>
                                 <div className="text-[9px] font-bold text-slate-500 uppercase">Deed</div>
                             </div>
                         </div>
 
                         {monthStats.highRateStates.length > 0 && (
-                            <div className="bg-slate-900 rounded-sm p-3 border border-amber-200">
+                            <div className="bg-surface rounded-sm p-3 border border-amber-200">
                                 <div className="text-[10px] font-semibold text-amber-800 uppercase tracking-wider mb-2">🔥 High-Yield States This Month</div>
                                 <div className="flex flex-wrap gap-1.5">
                                     {monthStats.highRateStates.map(s => (
                                         <button
                                             key={s}
                                             onClick={() => onSelectState && onSelectState(s)}
-                                            className="px-2.5 py-1 bg-slate-950 rounded-lg border border-amber-200 text-xs font-semibold text-slate-300 hover:border-amber-400 transition-all"
+                                            className="px-2.5 py-1 bg-canvas rounded-lg border border-amber-200 text-xs font-semibold text-slate-700 hover:border-amber-400 transition-all"
                                         >
                                             {s}
                                         </button>
@@ -418,7 +418,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                 )}
 
                 {/* Quick Navigation */}
-                <div className="bg-slate-900 rounded-md shadow-none p-5">
+                <div className="bg-surface rounded-md shadow-none p-5">
                     <h3 className="font-mono font-semibold text-white mb-3">🚀 Quick Jump</h3>
                     <div className="grid grid-cols-4 gap-2">
                         {MONTH_NAMES.map((name, i) => {
@@ -429,9 +429,9 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 <button
                                     key={name}
                                     onClick={() => { setCurrentMonth(i); setCurrentYear(2026); setSelectedDay(null); }}
-                                    className={`py-2 rounded-lg text-[10px] font-semibold uppercase transition-all ${isActive ? 'bg-blue-600 text-white shadow-none' :
- monthHasEvents ? 'bg-slate-950/10 text-white hover:bg-slate-950/20' :
- 'bg-slate-950/5 text-white/30'
+                                    className={`py-2 rounded-lg text-[10px] font-semibold uppercase transition-all ${isActive ? 'bg-indigo-600 text-white shadow-none' :
+ monthHasEvents ? 'bg-slate-100/60 text-white hover:bg-slate-50/20' :
+ 'bg-slate-100/50 text-white/30'
  }`}
                                 >
                                     {name.slice(0, 3)}

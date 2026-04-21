@@ -71,15 +71,15 @@ export default function UserSettings({ onClose }) {
     };
 
     return (
-        <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 flex flex-col h-full">
+        <div className="bg-canvas rounded-md shadow-none border border-slate-200 flex flex-col h-full">
             {/* Header */}
-            <div className="p-6 md:p-8 border-b border-slate-800">
+            <div className="p-6 md:p-8 border-b border-slate-200">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-mono md:text-2xl font-mono font-semibold text-slate-100 tracking-tighter">Settings</h2>
-                        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-1">Manage your account</p>
+                        <h2 className="text-xl font-mono md:text-2xl font-mono font-semibold text-slate-900 tracking-tighter">Settings</h2>
+                        <p className="text-[10px] text-slate-600 font-semibold uppercase tracking-widest mt-1">Manage your account</p>
                     </div>
-                    <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-sm bg-slate-900 hover:bg-slate-200 text-slate-600 transition-all">
+                    <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-sm bg-surface hover:bg-slate-200 text-slate-600 transition-all">
                         ✕
                     </button>
                 </div>
@@ -95,8 +95,8 @@ export default function UserSettings({ onClose }) {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-bold transition-all ${activeTab === tab.id
- ? 'bg-slate-900 text-white shadow-none'
- : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
+ ? 'bg-surface text-white shadow-none'
+ : 'bg-surface text-slate-600 hover:bg-slate-200'
  }`}
                         >
                             <span>{tab.icon}</span>
@@ -112,29 +112,29 @@ export default function UserSettings({ onClose }) {
                 {activeTab === 'profile' && (
                     <div className="space-y-6">
                         {/* User avatar and info */}
-                        <div className="flex items-center gap-6 p-6 bg-slate-900 rounded-md">
-                            <div className="w-20 h-20 bg-slate-900 rounded-md flex items-center justify-center text-xl font-mono font-bold text-white shadow-none">
+                        <div className="flex items-center gap-6 p-6 bg-surface rounded-md">
+                            <div className="w-20 h-20 bg-surface rounded-md flex items-center justify-center text-xl font-mono font-bold text-white shadow-none">
                                 {user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                             <div>
-                                <h3 className="font-mono font-semibold text-lg font-mono text-slate-100">{user?.name}</h3>
+                                <h3 className="font-mono font-semibold text-lg font-mono text-slate-900">{user?.name}</h3>
                                 <p className="text-slate-500">{user?.email}</p>
-                                <p className="text-xs text-slate-400 mt-1">Member since {user?.createdAt ? formatDate(user.createdAt) : 'N/A'}</p>
+                                <p className="text-xs text-slate-600 mt-1">Member since {user?.createdAt ? formatDate(user.createdAt) : 'N/A'}</p>
                             </div>
                         </div>
 
                         {/* Account details */}
                         <div className="grid gap-4">
-                            <div className="p-4 bg-slate-950 border border-slate-700 rounded-sm">
-                                <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Full Name</div>
-                                <div className="text-lg font-bold text-slate-100">{user?.name}</div>
+                            <div className="p-4 bg-canvas border border-slate-300 rounded-sm">
+                                <div className="text-[10px] uppercase tracking-widest text-slate-600 font-bold mb-1">Full Name</div>
+                                <div className="text-lg font-bold text-slate-900">{user?.name}</div>
                             </div>
-                            <div className="p-4 bg-slate-950 border border-slate-700 rounded-sm">
-                                <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Email Address</div>
-                                <div className="text-lg font-bold text-slate-100">{user?.email}</div>
+                            <div className="p-4 bg-canvas border border-slate-300 rounded-sm">
+                                <div className="text-[10px] uppercase tracking-widest text-slate-600 font-bold mb-1">Email Address</div>
+                                <div className="text-lg font-bold text-slate-900">{user?.email}</div>
                             </div>
-                            <div className="p-4 bg-slate-950 border border-slate-700 rounded-sm">
-                                <div className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Account ID</div>
+                            <div className="p-4 bg-canvas border border-slate-300 rounded-sm">
+                                <div className="text-[10px] uppercase tracking-widest text-slate-600 font-bold mb-1">Account ID</div>
                                 <div className="font-mono text-sm text-slate-600">{user?.id}</div>
                             </div>
                         </div>
@@ -145,16 +145,16 @@ export default function UserSettings({ onClose }) {
                 {activeTab === 'security' && (
                     <div className="space-y-6">
                         {/* Password section */}
-                        <div className="p-6 bg-slate-950 border border-slate-700 rounded-md">
+                        <div className="p-6 bg-canvas border border-slate-300 rounded-md">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 className="font-mono font-bold text-lg text-slate-100">Password</h3>
+                                    <h3 className="font-mono font-bold text-lg text-slate-900">Password</h3>
                                     <p className="text-sm text-slate-500">Change your account password</p>
                                 </div>
                                 {!isChangingPassword && (
                                     <button
                                         onClick={() => setIsChangingPassword(true)}
-                                        className="px-4 py-2 bg-slate-900 text-slate-300 text-sm font-bold rounded-lg hover:bg-slate-200 transition-all"
+                                        className="px-4 py-2 bg-surface text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-200 transition-all"
                                     >
                                         Change
                                     </button>
@@ -170,39 +170,39 @@ export default function UserSettings({ onClose }) {
                             {isChangingPassword && (
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-1">New Password</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
                                         <input
                                             type="password"
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            className="w-full px-4 py-2.5 border border-slate-700 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                             placeholder="Enter new password"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-1">Confirm Password</label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
                                         <input
                                             type="password"
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full px-4 py-2.5 border border-slate-700 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                             placeholder="Confirm new password"
                                         />
                                     </div>
                                     {passwordError && (
-                                        <p className="text-sm text-red-500">{passwordError}</p>
+                                        <p className="text-sm text-rose-600">{passwordError}</p>
                                     )}
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleChangePassword}
                                             disabled={loading}
-                                            className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all"
+                                            className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all"
                                         >
                                             {loading ? 'Updating...' : 'Update Password'}
                                         </button>
                                         <button
                                             onClick={() => { setIsChangingPassword(false); setPasswordError(''); }}
-                                            className="px-4 py-2 bg-slate-900 text-slate-600 text-sm font-bold rounded-lg hover:bg-slate-200 transition-all"
+                                            className="px-4 py-2 bg-surface text-slate-600 text-sm font-bold rounded-lg hover:bg-slate-200 transition-all"
                                         >
                                             Cancel
                                         </button>
@@ -212,12 +212,12 @@ export default function UserSettings({ onClose }) {
                         </div>
 
                         {/* Session section */}
-                        <div className="p-6 bg-slate-950 border border-slate-700 rounded-md">
-                            <h3 className="font-mono font-bold text-lg text-slate-100 mb-2">Session</h3>
+                        <div className="p-6 bg-canvas border border-slate-300 rounded-md">
+                            <h3 className="font-mono font-bold text-lg text-slate-900 mb-2">Session</h3>
                             <p className="text-sm text-slate-500 mb-4">Sign out of your account across all devices</p>
                             <button
                                 onClick={signOut}
-                                className="px-4 py-2 bg-red-50 text-red-600 text-sm font-bold rounded-lg border border-red-200 hover:bg-red-100 transition-all"
+                                className="px-4 py-2 bg-red-50 text-rose-600 text-sm font-bold rounded-lg border border-red-200 hover:bg-red-100 transition-all"
                             >
                                 Sign Out
                             </button>
@@ -228,8 +228,8 @@ export default function UserSettings({ onClose }) {
                 {/* Preferences Tab */}
                 {activeTab === 'preferences' && (
                     <div className="space-y-6">
-                        <div className="p-6 bg-slate-950 border border-slate-700 rounded-md">
-                            <h3 className="font-mono font-bold text-lg text-slate-100 mb-4">Notification Preferences</h3>
+                        <div className="p-6 bg-canvas border border-slate-300 rounded-md">
+                            <h3 className="font-mono font-bold text-lg text-slate-900 mb-4">Notification Preferences</h3>
                             <div className="space-y-3">
                                 {[
                                     { key: 'auctionAlerts', label: 'Auction Alerts', desc: 'Get notified about upcoming auctions in your watchlist' },
@@ -237,17 +237,17 @@ export default function UserSettings({ onClose }) {
                                     { key: 'watchlistUpdates', label: 'Watchlist Updates', desc: 'Updates about properties in your watchlist' },
                                     { key: 'emailDigest', label: 'Weekly Email Digest', desc: 'Receive a weekly summary via email' }
                                 ].map(pref => (
-                                    <div key={pref.key} className="flex items-center justify-between p-3 bg-slate-900 rounded-sm">
+                                    <div key={pref.key} className="flex items-center justify-between p-3 bg-surface rounded-sm">
                                         <div>
-                                            <div className="font-medium text-slate-100">{pref.label}</div>
+                                            <div className="font-medium text-slate-900">{pref.label}</div>
                                             <div className="text-xs text-slate-500">{pref.desc}</div>
                                         </div>
                                         <button
                                             onClick={() => handleNotificationChange(pref.key)}
-                                            className={`w-12 h-7 rounded-sm transition-all ${notifications[pref.key] ? 'bg-blue-600' : 'bg-slate-300'
+                                            className={`w-12 h-7 rounded-sm transition-all ${notifications[pref.key] ? 'bg-indigo-600' : 'bg-slate-300'
  }`}
                                         >
-                                            <div className={`w-5 h-5 rounded-sm bg-slate-950 shadow-md transform transition-transform ${notifications[pref.key] ? 'translate-x-6' : 'translate-x-1'
+                                            <div className={`w-5 h-5 rounded-sm bg-canvas shadow-md transform transition-transform ${notifications[pref.key] ? 'translate-x-6' : 'translate-x-1'
  }`} />
                                         </button>
                                     </div>

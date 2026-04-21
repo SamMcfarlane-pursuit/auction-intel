@@ -99,12 +99,12 @@ export default function SignIn() {
     };
 
     return (
-        <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #0f172a 100%)' }}>
+        <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #F7F5F0 0%, #EEF2FF 50%, #F7F5F0 100%)' }}>
             <FloatingParticles />
 
             {/* Mesh gradient overlays */}
-            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-sm blur-3xl pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-sm blur-3xl pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-indigo-300/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-teal-300/20 rounded-full blur-3xl pointer-events-none"></div>
 
             {/* ═══ Left Panel — Desktop Only ═══ */}
             <div className="hidden lg:flex flex-col justify-between w-[500px] xl:w-[550px] p-8 xl:p-12 relative z-10"
@@ -117,21 +117,21 @@ export default function SignIn() {
                 <div>
                     {/* Logo */}
                     <div className="flex items-center gap-3 mb-12">
-                        <div className="w-11 h-11 bg-slate-900 rounded-sm flex items-center justify-center shadow-none shadow-purple-500/20">
+                        <div className="w-11 h-11 bg-surface rounded-sm flex items-center justify-center shadow-none shadow-violet-500/20">
                             <span className="text-white font-semibold text-lg">AI</span>
                         </div>
                         <div>
                             <div className="text-white font-mono font-semibold text-xl tracking-tight">Auction Intel</div>
-                            <div className="text-blue-300/60 text-[9px] font-bold uppercase tracking-[0.2em]">Intelligence Platform</div>
+                            <div className="text-indigo-400/70 text-[9px] font-bold uppercase tracking-[0.2em]">Intelligence Platform</div>
                         </div>
                     </div>
 
                     {/* Hero Text */}
                     <h1 className="text-white font-mono font-semibold text-2xl font-mono xl:text-3xl font-mono leading-tight tracking-tight mb-4">
                         Tax Auction
-                        <span className="block bg-slate-900 bg-clip-text text-transparent">Intelligence</span>
+                        <span className="block bg-surface bg-clip-text text-transparent">Intelligence</span>
                     </h1>
-                    <p className="text-slate-400 text-base leading-relaxed max-w-sm mb-10">
+                    <p className="text-slate-600 text-base leading-relaxed max-w-sm mb-10">
                         Research 3,143 counties across all 50 states. Real data, real returns, real opportunities.
                     </p>
 
@@ -144,7 +144,7 @@ export default function SignIn() {
                             { icon: '🔥', title: 'Live Auction Alerts', desc: 'Countdown timers & notifications for upcoming sales' },
                         ].map((feature, i) => (
                             <div key={i} className="flex items-start gap-3 group">
-                                <div className="w-10 h-10 rounded-sm bg-slate-950/5 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-slate-950/10 transition-all">
+                                <div className="w-10 h-10 rounded-sm bg-slate-100/50 border border-white/10 flex items-center justify-center text-lg shrink-0 group-hover:bg-slate-50/10 transition-all">
                                     {feature.icon}
                                 </div>
                                 <div>
@@ -163,14 +163,14 @@ export default function SignIn() {
                             <div className="text-white font-mono font-semibold text-lg font-mono"><AnimatedCounter end={50} /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">States</div>
                         </div>
-                        <div className="w-px h-8 bg-slate-950/10"></div>
+                        <div className="w-px h-8 bg-slate-100/60"></div>
                         <div className="text-center">
                             <div className="text-white font-mono font-semibold text-lg font-mono"><AnimatedCounter end={3143} suffix="+" /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Counties</div>
                         </div>
-                        <div className="w-px h-8 bg-slate-950/10"></div>
+                        <div className="w-px h-8 bg-slate-100/60"></div>
                         <div className="text-center">
-                            <div className="text-emerald-400 font-mono font-semibold text-lg font-mono"><AnimatedCounter end={2500} suffix="+" /></div>
+                            <div className="text-emerald-600 font-mono font-semibold text-lg font-mono"><AnimatedCounter end={2500} suffix="+" /></div>
                             <div className="text-slate-500 text-[9px] font-bold uppercase tracking-wider">Investors</div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@ export default function SignIn() {
                 >
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-                        <div className="w-10 h-10 bg-slate-900 rounded-sm flex items-center justify-center shadow-none shadow-purple-500/20">
+                        <div className="w-10 h-10 bg-surface rounded-sm flex items-center justify-center shadow-none shadow-violet-500/20">
                             <span className="text-white font-semibold text-lg">AI</span>
                         </div>
                         <div className="text-white font-mono font-semibold text-xl tracking-tight">Auction Intel</div>
@@ -204,43 +204,43 @@ export default function SignIn() {
                     >
                         <div className="mb-6">
                             <h2 className="text-white font-mono font-semibold text-lg font-mono tracking-tight">Welcome Back</h2>
-                            <p className="text-slate-400 text-sm mt-1">Sign in to access your auction intelligence dashboard</p>
+                            <p className="text-slate-600 text-sm mt-1">Sign in to access your auction intelligence dashboard</p>
                         </div>
 
                         {error && (
-                            <div className="mb-4 p-3 rounded-sm bg-red-500/10 border border-red-500/20 text-red-300 text-sm flex items-center gap-2">
+                            <div className="mb-4 p-3 rounded-sm bg-rose-50 border border-red-500/20 text-rose-500 text-sm flex items-center gap-2">
                                 <span>⚠️</span> {error}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Email Address</label>
+                                <label className="block text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-2">Email Address</label>
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-400 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                                     placeholder="investor@email.com"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Password</label>
+                                <label className="block text-[10px] font-semibold text-slate-600 uppercase tracking-widest mb-2">Password</label>
                                 <div className="relative">
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         value={formData.password}
                                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                        className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-500 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 pr-12"
+                                        className="w-full px-4 py-3 rounded-sm text-white placeholder-slate-400 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-12"
                                         style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                                         placeholder="••••••••"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors text-sm"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors text-sm"
                                     >
                                         {showPassword ? '🙈' : '👁️'}
                                     </button>
@@ -248,11 +248,11 @@ export default function SignIn() {
                             </div>
 
                             <div className="flex items-center justify-between text-sm">
-                                <label className="flex items-center gap-2 text-slate-400 cursor-pointer">
-                                    <input type="checkbox" className="rounded border-slate-600" />
+                                <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
+                                    <input type="checkbox" className="rounded border-slate-400" />
                                     <span className="text-xs">Remember me</span>
                                 </label>
-                                <a href="#" className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors">
+                                <a href="#" className="text-indigo-500 hover:text-indigo-400 text-xs font-medium transition-colors">
                                     Forgot password?
                                 </a>
                             </div>
@@ -260,9 +260,9 @@ export default function SignIn() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-none shadow-blue-500/20 hover:shadow-blue-500/30"
+                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-none shadow-indigo-500/15 hover:shadow-indigo-500/20"
                                 style={{
-                                    background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
+                                    background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
                                 }}
                             >
                                 {loading ? (
@@ -275,33 +275,33 @@ export default function SignIn() {
                         </form>
 
                         <div className="mt-4 flex items-center gap-3">
-                            <div className="flex-1 h-px bg-slate-950/10"></div>
+                            <div className="flex-1 h-px bg-slate-100/60"></div>
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
-                            <div className="flex-1 h-px bg-slate-950/10"></div>
+                            <div className="flex-1 h-px bg-slate-100/60"></div>
                         </div>
 
                         <button
                             onClick={demoLogin}
                             disabled={loading}
-                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm transition-all hover:bg-slate-950/10 disabled:opacity-50"
-                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8' }}
+                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm text-slate-700 transition-all hover:bg-slate-100 disabled:opacity-50"
+                            style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.08)' }}
                         >
                             🎯 Try Demo Account
                         </button>
 
                         <p className="text-center text-slate-500 text-xs mt-6">
                             Don't have an account?{' '}
-                            <a href="/signup" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">Create one free</a>
+                            <a href="/signup" className="text-indigo-500 hover:text-indigo-400 font-bold transition-colors">Create one free</a>
                         </p>
                     </div>
 
                     {/* Mobile Trust Bar */}
                     <div className="lg:hidden mt-6 flex items-center justify-center gap-4">
                         <span className="text-slate-500 text-xs font-bold">50 States</span>
-                        <span className="w-1 h-1 bg-slate-700 rounded-sm"></span>
+                        <span className="w-1 h-1 bg-panel-2 rounded-sm"></span>
                         <span className="text-slate-500 text-xs font-bold">3,143 Counties</span>
-                        <span className="w-1 h-1 bg-slate-700 rounded-sm"></span>
-                        <span className="text-emerald-500/60 text-xs font-bold">Live Data</span>
+                        <span className="w-1 h-1 bg-panel-2 rounded-sm"></span>
+                        <span className="text-emerald-600/80 text-xs font-bold">Live Data</span>
                     </div>
                 </div>
             </div>

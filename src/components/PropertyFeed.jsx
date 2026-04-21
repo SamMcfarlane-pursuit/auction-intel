@@ -4,10 +4,10 @@ import React, { useState } from 'react';
  * Property Categories for filtering
  */
 export const PROPERTY_CATEGORIES = {
-    TAX_LIEN: { id: 'tax_lien', label: 'Tax Lien', icon: '📋', color: 'bg-blue-500', description: 'Tax lien certificates' },
+    TAX_LIEN: { id: 'tax_lien', label: 'Tax Lien', icon: '📋', color: 'bg-indigo-500', description: 'Tax lien certificates' },
     TAX_DEED: { id: 'tax_deed', label: 'Tax Deed', icon: '📜', color: 'bg-purple-500', description: 'Tax deed sales' },
-    MORTGAGE: { id: 'mortgage', label: 'Mortgage/Foreclosure', icon: '🏦', color: 'bg-red-500', description: 'Pre-foreclosure & REO' },
-    OTHER: { id: 'other', label: 'Other', icon: '📦', color: 'bg-slate-500', description: 'Bank-owned, vacant, etc.' },
+    MORTGAGE: { id: 'mortgage', label: 'Mortgage/Foreclosure', icon: '🏦', color: 'bg-rose-500', description: 'Pre-foreclosure & REO' },
+    OTHER: { id: 'other', label: 'Other', icon: '📦', color: 'bg-slate-400', description: 'Bank-owned, vacant, etc.' },
 };
 
 /**
@@ -49,21 +49,21 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
 
     const tierColors = {
         1: 'bg-emerald-500',
-        2: 'bg-blue-500',
+        2: 'bg-indigo-500',
         3: 'bg-amber-500',
         4: 'bg-orange-500',
-        5: 'bg-red-500',
+        5: 'bg-rose-500',
     };
 
     return (
         <div
-            className="bg-slate-950 rounded-md shadow-none border border-slate-800 overflow-hidden hover:shadow-none transition-all group"
+            className="bg-canvas rounded-md shadow-none border border-slate-200 overflow-hidden hover:shadow-none transition-all group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Image Section */}
-            <div className="relative h-44 bg-slate-900">
-                <div className="w-full h-full flex items-center justify-center text-slate-400">
+            <div className="relative h-44 bg-surface">
+                <div className="w-full h-full flex items-center justify-center text-slate-600">
                     <div className="text-center">
                         <div className="text-2xl font-mono mb-1">🏠</div>
                         <div className="text-[10px]">{propertyType}</div>
@@ -87,7 +87,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                 </div>
 
                 {/* Days Until */}
-                <div className={`absolute bottom-2 right-2 ${daysUntil <= 7 ? 'bg-red-500' : 'bg-slate-900/80'} text-white text-[10px] font-bold px-2 py-0.5 rounded`}>
+                <div className={`absolute bottom-2 right-2 ${daysUntil <= 7 ? 'bg-rose-500' : 'bg-white/90'} text-white text-[10px] font-bold px-2 py-0.5 rounded`}>
                     {daysUntil > 0 ? `${daysUntil} days` : 'Today!'}
                 </div>
 
@@ -96,7 +96,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2">
                         <button
                             onClick={() => onViewDetails?.(property)}
-                            className="bg-slate-950 text-slate-100 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-slate-900 transition-all"
+                            className="bg-canvas text-slate-900 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-slate-100 transition-all"
                         >
                             Details
                         </button>
@@ -113,7 +113,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
             {/* Content Section */}
             <div className="p-3">
                 {/* Address */}
-                <div className="font-bold text-slate-100 text-sm mb-0.5 truncate">{address}</div>
+                <div className="font-bold text-slate-900 text-sm mb-0.5 truncate">{address}</div>
                 <div className="text-xs text-slate-500 mb-2">{city}, {state} {zip}</div>
 
                 {/* Property Stats */}
@@ -126,7 +126,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
 
                 {/* Mortgage/Equity Info (PropWire style) */}
                 {(equity !== null || mortgageBalance !== null) && (
-                    <div className="bg-slate-900 rounded-lg p-2 mb-2 text-[10px]">
+                    <div className="bg-surface rounded-lg p-2 mb-2 text-[10px]">
                         <div className="flex items-center justify-between mb-1">
                             <span className="text-slate-500">Equity</span>
                             <span className="font-bold text-emerald-600">${equity?.toLocaleString() || 'N/A'}</span>
@@ -134,33 +134,33 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                         {mortgageBalance && (
                             <div className="flex items-center justify-between mb-1">
                                 <span className="text-slate-500">Mortgage Bal</span>
-                                <span className="font-bold text-slate-200">${mortgageBalance?.toLocaleString()}</span>
+                                <span className="font-bold text-slate-800">${mortgageBalance?.toLocaleString()}</span>
                             </div>
                         )}
                         {lender && (
                             <div className="flex items-center justify-between">
                                 <span className="text-slate-500">Lender</span>
-                                <span className="font-bold text-slate-200 truncate max-w-[100px]">{lender}</span>
+                                <span className="font-bold text-slate-800 truncate max-w-[100px]">{lender}</span>
                             </div>
                         )}
                         {interestRate && (
                             <div className="flex items-center justify-between">
                                 <span className="text-slate-500">Rate</span>
-                                <span className="font-bold text-slate-200">{interestRate}%</span>
+                                <span className="font-bold text-slate-800">{interestRate}%</span>
                             </div>
                         )}
                     </div>
                 )}
 
                 {/* Pricing */}
-                <div className="flex items-end justify-between border-t border-slate-800 pt-2">
+                <div className="flex items-end justify-between border-t border-slate-200 pt-2">
                     <div>
-                        <div className="text-[9px] text-slate-400 uppercase font-bold">Opening Bid</div>
+                        <div className="text-[9px] text-slate-600 uppercase font-bold">Opening Bid</div>
                         <div className="text-lg font-semibold text-emerald-600">${openingBid.toLocaleString()}</div>
                     </div>
                     <div className="text-right">
-                        <div className="text-[9px] text-slate-400 uppercase font-bold">Est. Value</div>
-                        <div className="text-sm font-bold text-slate-400 line-through">${estimatedValue.toLocaleString()}</div>
+                        <div className="text-[9px] text-slate-600 uppercase font-bold">Est. Value</div>
+                        <div className="text-sm font-bold text-slate-600 line-through">${estimatedValue.toLocaleString()}</div>
                     </div>
                 </div>
 
@@ -205,7 +205,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="text-slate-400 animate-none">Loading properties...</div>
+                <div className="text-slate-600 animate-none">Loading properties...</div>
             </div>
         );
     }
@@ -213,7 +213,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="bg-slate-900 rounded-md p-5 text-white">
+            <div className="bg-surface rounded-md p-5 text-white">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-lg font-mono font-semibold mb-1">🏠 Live Property Feed</h1>
@@ -227,13 +227,13 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
             </div>
 
             {/* Category Tabs */}
-            <div className="bg-slate-950 rounded-md shadow-none border border-slate-800 p-3">
+            <div className="bg-canvas rounded-md shadow-none border border-slate-200 p-3">
                 <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setActiveCategory('all')}
                         className={`px-4 py-2 rounded-sm font-bold text-sm transition-all ${activeCategory === 'all'
- ? 'bg-slate-900 text-white'
- : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
+ ? 'bg-surface text-white'
+ : 'bg-surface text-slate-600 hover:bg-slate-200'
  }`}
                     >
                         All ({categoryCounts.all})
@@ -244,7 +244,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                             onClick={() => setActiveCategory(cat.id)}
                             className={`px-4 py-2 rounded-sm font-bold text-sm transition-all flex items-center gap-1.5 ${activeCategory === cat.id
                                     ? `${cat.color} text-white`
-                                    : 'bg-slate-900 text-slate-600 hover:bg-slate-200'
+                                    : 'bg-surface text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             <span>{cat.icon}</span>
@@ -256,13 +256,13 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
             </div>
 
             {/* Filters Row */}
-            <div className="bg-slate-950 rounded-sm shadow border border-slate-800 p-3 flex flex-wrap items-center gap-4">
+            <div className="bg-canvas rounded-sm shadow border border-slate-200 p-3 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-600">Tier:</span>
                     <select
                         value={filter.tier}
                         onChange={(e) => setFilter({ ...filter, tier: e.target.value })}
-                        className="px-2 py-1 border border-slate-700 rounded text-xs"
+                        className="px-2 py-1 border border-slate-300 rounded text-xs"
                     >
                         <option value="all">All</option>
                         {[1, 2, 3, 4, 5].map(t => <option key={t} value={t}>T{t}</option>)}
@@ -273,7 +273,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                     <select
                         value={filter.maxPrice}
                         onChange={(e) => setFilter({ ...filter, maxPrice: parseInt(e.target.value) })}
-                        className="px-2 py-1 border border-slate-700 rounded text-xs"
+                        className="px-2 py-1 border border-slate-300 rounded text-xs"
                     >
                         <option value={100000}>$100K</option>
                         <option value={250000}>$250K</option>
@@ -288,9 +288,9 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
 
             {/* Property Grid */}
             {filteredProperties.length === 0 ? (
-                <div className="bg-slate-950 rounded-md shadow-none p-10 text-center">
+                <div className="bg-canvas rounded-md shadow-none p-10 text-center">
                     <div className="text-2xl font-mono mb-3">🏠</div>
-                    <h3 className="text-lg font-bold text-slate-100 mb-1">No Properties Found</h3>
+                    <h3 className="text-lg font-bold text-slate-900 mb-1">No Properties Found</h3>
                     <p className="text-sm text-slate-500">Try adjusting your filters or category</p>
                 </div>
             ) : (

@@ -24,7 +24,7 @@ const SparklineChart = ({ fips, height = 32, width = 120, color = '#10b981', api
     }, [fips, apiUrl]);
 
     if (loading || data.length < 2) {
-        return <div style={{ width, height }} className="bg-slate-800/20 rounded animate-none" />;
+        return <div style={{ width, height }} className="bg-panel/20 rounded animate-none" />;
     }
 
     const min = Math.min(...data);

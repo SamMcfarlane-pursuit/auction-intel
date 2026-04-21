@@ -10,12 +10,12 @@ export function Sparkline({
     dataKey = 'value',
     width = 80,
     height = 24,
-    color = '#3b82f6',
+    color = '#4F46E5',
     showDot = false,
     trend = null // 'up', 'down', 'stable' - auto-calculated if null
 }) {
     if (!data || data.length < 2) {
-        return <span className="text-slate-400 text-xs">—</span>;
+        return <span className="text-slate-600 text-xs">—</span>;
     }
 
     // Auto-calculate trend if not provided
@@ -51,7 +51,7 @@ export function Sparkline({
                 </ResponsiveContainer>
             </div>
             {calculatedTrend !== 'stable' && (
-                <span className={`text-[10px] font-bold ${calculatedTrend === 'up' ? 'text-emerald-500' : 'text-red-500'}`}>
+                <span className={`text-[10px] font-bold ${calculatedTrend === 'up' ? 'text-emerald-500' : 'text-rose-600'}`}>
                     {calculatedTrend === 'up' ? '↑' : '↓'}
                 </span>
             )}
@@ -80,7 +80,7 @@ export function TrendIndicator({ value, previousValue, format = 'percent' }) {
     const colors = {
         up: 'bg-emerald-100 text-emerald-700',
         down: 'bg-red-100 text-red-700',
-        stable: 'bg-slate-900 text-slate-600'
+        stable: 'bg-surface text-slate-600'
     };
 
     const icons = { up: '↑', down: '↓', stable: '→' };

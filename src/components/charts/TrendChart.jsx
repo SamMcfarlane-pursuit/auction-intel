@@ -21,7 +21,7 @@ export function TrendChart({
 }) {
     if (!data || data.length === 0) {
         return (
-            <div className="flex items-center justify-center h-48 text-slate-400">
+            <div className="flex items-center justify-center h-48 text-slate-600">
                 No data available
             </div>
         );
@@ -32,7 +32,7 @@ export function TrendChart({
     return (
         <div className="w-full">
             {title && (
-                <h3 className="text-sm font-bold text-slate-300 mb-3">{title}</h3>
+                <h3 className="text-sm font-bold text-slate-700 mb-3">{title}</h3>
             )}
             <ResponsiveContainer width="100%" height={height}>
                 <ChartComponent data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
@@ -51,12 +51,15 @@ export function TrendChart({
                     />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: '#1e293b',
-                            border: 'none',
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E5E1D8',
                             borderRadius: '8px',
                             fontSize: '12px',
-                            color: '#f1f5f9'
+                            color: '#0F172A',
+                            boxShadow: '0 4px 12px rgba(15,23,42,0.08)'
                         }}
+                        labelStyle={{ color: '#475569' }}
+                        itemStyle={{ color: '#0F172A' }}
                         formatter={(value) => [formatValue(value), dataKey]}
                     />
                     {showArea ? (
@@ -95,12 +98,12 @@ export function MultiLineChart({
     height = 300
 }) {
     if (!data || data.length === 0) {
-        return <div className="text-slate-400 text-center py-8">No data</div>;
+        return <div className="text-slate-600 text-center py-8">No data</div>;
     }
 
     return (
         <div className="w-full">
-            {title && <h3 className="text-sm font-bold text-slate-300 mb-3">{title}</h3>}
+            {title && <h3 className="text-sm font-bold text-slate-700 mb-3">{title}</h3>}
             <ResponsiveContainer width="100%" height={height}>
                 <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -108,11 +111,14 @@ export function MultiLineChart({
                     <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: '#1e293b',
-                            border: 'none',
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #E5E1D8',
                             borderRadius: '8px',
-                            color: '#f1f5f9'
+                            color: '#0F172A',
+                            boxShadow: '0 4px 12px rgba(15,23,42,0.08)'
                         }}
+                        labelStyle={{ color: '#475569' }}
+                        itemStyle={{ color: '#0F172A' }}
                     />
                     <Legend />
                     {lines.map(line => (

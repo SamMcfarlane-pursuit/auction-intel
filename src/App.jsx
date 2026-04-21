@@ -15,7 +15,7 @@ function AuthenticatedApp() {
   // Show loading state while checking for existing session
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-blue-400 border-t-transparent rounded-sm animate-spin"></div>
           <p className="text-white/70 font-medium">Loading...</p>
@@ -49,19 +49,19 @@ class AppErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', color: 'white', fontFamily: 'system-ui, sans-serif' }}>
+        <div style={{ minHeight: '100vh', background: '#F7F5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', color: '#0F172A', fontFamily: 'system-ui, sans-serif' }}>
           <div style={{ fontSize: '3rem' }}>⚠️</div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.02em' }}>Auction Intel – Unexpected Error</h2>
-          <p style={{ fontSize: '0.75rem', color: '#94a3b8', maxWidth: '400px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Auction Intel – Unexpected Error</h2>
+          <p style={{ fontSize: '0.875rem', color: '#475569', maxWidth: '400px', textAlign: 'center' }}>
             Something went wrong. Please refresh the page to resume your session.
           </p>
           <button
             onClick={() => window.location.reload()}
-            style={{ marginTop: '8px', padding: '10px 24px', background: '#f59e0b', color: '#0f172a', borderRadius: '12px', fontWeight: 900, border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}
+            style={{ marginTop: '8px', padding: '10px 24px', background: '#4F46E5', color: '#FFFFFF', borderRadius: '8px', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}
           >
             Reload Platform
           </button>
-          <pre style={{ marginTop: '16px', fontSize: '0.6rem', color: '#475569', maxWidth: '600px', overflow: 'auto', background: '#1e293b', padding: '12px', borderRadius: '8px' }}>
+          <pre style={{ marginTop: '16px', fontSize: '0.75rem', color: '#475569', maxWidth: '600px', overflow: 'auto', background: '#FFFFFF', border: '1px solid #E5E1D8', padding: '12px', borderRadius: '8px' }}>
             {this.state.error?.toString()}
           </pre>
         </div>
