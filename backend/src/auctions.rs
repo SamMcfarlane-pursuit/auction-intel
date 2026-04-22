@@ -9,7 +9,7 @@ use once_cell::sync::Lazy;
 // DATA STRUCTURES
 // ============================================================================
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct AuctionListing {
     pub id: String,
     pub state: String,
@@ -1311,7 +1311,7 @@ pub struct AuctionListingOut {
     pub lng: Option<f64>,
 }
 
-fn attach_coords(listing: AuctionListing) -> AuctionListingOut {
+pub fn attach_coords(listing: AuctionListing) -> AuctionListingOut {
     let coords = crate::geocoding::geocode_county(&listing.state, &listing.county)
         .or_else(|| crate::geocoding::geocode_state(&listing.state));
     AuctionListingOut {
@@ -1321,10 +1321,14 @@ fn attach_coords(listing: AuctionListing) -> AuctionListingOut {
     }
 }
 
+pub fn with_coords(listings: Vec<AuctionListing>) -> Vec<AuctionListingOut> {
+    listings.into_iter().map(attach_coords).collect()
+}
+
 pub fn get_upcoming_auctions_with_coords() -> Vec<AuctionListingOut> {
-    get_upcoming_auctions().into_iter().map(attach_coords).collect()
+    with_coords(get_upcoming_auctions())
 }
 
 pub fn get_state_auctions_with_coords(state: &str) -> Vec<AuctionListingOut> {
-    get_state_auctions(state).into_iter().map(attach_coords).collect()
+    with_coords(get_state_auctions(state))
 }
