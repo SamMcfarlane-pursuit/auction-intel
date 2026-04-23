@@ -196,7 +196,7 @@ export default function UserSettings({ onClose }) {
                                         <button
                                             onClick={handleChangePassword}
                                             disabled={loading}
-                                            className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-all"
+                                            className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 disabled:brightness-75 transition-all"
                                         >
                                             {loading ? 'Updating...' : 'Update Password'}
                                         </button>

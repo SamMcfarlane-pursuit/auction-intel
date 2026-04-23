@@ -65,7 +65,7 @@ export function AlertSettings({ onClose }) {
                         </div>
                     </div>
                     {onClose && (
-                        <button onClick={onClose} className="text-white/70 hover:text-white text-lg font-mono">×</button>
+                        <button onClick={onClose} className="text-white hover:text-slate-200 text-lg font-mono">×</button>
                     )}
                 </div>
             </div>

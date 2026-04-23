@@ -249,7 +249,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                         >
                             <span>{cat.icon}</span>
                             <span>{cat.label}</span>
-                            <span className="opacity-70">({categoryCounts[cat.id]})</span>
+                            <span className="text-slate-700">({categoryCounts[cat.id]})</span>
                         </button>
                     ))}
                 </div>

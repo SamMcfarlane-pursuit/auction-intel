@@ -48,7 +48,7 @@ const SparklineChart = ({ fips, height = 32, width = 120, color = '#10b981', api
             <path
                 d={`M 0,${height} L ${points} L ${width},${height} Z`}
                 fill={`url(#grad-${fips})`}
-                className="opacity-50"
+                className="opacity-75"
             />
             <polyline
                 fill="none"

@@ -269,7 +269,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                         {/* Close Button */}
                         <button
                             onClick={onClose}
-                            className="text-white/60 hover:text-white hover:bg-slate-50/10 w-10 h-10 rounded-sm flex items-center justify-center transition-all text-lg font-mono"
+                            className="text-white hover:text-slate-200 hover:bg-slate-50/10 w-10 h-10 rounded-sm flex items-center justify-center transition-all text-lg font-mono"
                         >
                             ×
                         </button>

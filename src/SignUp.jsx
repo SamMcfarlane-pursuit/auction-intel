@@ -319,7 +319,7 @@ export default function SignUp() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-none shadow-emerald-500/20 hover:shadow-emerald-500/30 mt-2"
+                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:brightness-75 shadow-none shadow-emerald-500/20 hover:shadow-emerald-500/30 mt-2"
                                 style={{
                                     background: 'linear-gradient(135deg, #059669, #4F46E5)',
                                 }}

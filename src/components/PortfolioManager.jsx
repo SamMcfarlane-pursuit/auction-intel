@@ -140,7 +140,7 @@ export default function PortfolioManager({ onBack }) {
                         onClick={generateProspectus}
                         disabled={isGenerating || watchlist.length === 0}
                         className={`bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-3 rounded-sm text-sm font-semibold transition-all shadow-none flex items-center gap-2 ${
- isGenerating || watchlist.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
+ isGenerating || watchlist.length === 0 ? 'disabled:brightness-75 disabled:cursor-not-allowed' : ''
  }`}
                     >
                         {isGenerating ? '⏳ Compiling PDF...' : '📄 Generate Prospectus'}

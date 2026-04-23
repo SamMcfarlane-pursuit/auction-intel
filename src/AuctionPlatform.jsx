@@ -1586,7 +1586,7 @@ export default function AuctionPlatform() {
                                     {/* Glass Overlay Layer: Top HUD */}
                                     <div className="absolute top-6 left-6 right-6 flex justify-between items-start pointer-events-none" style={{ zIndex: 10 }}>
                                         {/* Top Left Title Glass */}
-                                        <div className="bg-white/60 backdrop-blur-2xl border border-white/10 rounded-sm p-5 shadow-none">
+                                        <div className="bg-white backdrop-blur-2xl border border-white/20 rounded-sm p-5 shadow-none">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <div className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-none shadow-[0_0_8px_#34d399]" />
                                                 <h2 className="text-[9px] font-semibold text-slate-600 uppercase tracking-[0.3em]">State Liquidity :: Neural Projection</h2>
@@ -1598,7 +1598,7 @@ export default function AuctionPlatform() {
                                         <div className="flex items-center gap-3 pointer-events-auto">
                                             <button
                                                 onClick={() => setIsMapExpanded(!isMapExpanded)}
-                                                className="w-12 h-12 flex items-center justify-center rounded-sm bg-white/60 backdrop-blur-2xl border border-white/10 text-white/60 hover:text-white hover:bg-slate-100 transition-all shadow-none"
+                                                className="w-12 h-12 flex items-center justify-center rounded-sm bg-white backdrop-blur-2xl border border-white/20 text-ink hover:text-ink hover:bg-slate-50 transition-all shadow-none"
                                                 title={isMapExpanded ? "Exit Fullscreen" : "Fullscreen Mode"}
                                             >
                                                 <span className="text-xl leading-none">{isMapExpanded ? '×' : '⤢'}</span>
@@ -1612,7 +1612,7 @@ export default function AuctionPlatform() {
                                         <div className="hidden md:block w-[140px] invisible"></div>
 
                                         {/* Bottom Center Intelligence Bar */}
-                                        <div className="bg-white/60 backdrop-blur-2xl border border-white/10 rounded-sm px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-none pointer-events-auto filter drop-shadow-none max-w-full">
+                                        <div className="bg-white backdrop-blur-2xl border border-white/20 rounded-sm px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-none pointer-events-auto filter drop-shadow-none max-w-full">
                                             <div>
                                                 <div className="text-[8px] text-slate-600 font-semibold uppercase tracking-[0.2em] mb-1">Global Coverage</div>
                                                 <div className="flex items-baseline gap-1.5">
@@ -1902,7 +1902,7 @@ export default function AuctionPlatform() {
                                                 <button
                                                     key={abbr}
                                                     onClick={() => { setSelectedState(abbr); setSelectedCounty(null); }}
-                                                    className={`px-4 py-3 rounded-sm font-mono font-semibold transition-all duration-300 ${isSelected ? 'shadow-none ring-2 ring-indigo-500 scale-105' : 'opacity-50 hover:opacity-100 hover:shadow-md'}`}
+                                                    className={`px-4 py-3 rounded-sm font-mono font-semibold transition-all duration-300 ${isSelected ? 'shadow-none ring-2 ring-indigo-500 scale-105' : 'hover:shadow-md brightness-75 hover:brightness-90'}`}
                                                     style={{ background: TIERS[best].bg, color: TIERS[best].color }}
                                                 >
                                                     <div className="text-lg tracking-tighter">{abbr}</div>
@@ -2339,7 +2339,7 @@ export default function AuctionPlatform() {
                                                             <span className="text-2xl font-mono font-semibold text-white">{selectedStateInfo.abbr}</span>
                                                         </div>
                                                         <div>
-                                                            <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">
+                                                            <div className="text-white text-xs font-bold uppercase tracking-widest mb-1">
                                                                 {selectedStateInfo.type === 'Lien' ? '🔒 Tax Lien State' : '📜 Tax Deed State'}
                                                             </div>
                                                             <h2 className="text-2xl font-mono font-semibold text-white tracking-tight">
@@ -2673,19 +2673,19 @@ export default function AuctionPlatform() {
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="bg-surface rounded-md p-5 text-white">
                                         <div className="text-xl font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Lien').length}</div>
-                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Lien States</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white">Lien States</div>
                                     </div>
                                     <div className="bg-surface rounded-md p-5 text-white">
                                         <div className="text-xl font-mono font-semibold">{Object.values(STATE_AUCTION_INFO).filter(s => s.type === 'Deed').length}</div>
-                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Deed States</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white">Deed States</div>
                                     </div>
                                     <div className="bg-surface rounded-md p-5 text-white">
                                         <div className="text-xl font-mono font-semibold">{totalCounties}</div>
-                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Total Counties</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white">Total Counties</div>
                                     </div>
                                     <div className="bg-surface rounded-md p-5 text-white">
                                         <div className="text-xl font-mono font-semibold">{totalT123}</div>
-                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white/70">Prime Counties</div>
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-white">Prime Counties</div>
                                     </div>
                                 </div>
                             </div>

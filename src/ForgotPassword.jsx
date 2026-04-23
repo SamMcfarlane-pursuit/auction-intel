@@ -134,7 +134,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full py-3.5 bg-surface text-white font-mono font-bold rounded-sm shadow-none shadow-indigo-500/25 hover:shadow-none hover:shadow-indigo-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                    className="w-full py-3.5 bg-surface text-white font-mono font-bold rounded-sm shadow-none shadow-indigo-500/25 hover:shadow-none hover:shadow-indigo-500/30 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:brightness-75 disabled:cursor-not-allowed disabled:hover:scale-100"
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">

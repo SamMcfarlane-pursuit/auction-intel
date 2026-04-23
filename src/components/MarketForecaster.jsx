@@ -135,7 +135,7 @@ export default function MarketForecaster({ county, onBack }) {
                                         <span className="text-xs font-semibold uppercase tracking-tighter">{s}</span>
                                         {scenario === s && <span className="text-indigo-600">●</span>}
                                     </div>
-                                    <div className="text-[10px] opacity-70 mt-1">
+                                    <div className="text-[10px] text-slate-600 mt-1">
                                         {s === 'aggressive' ? 'Optimistic growth & low interest rates' : 
                                          s === 'baseline' ? 'Yield based on current FRED telemetry' : 
                                          'Higher rates & cooled demand projection'}

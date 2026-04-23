@@ -260,7 +260,7 @@ export default function SignIn() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:opacity-50 shadow-none shadow-indigo-500/15 hover:shadow-indigo-500/20"
+                                className="w-full py-3.5 rounded-sm font-bold text-white text-sm transition-all relative overflow-hidden disabled:brightness-75 shadow-none shadow-indigo-500/15 hover:shadow-indigo-500/20"
                                 style={{
                                     background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
                                 }}
@@ -283,7 +283,7 @@ export default function SignIn() {
                         <button
                             onClick={demoLogin}
                             disabled={loading}
-                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm text-slate-700 transition-all hover:bg-slate-100 disabled:opacity-50"
+                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm text-slate-700 transition-all hover:bg-slate-100 disabled:brightness-75"
                             style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.08)' }}
                         >
                             🎯 Try Demo Account

@@ -246,7 +246,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-white/70 hover:text-white text-lg font-mono w-10 h-10 flex items-center justify-center rounded-sm hover:bg-slate-50/10"
+                            className="text-white hover:text-slate-200 text-lg font-mono w-10 h-10 flex items-center justify-center rounded-sm hover:bg-slate-50/10"
                         >
                             ×
                         </button>

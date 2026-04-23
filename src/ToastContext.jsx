@@ -51,7 +51,7 @@ export function ToastProvider({ children }) {
                         <span className="font-medium text-sm">{toast.message}</span>
                         <button
                             onClick={() => removeToast(toast.id)}
-                            className="ml-2 text-white/70 hover:text-white transition-colors"
+                            className="ml-2 text-white hover:text-slate-200 transition-colors"
                         >
                             ×
                         </button>
