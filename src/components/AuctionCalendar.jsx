@@ -419,7 +419,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
 
                 {/* Quick Navigation */}
                 <div className="bg-surface rounded-md shadow-none p-5">
-                    <h3 className="font-mono font-semibold text-white mb-3">🚀 Quick Jump</h3>
+                    <h3 className="font-mono font-semibold text-slate-900 mb-3">🚀 Quick Jump</h3>
                     <div className="grid grid-cols-4 gap-2">
                         {MONTH_NAMES.map((name, i) => {
                             const isActive = i === currentMonth;
@@ -429,10 +429,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 <button
                                     key={name}
                                     onClick={() => { setCurrentMonth(i); setCurrentYear(2026); setSelectedDay(null); }}
-                                    className={`py-2 rounded-lg text-[10px] font-semibold uppercase transition-all ${isActive ? 'bg-indigo-600 text-white shadow-none' :
- monthHasEvents ? 'bg-slate-100 text-white hover:bg-slate-50/20' :
- 'bg-slate-100 text-white'
- }`}
+                                    className={`py-2 rounded-lg text-[10px] font-semibold uppercase transition-all ${isActive ? 'bg-indigo-600 text-white shadow-none' : monthHasEvents ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }`}
                                 >
                                     {name.slice(0, 3)}
                                 </button>
