@@ -217,11 +217,11 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-lg font-mono font-semibold mb-1">🏠 Live Property Feed</h1>
-                        <p className="text-purple-100 text-sm">PropWire-powered tax sale and foreclosure listings</p>
+                        <p className="text-indigo-200 text-sm font-medium">PropWire-powered tax sale and foreclosure listings</p>
                     </div>
                     <div className="text-right">
                         <div className="text-xl font-mono font-semibold">{properties.length}</div>
-                        <div className="text-xs text-purple-200">Total Properties</div>
+                        <div className="text-xs text-indigo-200 font-semibold">Total Properties</div>
                     </div>
                 </div>
             </div>

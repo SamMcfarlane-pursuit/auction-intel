@@ -96,7 +96,7 @@ export function MarketDataDashboard() {
                         <h1 className="text-xl font-mono md:text-2xl font-mono font-semibold tracking-tight mb-2">
                             📊 Market Intelligence
                         </h1>
-                        <p className="text-blue-100 text-sm md:text-base">
+                        <p className="text-indigo-200 text-sm md:text-base font-medium">
                             Real-time mortgage rates and economic indicators from FRED, Treasury, and Census data
                         </p>
                     </div>
