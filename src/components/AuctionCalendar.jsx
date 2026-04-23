@@ -239,7 +239,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 onClick={() => cell.currentMonth && cell.date && setSelectedDay(cell.date === selectedDay ? null : cell.date)}
                                 className={`min-h-[72px] md:min-h-[90px] p-1.5 md:p-2 border-b border-r border-slate-200 transition-all relative ${!cell.currentMonth ? 'bg-surface/20' :
                                     isSelected ? 'bg-indigo-50 ring-1 ring-indigo-500/50 ring-inset z-10' :
-                                        hasEvents ? 'bg-canvas hover:bg-slate-100/50 cursor-pointer' :
+                                        hasEvents ? 'bg-canvas hover:bg-slate-100 cursor-pointer' :
                                             'bg-canvas'
                                     }`}
                             >
@@ -288,7 +288,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                 </div>
 
                 {/* Legend */}
-                <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-200 bg-white/70">
+                <div className="flex items-center justify-center gap-6 py-3 border-t border-slate-200 bg-white">
                     <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span>
                         <span className="text-[10px] font-bold text-slate-500">Lien State</span>
@@ -346,7 +346,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                         <div
                                             key={i}
                                             onClick={() => onSelectState && onSelectState(e.state)}
-                                            className={`p-4 rounded-md border-2 cursor-pointer transition-all hover:shadow-none hover:scale-[1.01] ${isHighRate ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200 bg-canvas hover:border-indigo-200'
+                                            className={`p-4 rounded-md border-2 cursor-pointer transition-all hover:shadow-none hover:scale-[1.01] ${isHighRate ? 'border-amber-200 bg-amber-50' : 'border-slate-200 bg-canvas hover:border-indigo-200'
  }`}
                                         >
                                             <div className="flex items-center justify-between mb-2">
@@ -388,7 +388,7 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                 <div className="font-mono font-semibold text-xl text-indigo-700">{monthStats.totalAuctions}</div>
                                 <div className="text-[9px] font-bold text-indigo-500 uppercase">Total</div>
                             </div>
-                            <div className="bg-indigo-50/50 rounded-sm p-3 text-center">
+                            <div className="bg-indigo-50 rounded-sm p-3 text-center">
                                 <div className="font-mono font-semibold text-xl text-indigo-600">{monthStats.lienCount}</div>
                                 <div className="text-[9px] font-bold text-indigo-500 uppercase">Lien</div>
                             </div>
@@ -430,8 +430,8 @@ export default function AuctionCalendar({ auctions, onSelectState }) {
                                     key={name}
                                     onClick={() => { setCurrentMonth(i); setCurrentYear(2026); setSelectedDay(null); }}
                                     className={`py-2 rounded-lg text-[10px] font-semibold uppercase transition-all ${isActive ? 'bg-indigo-600 text-white shadow-none' :
- monthHasEvents ? 'bg-slate-100/60 text-white hover:bg-slate-50/20' :
- 'bg-slate-100/50 text-white/30'
+ monthHasEvents ? 'bg-slate-100 text-white hover:bg-slate-50/20' :
+ 'bg-slate-100 text-white'
  }`}
                                 >
                                     {name.slice(0, 3)}

@@ -128,7 +128,7 @@ export function DueDiligenceChecklist({ onUpdate }) {
     const priorityColors = {
         high: 'border-red-900/50 bg-red-950/20',
         medium: 'border-amber-900/50 bg-amber-950/20',
-        low: 'border-slate-200 bg-white/70',
+        low: 'border-slate-200 bg-white',
     };
 
     return (
@@ -224,7 +224,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
     const catInfo = categoryLabels[category] || categoryLabels.other;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black backdrop-blur-sm">
             <div className="bg-canvas rounded-md shadow-none max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="bg-surface p-6 text-white">
@@ -254,7 +254,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white/70 px-6 py-2 flex gap-2 border-b border-slate-200">
+                <div className="bg-white px-6 py-2 flex gap-2 border-b border-slate-200">
                     {[
                         { id: 'overview', label: 'Overview' },
                         { id: 'valuations', label: 'Valuations' },
@@ -301,7 +301,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                             <div className="bg-canvas rounded-md p-6 border border-emerald-200">
                                 <h3 className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] mb-6">Auction Financials</h3>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center bg-white/70 p-3 border-l-2 border-emerald-500">
+                                    <div className="flex justify-between items-center bg-white p-3 border-l-2 border-emerald-500">
                                         <span className="text-[10px] uppercase font-bold text-slate-600">Opening Bid</span>
                                         <span className="text-xl font-mono font-semibold text-white/90">${openingBid.toLocaleString()}</span>
                                     </div>
@@ -309,7 +309,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                         <span className="text-[10px] uppercase font-bold text-slate-500">Est. AVM Value</span>
                                         <span className="text-lg font-mono font-medium text-slate-600 line-through">${estimatedValue.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between items-center bg-white/70 p-3 border-l-2 border-emerald-500">
+                                    <div className="flex justify-between items-center bg-white p-3 border-l-2 border-emerald-500">
                                         <span className="text-[10px] uppercase font-bold text-slate-600">Projected Equity</span>
                                         <span className="text-xl font-mono font-semibold text-emerald-500">${(estimatedValue - openingBid).toLocaleString()}</span>
                                     </div>
@@ -327,15 +327,15 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                 <div className="bg-canvas rounded-md p-6 border border-red-900/30 md:col-span-2">
                                     <h3 className="text-[10px] font-bold text-rose-600 uppercase tracking-[0.2em] mb-6">Financial Encumbrances</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="bg-white/70 p-4 border-l-2 border-red-500">
+                                        <div className="bg-white p-4 border-l-2 border-red-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Mortgage Balance</div>
                                             <div className="text-xl font-mono font-semibold text-white/90">${mortgageBalance?.toLocaleString()}</div>
                                         </div>
-                                        <div className="bg-white/70 p-4 border-l-2 border-emerald-500">
+                                        <div className="bg-white p-4 border-l-2 border-emerald-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Asset Equity</div>
                                             <div className="text-xl font-mono font-semibold text-emerald-500">${equity?.toLocaleString()}</div>
                                         </div>
-                                        <div className="bg-white/70 p-4 border-l-2 border-slate-500">
+                                        <div className="bg-white p-4 border-l-2 border-slate-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Lead Lender</div>
                                             <div className="text-base font-mono font-semibold text-white/90 truncate">{lender}</div>
                                         </div>

@@ -226,7 +226,7 @@ export function InvestmentHeatMap({ onStateSelect, currentView = 'score' }) {
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {Object.entries(SCORING_FACTORS).map(([key, factor]) => (
-                            <div key={key} className="bg-canvas/60 rounded-sm p-3 text-center">
+                            <div key={key} className="bg-canvas rounded-sm p-3 text-center">
                                 <div className="text-xl mb-1">{factor.icon}</div>
                                 <div className="text-xs font-bold text-slate-700">{factor.label}</div>
                                 <div className="text-lg font-semibold text-indigo-600">{(factor.weight * 100).toFixed(0)}%</div>

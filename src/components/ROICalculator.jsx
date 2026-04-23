@@ -147,19 +147,19 @@ export default function ROICalculator({ onClose }) {
                     <div className="text-xs font-semibold text-indigo-400 uppercase mb-4">Projected Returns</div>
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-slate-100/60 rounded-sm p-4">
+                        <div className="bg-slate-100 rounded-sm p-4">
                             <div className="text-xs text-indigo-400 uppercase font-bold">Interest Earned</div>
                             <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.interest).toLocaleString()}</div>
                         </div>
-                        <div className="bg-slate-100/60 rounded-sm p-4">
+                        <div className="bg-slate-100 rounded-sm p-4">
                             <div className="text-xs text-indigo-400 uppercase font-bold">Total Return</div>
                             <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.totalReturn).toLocaleString()}</div>
                         </div>
-                        <div className="bg-slate-100/60 rounded-sm p-4">
+                        <div className="bg-slate-100 rounded-sm p-4">
                             <div className="text-xs text-indigo-400 uppercase font-bold">ROI ({holdMonths}mo)</div>
                             <div className="font-mono font-semibold text-lg font-mono">{calculations.roi}%</div>
                         </div>
-                        <div className="bg-slate-100/60 rounded-sm p-4">
+                        <div className="bg-slate-100 rounded-sm p-4">
                             <div className="text-xs text-indigo-400 uppercase font-bold">Annualized ROI</div>
                             <div className="font-mono font-semibold text-lg font-mono text-emerald-300">{calculations.annualizedROI}%</div>
                         </div>

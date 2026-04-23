@@ -93,7 +93,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
 
                 {/* Hover Actions */}
                 {isHovered && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2">
+                    <div className="absolute inset-0 bg-black flex items-center justify-center gap-2">
                         <button
                             onClick={() => onViewDetails?.(property)}
                             className="bg-canvas text-slate-900 px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-slate-100 transition-all"

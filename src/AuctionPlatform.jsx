@@ -1960,7 +1960,7 @@ export default function AuctionPlatform() {
                                     </div>
                                 ) : (
                                     <div className="flex-1 flex flex-col items-center justify-center p-16 text-center">
-                                        <div className="w-24 h-24 bg-surface rounded-md flex items-center justify-center text-2xl font-mono mb-6 opacity-30">🌐</div>
+                                        <div className="w-24 h-24 bg-surface rounded-md flex items-center justify-center text-2xl font-mono mb-6 opacity-60">🌐</div>
                                         <h3 className="text-lg font-mono font-semibold text-slate-800 uppercase">Select a State</h3>
                                         <p className="text-slate-600 text-xs font-bold uppercase tracking-widest mt-2">Choose from the state buttons above</p>
                                     </div>
@@ -2695,7 +2695,7 @@ export default function AuctionPlatform() {
                                 <UserSettings onClose={() => setView('map')} />
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-full gap-4 opacity-30">
+                            <div className="flex flex-col items-center justify-center h-full gap-4 opacity-60">
                                 <div className="text-6xl">⚡</div>
                                 <div className="font-mono font-semibold text-xl font-mono uppercase text-slate-900">Coming Soon</div>
                                 <div className="text-xs font-bold tracking-widest uppercase text-slate-500">Feature in development</div>

@@ -57,7 +57,7 @@ export default function UnderwritingPanel({ property, onCalculate }) {
 
     return (
         <div className="flex flex-col h-full bg-surface border-l border-slate-300 shadow-none animate-in slide-in-from-right duration-300">
-            <div className="p-6 border-b border-slate-300 bg-slate-100/60">
+            <div className="p-6 border-b border-slate-300 bg-slate-100">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                     <span className="text-amber-400">⚡</span> Institutional Underwriting
                 </h2>
@@ -113,7 +113,7 @@ export default function UnderwritingPanel({ property, onCalculate }) {
                         </div>
 
                         {clearingBounds && (
-                            <div className="bg-panel/60 rounded-md p-5 border border-slate-300">
+                            <div className="bg-panel rounded-md p-5 border border-slate-300">
                                 <div className="flex justify-between items-center mb-3">
                                     <div className="text-[10px] text-indigo-400 font-semibold uppercase tracking-widest flex items-center gap-2">
                                         <span>🔮</span> AI Clearing Prediction
@@ -157,7 +157,7 @@ export default function UnderwritingPanel({ property, onCalculate }) {
                             />
                         </div>
 
-                        <div className="bg-slate-100/60 rounded-sm p-4 border border-slate-300">
+                        <div className="bg-slate-100 rounded-sm p-4 border border-slate-300">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-xs text-slate-600">Total Acquisition Cost</span>
                                 <span className="text-sm font-bold text-white">${Math.round(results.total_acquisition_cost).toLocaleString()}</span>
@@ -171,7 +171,7 @@ export default function UnderwritingPanel({ property, onCalculate }) {
                 )}
             </div>
 
-            <div className="p-6 bg-slate-100/70 border-t border-slate-300">
+            <div className="p-6 bg-slate-100 border-t border-slate-300">
                 <button className="w-full py-3 bg-surface hover: hover: text-white font-semibold rounded-sm shadow-none transition-all active:scale-[0.98]">
                     GENERATE PRO-FORMA PDF
                 </button>

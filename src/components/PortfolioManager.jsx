@@ -146,7 +146,7 @@ export default function PortfolioManager({ onBack }) {
                         {isGenerating ? '⏳ Compiling PDF...' : '📄 Generate Prospectus'}
                     </button>
                     {onBack && (
-                        <button onClick={onBack} className="bg-slate-100/60 hover:bg-slate-50/20 px-4 py-3 rounded-sm text-xs font-bold transition-all border border-white/20">
+                        <button onClick={onBack} className="bg-slate-100 hover:bg-slate-50/20 px-4 py-3 rounded-sm text-xs font-bold transition-all border border-white/20">
                             ← Back
                         </button>
                     )}

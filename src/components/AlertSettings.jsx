@@ -56,12 +56,12 @@ export function AlertSettings({ onClose }) {
             <div className="bg-surface p-6 text-white">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-slate-100/70 rounded-sm flex items-center justify-center text-lg font-mono">
+                        <div className="w-12 h-12 bg-slate-100 rounded-sm flex items-center justify-center text-lg font-mono">
                             🔔
                         </div>
                         <div>
                             <h2 className="text-lg font-mono font-semibold">Alert Settings</h2>
-                            <p className="text-amber-100 text-sm">Never miss an investment opportunity</p>
+                            <p className="text-amber-200 text-sm">Never miss an investment opportunity</p>
                         </div>
                     </div>
                     {onClose && (

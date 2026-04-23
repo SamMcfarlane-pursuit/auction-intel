@@ -86,7 +86,7 @@ export default function WelcomeScreen({ user, onDismiss }) {
                     </div>
 
                     {/* Quick tips */}
-                    <div className="bg-slate-100/70 rounded-sm p-4 mb-6 border border-slate-300/60">
+                    <div className="bg-slate-100 rounded-sm p-4 mb-6 border border-slate-300/60">
                         <div className="flex items-start gap-3">
                             <span className="text-xl">💡</span>
                             <div>

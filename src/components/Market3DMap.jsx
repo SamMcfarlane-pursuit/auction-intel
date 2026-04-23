@@ -99,7 +99,7 @@ function Bar({ position, height, score, label, capRate, deals, onHover }) {
                     <div className="bg-surface/90 backdrop-blur-xl border border-white/20 p-4 rounded-md shadow-none w-48 animate-in fade-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-white font-semibold text-lg">{label}</span>
-                            <span className="text-[10px] bg-slate-100/60 px-2 py-0.5 rounded-sm text-slate-700 font-bold">STATE_{label}</span>
+                            <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-sm text-slate-700 font-bold">STATE_{label}</span>
                         </div>
                         <div className="space-y-1.5">
                             <div className="flex justify-between items-center">
@@ -117,7 +117,7 @@ function Bar({ position, height, score, label, capRate, deals, onHover }) {
                         </div>
                         <div className="mt-3 pt-3 border-t border-white/5 flex gap-2">
                             <div className={`h-1 flex-1 rounded-sm ${score >= 80 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${score}%` }} />
-                            <div className="h-1 flex-1 bg-slate-100/60 rounded-sm" />
+                            <div className="h-1 flex-1 bg-slate-100 rounded-sm" />
                         </div>
                     </div>
                 </Html>

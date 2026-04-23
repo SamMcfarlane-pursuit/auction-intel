@@ -103,11 +103,11 @@ export function MarketDataDashboard() {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => exportMarketDataCSV(rates, indicators)}
-                            className="flex items-center gap-2 bg-slate-100/70 hover:bg-slate-50/30 px-4 py-2 rounded-sm transition-all text-xs font-bold"
+                            className="flex items-center gap-2 bg-slate-100 hover:bg-slate-50/30 px-4 py-2 rounded-sm transition-all text-xs font-bold"
                         >
                             📥 Export CSV
                         </button>
-                        <div className="flex items-center gap-2 bg-slate-100/60 backdrop-blur px-4 py-2 rounded-sm">
+                        <div className="flex items-center gap-2 bg-slate-100 backdrop-blur px-4 py-2 rounded-sm">
                             <span className="w-2 h-2 bg-emerald-400 rounded-sm animate-none"></span>
                             <span className="text-xs font-bold">LIVE DATA</span>
                             <span className="text-xs text-indigo-400">• Updated {lastUpdated}</span>

@@ -46,7 +46,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
         <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
             {/* Animated gradient background */}
             <div className="absolute inset-0 bg-surface">
-                <div className="absolute inset-0 opacity-30">
+                <div className="absolute inset-0 opacity-50">
                     <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-500 rounded-sm filter blur-3xl animate-none"></div>
                     <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-sm filter blur-3xl animate-none" style={{ animationDelay: '1s' }}></div>
                     <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-cyan-400 rounded-sm filter blur-3xl animate-none" style={{ animationDelay: '2s' }}></div>
@@ -63,7 +63,7 @@ export default function ForgotPassword({ onNavigateToSignIn }) {
                     <h1 className="font-mono text-xl font-mono font-semibold text-white tracking-tight">
                         Reset Password
                     </h1>
-                    <p className="text-indigo-200/80 mt-2">We'll help you get back in</p>
+                    <p className="text-indigo-200 font-medium mt-2">We'll help you get back in</p>
                 </div>
 
                 {/* Glass card */}

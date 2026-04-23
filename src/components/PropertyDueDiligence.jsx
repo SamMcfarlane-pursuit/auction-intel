@@ -208,7 +208,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black backdrop-blur-sm">
             <div className="bg-surface rounded-md sm:rounded-md shadow-none w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
 
                 {/* Hero Header */}
@@ -247,19 +247,19 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
 
                             {/* Quick Stats */}
                             <div className="flex flex-wrap gap-3 mt-4">
-                                <div className="bg-slate-100/60 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-100 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-600 text-xs">🏠</span>
                                     <span className="text-white font-bold ml-1">{propertyType}</span>
                                 </div>
-                                <div className="bg-slate-100/60 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-100 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-600 text-xs">🛏️</span>
                                     <span className="text-white font-bold ml-1">{bedrooms} bd / {bathrooms} ba</span>
                                 </div>
-                                <div className="bg-slate-100/60 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-100 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-600 text-xs">📐</span>
                                     <span className="text-white font-bold ml-1">{sqft.toLocaleString()} sqft</span>
                                 </div>
-                                <div className="bg-slate-100/60 backdrop-blur rounded-lg px-3 py-1.5">
+                                <div className="bg-slate-100 backdrop-blur rounded-lg px-3 py-1.5">
                                     <span className="text-slate-600 text-xs">📅</span>
                                     <span className="text-white font-bold ml-1">Built {yearBuilt}</span>
                                 </div>
@@ -293,7 +293,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="bg-slate-100/70 px-4 sm:px-6 py-2 flex gap-1 sm:gap-2 overflow-x-auto border-b border-slate-300/60">
+                <div className="bg-slate-100 px-4 sm:px-6 py-2 flex gap-1 sm:gap-2 overflow-x-auto border-b border-slate-300/60">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
@@ -327,7 +327,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         { source: 'Regrid AVM', value: Math.round(estimatedValue * 0.95), color: 'bg-purple-500', confidence: 'High' },
                                         { source: 'County Assessment', value: Math.round(estimatedValue * 0.85), color: 'bg-slate-400', confidence: 'Official' },
                                     ].map((est, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-200/70 rounded-sm">
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-200 rounded-sm">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-3 h-3 ${est.color} rounded-sm`} />
                                                 <div>
@@ -352,19 +352,19 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-slate-200/70 rounded-sm p-3">
+                                        <div className="bg-slate-200 rounded-sm p-3">
                                             <div className="text-xs text-slate-600">Price/SqFt</div>
                                             <div className="text-xl font-bold text-white">${pricePerSqft}</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3">
+                                        <div className="bg-slate-200 rounded-sm p-3">
                                             <div className="text-xs text-slate-600">Lot Size</div>
                                             <div className="text-xl font-bold text-white">{(lotSize / 43560).toFixed(2)} acres</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3">
+                                        <div className="bg-slate-200 rounded-sm p-3">
                                             <div className="text-xs text-slate-600">Cap Rate (Est.)</div>
                                             <div className="text-xl font-bold text-emerald-600">{(8 + Math.random() * 4).toFixed(1)}%</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3">
+                                        <div className="bg-slate-200 rounded-sm p-3">
                                             <div className="text-xs text-slate-600">Cash-on-Cash</div>
                                             <div className="text-xl font-bold text-emerald-600">{(12 + Math.random() * 8).toFixed(1)}%</div>
                                         </div>
@@ -429,13 +429,13 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
 
                                 {/* Summary Stats */}
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-                                    <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                    <div className="bg-slate-200 rounded-sm p-3 text-center">
                                         <div className="text-xs text-slate-600">Avg Sale Price</div>
                                         <div className="text-lg font-bold text-white">
                                             ${Math.round(comparables.reduce((s, c) => s + c.salePrice, 0) / comparables.length).toLocaleString()}
                                         </div>
                                     </div>
-                                    <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                    <div className="bg-slate-200 rounded-sm p-3 text-center">
                                         <div className="text-xs text-slate-600">Avg $/SqFt</div>
                                         <div className="text-lg font-bold text-white">
                                             ${Math.round(comparables.reduce((s, c) => s + (c.salePrice / c.sqft), 0) / comparables.length)}
@@ -470,7 +470,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         {ownershipHistory.map((record, idx) => (
                                             <div key={idx} className="relative pl-8">
                                                 <div className={`absolute left-1.5 w-3 h-3 rounded-sm ${record.status === 'delinquent' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-                                                <div className={`p-3 rounded-sm ${record.status === 'delinquent' ? 'bg-rose-100 border border-red-500/30' : 'bg-slate-200/70'}`}>
+                                                <div className={`p-3 rounded-sm ${record.status === 'delinquent' ? 'bg-rose-100 border border-red-500/30' : 'bg-slate-200'}`}>
                                                     <div className="flex items-start justify-between">
                                                         <div>
                                                             <div className="text-sm font-bold text-white">{record.owner}</div>
@@ -497,23 +497,23 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                     📋 Property Records
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="flex justify-between p-3 bg-slate-200/70 rounded-sm">
+                                    <div className="flex justify-between p-3 bg-slate-200 rounded-sm">
                                         <span className="text-slate-600">Parcel ID</span>
                                         <span className="text-white font-mono">{parcelId || `${county.substring(0, 3).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`}</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-200/70 rounded-sm">
+                                    <div className="flex justify-between p-3 bg-slate-200 rounded-sm">
                                         <span className="text-slate-600">Zoning</span>
                                         <span className="text-white">R-1 Residential</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-200/70 rounded-sm">
+                                    <div className="flex justify-between p-3 bg-slate-200 rounded-sm">
                                         <span className="text-slate-600">Legal Description</span>
                                         <span className="text-white text-xs text-right max-w-[200px] truncate">Lot 15, Block 3, {city} Subdivision</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-200/70 rounded-sm">
+                                    <div className="flex justify-between p-3 bg-slate-200 rounded-sm">
                                         <span className="text-slate-600">Year Delinquent</span>
                                         <span className="text-rose-600 font-bold">2024</span>
                                     </div>
-                                    <div className="flex justify-between p-3 bg-slate-200/70 rounded-sm">
+                                    <div className="flex justify-between p-3 bg-slate-200 rounded-sm">
                                         <span className="text-slate-600">Redemption Period</span>
                                         <span className="text-amber-400 font-bold">6 months</span>
                                     </div>
@@ -540,7 +540,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         referrerPolicy="no-referrer-when-downgrade"
                                         src={`https://www.google.com/maps/embed/v1/streetview?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&location=${encodeURIComponent(city + ', ' + state)}&heading=210&pitch=10&fov=90`}
                                     />
-                                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                    <div className="absolute bottom-2 left-2 bg-black text-white text-xs px-2 py-1 rounded">
                                         📍 {fullAddress}
                                     </div>
                                 </div>
@@ -561,22 +561,22 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                        <div className="bg-slate-200 rounded-sm p-3 text-center">
                                             <div className="text-lg font-mono mb-1">🏫</div>
                                             <div className="text-xs text-slate-600">Schools</div>
                                             <div className="text-lg font-bold text-white">A-</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                        <div className="bg-slate-200 rounded-sm p-3 text-center">
                                             <div className="text-lg font-mono mb-1">🚔</div>
                                             <div className="text-xs text-slate-600">Crime</div>
                                             <div className="text-lg font-bold text-emerald-600">Low</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                        <div className="bg-slate-200 rounded-sm p-3 text-center">
                                             <div className="text-lg font-mono mb-1">🚶</div>
                                             <div className="text-xs text-slate-600">Walk Score</div>
                                             <div className="text-lg font-bold text-white">{55 + Math.floor(Math.random() * 30)}</div>
                                         </div>
-                                        <div className="bg-slate-200/70 rounded-sm p-3 text-center">
+                                        <div className="bg-slate-200 rounded-sm p-3 text-center">
                                             <div className="text-lg font-mono mb-1">🚗</div>
                                             <div className="text-xs text-slate-600">Commute</div>
                                             <div className="text-lg font-bold text-white">{15 + Math.floor(Math.random() * 20)} min</div>
@@ -588,7 +588,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                         <h4 className="text-sm font-bold text-white mb-2">📍 Nearby</h4>
                                         <div className="flex flex-wrap gap-2">
                                             {['Grocery', 'Hospital', 'Park', 'School', 'Restaurant', 'Gas Station'].map(amenity => (
-                                                <span key={amenity} className="bg-slate-200/70 text-slate-700 text-xs px-2 py-1 rounded-lg">
+                                                <span key={amenity} className="bg-slate-200 text-slate-700 text-xs px-2 py-1 rounded-lg">
                                                     {amenity}
                                                 </span>
                                             ))}
@@ -606,7 +606,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                 <UnderwritingPanel property={property} />
                             </div>
                             <div className="lg:col-span-2 space-y-4">
-                                <div className="bg-slate-100/60 rounded-md p-6 border border-slate-300 h-full">
+                                <div className="bg-slate-100 rounded-md p-6 border border-slate-300 h-full">
                                     <h3 className="text-lg font-semibold text-white mb-4">Investment Thesis</h3>
                                     <div className="space-y-4 text-slate-700 text-sm leading-relaxed">
                                         <p>
@@ -618,11 +618,11 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                                             Based on local market liquidity (DOM: {sqft > 2000 ? 'Low' : 'Moderate'}), the primary exit should be a retail resale after minor cosmetic rehab.
                                         </div>
                                         <div className="grid grid-cols-2 gap-4 mt-6">
-                                            <div className="p-3 bg-slate-200/70 rounded-lg">
+                                            <div className="p-3 bg-slate-200 rounded-lg">
                                                 <div className="text-[10px] text-slate-500 uppercase font-semibold">Capital Required</div>
                                                 <div className="text-lg font-semibold text-white">${(openingBid + 35000).toLocaleString()}</div>
                                             </div>
-                                            <div className="p-3 bg-slate-200/70 rounded-lg">
+                                            <div className="p-3 bg-slate-200 rounded-lg">
                                                 <div className="text-[10px] text-slate-500 uppercase font-semibold">Hold Time (Est)</div>
                                                 <div className="text-lg font-semibold text-white">4-6 Months</div>
                                             </div>
@@ -635,7 +635,7 @@ export default function PropertyDueDiligence({ property, onClose, onAddToWatchli
                 </div>
 
                 {/* Footer Actions */}
-                <div className="border-t border-slate-300 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-100/70">
+                <div className="border-t border-slate-300 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-100">
                     <button
                         onClick={onClose}
                         className="w-full sm:w-auto px-6 py-2.5 rounded-sm border border-slate-400 text-slate-700 font-bold hover:bg-slate-200 transition-all"

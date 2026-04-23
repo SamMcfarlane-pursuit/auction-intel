@@ -49,7 +49,7 @@ const LiveFeed = ({ apiUrl = 'http://localhost:8080/api' }) => {
     };
 
     return (
-        <div className="flex items-center gap-4 bg-white/70 backdrop-blur-md border border-slate-300/60 px-4 py-1.5 rounded-sm overflow-hidden max-w-2xl w-full h-9">
+        <div className="flex items-center gap-4 bg-white backdrop-blur-md border border-slate-300/60 px-4 py-1.5 rounded-sm overflow-hidden max-w-2xl w-full h-9">
             <div className="flex items-center gap-2 shrink-0 border-r border-slate-300 pr-3 mr-1">
                 <div className={`w-2 h-2 rounded-sm ${status === 'connected' ? 'bg-emerald-500 animate-none' : 'bg-rose-500'}`} />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
