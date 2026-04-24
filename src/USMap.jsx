@@ -77,6 +77,10 @@ export default function USMap({
     const [cursor, setCursor] = useState(null);
     const [streetView, setStreetView] = useState(null);
     const [showHint, setShowHint] = useState(() => !localStorage.getItem('aim.mapHintSeen'));
+    const [showMobileHint, setShowMobileHint] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return !localStorage.getItem('aim.mapMobileHintSeen') && window.innerWidth <= 720;
+    });
 
     const styleDark = getStyleConfig(styleId).dark;
 
@@ -319,6 +323,22 @@ export default function USMap({
     }, []);
 
     const dismissHint = () => { setShowHint(false); localStorage.setItem('aim.mapHintSeen', '1'); };
+    const dismissMobileHint = () => { setShowMobileHint(false); localStorage.setItem('aim.mapMobileHintSeen', '1'); };
+
+    const handleZoomIn = () => {
+        const map = mapRef.current;
+        if (map) map.zoomIn({ duration: 300 });
+    };
+
+    const handleZoomOut = () => {
+        const map = mapRef.current;
+        if (map) map.zoomOut({ duration: 300 });
+    };
+
+    const handleResetView = () => {
+        const map = mapRef.current;
+        if (map) map.flyTo({ ...INITIAL_VIEW, duration: 600, essential: true });
+    };
 
     return (
         <div className={`usmap-root ${styleDark ? 'is-dark' : 'is-light'}`}>
@@ -357,6 +377,47 @@ export default function USMap({
                     <button type="button" onClick={dismissHint}>Got it</button>
                 </div>
             )}
+
+            {showMobileHint && (
+                <div className="usmap-mobile-hint">
+                    <div className="hint-title">Map Tips</div>
+                    <div className="hint-text">
+                        Drag to pan, pinch to zoom, or use the buttons below for navigation.
+                    </div>
+                    <div className="hint-actions">
+                        <button className="hint-secondary" onClick={dismissMobileHint}>
+                            Later
+                        </button>
+                        <button className="hint-primary" onClick={dismissMobileHint}>
+                            Got it
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <div className="usmap-mobile-nav">
+                <button
+                    title="Zoom in"
+                    onClick={handleZoomIn}
+                    aria-label="Zoom in"
+                >
+                    +
+                </button>
+                <button
+                    title="Zoom out"
+                    onClick={handleZoomOut}
+                    aria-label="Zoom out"
+                >
+                    −
+                </button>
+                <button
+                    title="Reset view"
+                    onClick={handleResetView}
+                    aria-label="Reset to home view"
+                >
+                    ⌂
+                </button>
+            </div>
 
             {streetView && (
                 <StreetViewModal
