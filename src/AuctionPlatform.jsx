@@ -535,6 +535,7 @@ export default function AuctionPlatform() {
     const [realListings, setRealListings] = useState([]); // Real HUD/REO listings from API
     const [listingsLoading, setListingsLoading] = useState(false);
     const [selectedPropertyForModal, setSelectedPropertyForModal] = useState(null); // Property detail modal
+    const [mapFocus, setMapFocus] = useState(null); // { lat, lng } to focus map
     const [dueDiligenceProperty, setDueDiligenceProperty] = useState(null); // Full Due Diligence view
     const [showWelcome, setShowWelcome] = useState(true);
     const [realAuctions, setRealAuctions] = useState([]);
@@ -643,6 +644,20 @@ export default function AuctionPlatform() {
         };
 
         fetchData();
+    }, []);
+
+    // Listen for geospatial requests from PropertyModal (also fires custom event)
+    useEffect(() => {
+        const handler = (e) => {
+            const p = e?.detail || null;
+            if (!p) return;
+            const lat = p?.lat || p?.latitude || (p?.location && p.location.lat) || (p?.coords && p.coords[0]) || null;
+            const lng = p?.lng || p?.longitude || (p?.location && p.location.lng) || (p?.coords && p.coords[1]) || null;
+            if (lat && lng) setMapFocus({ lat: Number(lat), lng: Number(lng) });
+            setView('map');
+        };
+        window.addEventListener('aim:geospatial', handler);
+        return () => window.removeEventListener('aim:geospatial', handler);
     }, []);
 
     const getStateSummary = (abbr) => {
@@ -1578,6 +1593,7 @@ export default function AuctionPlatform() {
                                                 onStateClick={(abbr) => setSelectedState(abbr)}
                                                 selectedState={selectedState}
                                                 properties={mapProperties}
+                                                focusProperty={mapFocus}
                                                 onPropertyClick={(p) => setSelectedPropertyForModal(p)}
                                             />
                                         </Suspense>

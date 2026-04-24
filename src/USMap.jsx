@@ -63,7 +63,8 @@ export default function USMap({
     hoveredState,
     onHoverState,
     properties = [],
-    onPropertyClick
+    onPropertyClick,
+    focusProperty
 }) {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
@@ -210,6 +211,17 @@ export default function USMap({
         if (!map || !map.getLayer('state-fill')) return;
         map.setPaintProperty('state-fill', 'fill-color', featureColorExpr(selectedState, hoveredState));
     }, [selectedState, hoveredState]);
+
+    useEffect(() => {
+        if (!focusProperty || !mapRef.current) return;
+        const { lat, lng } = focusProperty;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+        try {
+            mapRef.current.flyTo({ center: [lng, lat], zoom: 14, duration: 700, essential: true });
+        } catch (err) {
+            console.warn('Map flyTo failed', err);
+        }
+    }, [focusProperty]);
 
     const geoProperties = useMemo(() => {
         if (!Array.isArray(properties) || properties.length === 0) return [];

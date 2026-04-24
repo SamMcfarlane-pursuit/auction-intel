@@ -369,7 +369,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                         >
                             Audit File
                         </button>
-                        <button className="px-6 py-2 rounded-sm bg-indigo-600 border border-indigo-500 text-white font-mono font-bold text-xs hover:bg-indigo-700 transition-all uppercase tracking-widest">
+                        <button onClick={() => { onOpenGeospatial?.(property); try { window.dispatchEvent(new CustomEvent('aim:geospatial', { detail: property })); } catch(e) {} }} className="px-6 py-2 rounded-sm bg-indigo-600 border border-indigo-500 text-white font-mono font-bold text-xs hover:bg-indigo-700 transition-all uppercase tracking-widest">
                             Geospatial
                         </button>
                         <button
