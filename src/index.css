@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-    /* Semantic surface tokens (warm-paper mix palette) */
-    --color-canvas: #F7F5F0;
+    /* Semantic surface tokens — reduced brightness, improved contrast for readability */
+    --color-canvas: #EEF3F8; /* slightly cooler, lower luminance than previous warm paper */
     --color-surface: #FFFFFF;
-    --color-panel: #F1EEE8;
-    --color-panel-2: #E9E4D9;
-    --color-border: #E5E1D8;
-    --color-border-strong: #D1CCC0;
-    --color-ink: #0F172A;
-    --color-ink-soft: #1E293B;
-    --color-muted: #475569;
-    --color-subtle: #78716C;
+    --color-panel: #F5F7FA; /* subtle, cool panel */
+    --color-panel-2: #EEF3F8;
+    --color-border: #E0E6EE;
+    --color-border-strong: #C9D2DF;
+    --color-ink: #0B1723; /* slightly deeper for stronger heading contrast */
+    --color-ink-soft: #13232E; /* softer body text but still high contrast */
+    --color-muted: #334155; /* darker muted text for readability */
+    --color-subtle: #64748B;
 
-    /* Accent ramp (indigo primary + teal secondary) */
-    --color-accent-50: #EEF2FF;
-    --color-accent-100: #E0E7FF;
-    --color-accent-200: #C7D2FE;
-    --color-accent-300: #A5B4FC;
-    --color-accent-400: #818CF8;
-    --color-accent-500: #6366F1;
-    --color-accent-600: #4F46E5;
-    --color-accent-700: #4338CA;
-    --color-accent-800: #3730A3;
-    --color-accent-900: #312E81;
+    /* Accent ramp (muted indigo + teal) - slightly desaturated for eye comfort */
+    --color-accent-50: #F0F3FF;
+    --color-accent-100: #E6EBFF;
+    --color-accent-200: #D3DBFF;
+    --color-accent-300: #B9C4FF;
+    --color-accent-400: #98A9FF;
+    --color-accent-500: #7E86F0;
+    --color-accent-600: #5750D1;
+    --color-accent-700: #4B42B7;
+    --color-accent-800: #3D368F;
+    --color-accent-900: #2F2B6E;
 
-    --color-secondary-500: #14B8A6;
-    --color-secondary-600: #0D9488;
-    --color-secondary-700: #0F766E;
+    --color-secondary-500: #16A89A;
+    --color-secondary-600: #0E7F75;
+    --color-secondary-700: #0C6A59;
 
-    --color-up: #059669;
-    --color-down: #E11D48;
-    --color-warn: #D97706;
+    --color-up: #0F9B6E;
+    --color-down: #C81A3A;
+    --color-warn: #B25A04;
 
-    /* Legacy primary-* tokens kept for any downstream references */
+    /* Legacy primary-* tokens kept for downstream references */
     --color-primary-50: var(--color-accent-50);
     --color-primary-100: var(--color-accent-100);
     --color-primary-200: var(--color-accent-200);
