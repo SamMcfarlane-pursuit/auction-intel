@@ -13,15 +13,24 @@
 
 .usmap-overlay {
     position: absolute;
-    z-index: 10;
+    z-index: 30;
     pointer-events: none;
 }
 .usmap-overlay > * { pointer-events: auto; }
-.usmap-overlay.top-left { top: 14px; left: 14px; width: min(420px, calc(100% - 200px)); }
-.usmap-overlay.top-right { top: 14px; right: 56px; }
+/* Center the primary overlay (search) above the map and constrain width for clean layout */
+.usmap-overlay.top-left {
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: calc(100% - 48px);
+    display: flex;
+    justify-content: center;
+}
+.usmap-overlay.top-right { top: 18px; right: 20px; }
 
 /* --- Search bar ---------------------------------------------------------- */
-.map-search-wrap { position: relative; max-width: 100%; }
+.map-search-wrap { position: relative; max-width: min(840px, calc(100% - 48px)); width: 100%; margin: 0 auto; }
 .map-search-box {
     display: flex; align-items: center; gap: 8px;
     padding: 9px 12px;
