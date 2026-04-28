@@ -325,13 +325,44 @@ path:hover {
 /* make inner content interactive while container stays non-interactive */
 .map-hud * { pointer-events: auto; }
 
-/* Responsive adjustments */
+/* Map stats bar — cleaner, responsive */
+.map-stats {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 90%, transparent), color-mix(in srgb, var(--color-panel) 88%, transparent));
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.05);
+    backdrop-filter: blur(8px) saturate(1.05);
+    -webkit-backdrop-filter: blur(8px) saturate(1.05);
+    max-width: min(920px, calc(100% - 96px));
+    margin: 0 auto; /* center within overlay */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+}
+.map-stats > div { min-width: 120px; text-align: center; }
+.map-stats .text-[8px] { color: var(--color-ink-soft); }
+
+/* small separator used inside map stats */
+.map-stats .sep-vert { width: 1px; height: 28px; background: var(--color-border); opacity: 0.9; }
+
+/* Ensure legend stacks on small screens */
 @media (max-width: 767px) {
-    .map-hud {
-        max-width: calc(100% - 32px);
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-    }
+    .map-stats { flex-direction: column; gap: 0.5rem; padding: 0.6rem; }
+    .map-stats > div { min-width: auto; text-align: center; }
+}
+
+
+/* Map legend — compact, semantic colors */
+.map-legend {
+    background: color-mix(in srgb, var(--color-surface) 95%, transparent);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.05);
+    backdrop-filter: blur(8px) saturate(1.05);
+    -webkit-backdrop-filter: blur(8px) saturate(1.05);
 }
 
 

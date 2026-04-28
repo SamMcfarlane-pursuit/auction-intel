@@ -109,10 +109,21 @@
     box-shadow: 0 2px 8px rgba(15,23,42,0.06);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
+    max-width: 420px; /* prevent span across the width */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-.usmap-hud .hud-dot { width: 6px; height: 6px; border-radius: 50%; background: #4F46E5; }
+.usmap-hud .hud-dot { width: 6px; height: 6px; border-radius: 50%; background: #4F46E5; flex: 0 0 auto; }
 .usmap-hud .hud-sep { color: #CBD5E1; }
-.usmap-hud .hud-hint { color: #94A3B8; font-weight: 500; }
+.usmap-hud .hud-hint { color: #94A3B8; font-weight: 500; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+
+/* On very small screens reduce hud width */
+@media (max-width: 520px) {
+    .usmap-hud { max-width: calc(100% - 28px); padding: 4px 10px; font-size: 10px; }
+    .usmap-hud .hud-hint { display: none; }
+}
+
 
 /* Dark HUD on satellite/hybrid styles */
 .usmap-root.is-dark .usmap-hud {

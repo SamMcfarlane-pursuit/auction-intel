@@ -1251,29 +1251,29 @@ export default function AuctionPlatform() {
 
                     {/* Search bar row - always visible */}
                     <div className="px-3 md:px-6 pb-2 md:pb-3">
-                        <div className="relative">
+                        <div className="relative max-w-2xl">
                             <input
                                 type="text"
                                 placeholder="Search ZIP, state, or county..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full bg-white/80 border-slate-300 border rounded-lg md:rounded-sm px-4 py-2 md:py-2.5 pl-9 md:pl-10 text-sm font-medium focus:ring-2 focus:ring-indigo-200 focus:bg-canvas focus:outline-none transition-all"
+                                className="w-full bg-surface/95 border border-slate-200 rounded-md px-4 py-2.5 pl-10 text-sm font-medium text-ink-soft placeholder-slate-500 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-surface focus:outline-none transition-all shadow-sm hover:shadow-md"
                             />
-                            <span className="absolute left-3 top-2 md:top-2.5 text-slate-600">🔍</span>
+                            <span className="absolute left-3 top-2.5 text-slate-400 text-base">🔍</span>
                             {searchResults.length > 0 && (
-                                <div className="absolute top-[calc(100%+4px)] left-0 right-0 md:right-auto md:w-80 bg-canvas rounded-sm shadow-none border border-slate-200 z-[100] overflow-hidden py-2 max-h-72 overflow-y-auto">
-                                    <div className="px-3 py-1.5 text-[9px] font-semibold text-slate-600 uppercase tracking-widest border-b border-slate-200">Search Results</div>
+                                <div className="absolute top-[calc(100%+8px)] left-0 right-0 md:right-auto md:w-96 bg-surface rounded-md shadow-lg border border-slate-200 z-[100] overflow-hidden max-h-96 overflow-y-auto">
+                                    <div className="px-4 py-2 text-[9px] font-semibold text-ink-soft uppercase tracking-widest border-b border-slate-200 bg-panel">Search Results</div>
                                     {searchResults.map((r, i) => {
                                         if (!r.county) {
                                             const auctionInfo = STATE_AUCTION_INFO[r.abbr];
                                             return (
                                                 <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(null); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
-                                                    className="flex items-center justify-between px-3 py-2 hover:bg-indigo-50 cursor-pointer transition-colors border-b border-slate-200">
+                                                    className="flex items-center justify-between px-4 py-2.5 hover:bg-panel cursor-pointer transition-colors border-b border-slate-200">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-7 h-7 rounded-md bg-surface flex items-center justify-center text-white text-xs font-semibold">{r.abbr}</div>
-                                                        <div className="font-bold text-slate-900 text-sm">{r.state}</div>
+                                                        <div className="w-7 h-7 rounded-md bg-accent-600 flex items-center justify-center text-white text-xs font-semibold">{r.abbr}</div>
+                                                        <div className="font-bold text-ink text-sm">{r.state}</div>
                                                     </div>
-                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-indigo-600' : 'bg-slate-300'}`}>{auctionInfo.type}</span>}
+                                                    {auctionInfo && <span className={`px-2 py-0.5 rounded text-[9px] font-bold text-white ${auctionInfo.type === 'Lien' ? 'bg-accent-600' : 'bg-muted'}`}>{auctionInfo.type}</span>}
                                                 </div>
                                             );
                                         }
@@ -1282,13 +1282,13 @@ export default function AuctionPlatform() {
                                         const isAlpha = tier <= 2 && growth > 5;
                                         return (
                                             <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
-                                                className="flex items-center justify-between px-3 py-2 hover:bg-slate-100 cursor-pointer transition-colors border-b border-slate-200 last:border-0 group">
+                                                className="flex items-center justify-between px-4 py-2.5 hover:bg-panel cursor-pointer transition-colors border-b border-slate-200 last:border-0 group">
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-slate-800 text-sm truncate">{name}, {r.abbr}</span>
-                                                        {isAlpha && <span className="text-[7px] font-semibold bg-indigo-600 text-white px-1.2 py-0.5 rounded-sm animate-none tracking-tighter">AI ALPHA</span>}
+                                                        <span className="font-bold text-ink text-sm truncate">{name}, {r.abbr}</span>
+                                                        {isAlpha && <span className="text-[7px] font-semibold bg-accent-600 text-white px-1.2 py-0.5 rounded-sm animate-none tracking-tighter">AI ALPHA</span>}
                                                     </div>
-                                                    <div className="text-[9px] text-slate-600 font-bold uppercase tracking-tight">Tier {tier} Opportunity</div>
+                                                    <div className="text-[9px] text-muted font-bold uppercase tracking-tight">Tier {tier} Opportunity</div>
                                                 </div>
                                                 <span className="px-2 py-0.5 rounded text-[9px] font-semibold text-white" style={{ background: t.color }}>{t.label}</span>
                                             </div>
