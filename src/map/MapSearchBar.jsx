@@ -9,12 +9,13 @@ export default function MapSearchBar({ onSelect }) {
     const [results, setResults] = useState([]);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const inputRef = useRef(null);
     const debounceRef = useRef(null);
     const abortRef = useRef(null);
 
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (!query || query.trim().length < 3) {
+        if (!query || query.trim().length < 2) {
             setResults([]);
             setLoading(false);
             return;
@@ -25,16 +26,16 @@ export default function MapSearchBar({ onSelect }) {
             abortRef.current = ctrl;
             setLoading(true);
             try {
-                const url = `${NOMINATIM}?format=json&q=${encodeURIComponent(query)}&countrycodes=us&limit=6&addressdetails=1`;
+                const url = `${NOMINATIM}?format=json&q=${encodeURIComponent(query)}&countrycodes=us&limit=8&addressdetails=1`;
                 const res = await fetch(url, { signal: ctrl.signal, headers: { 'Accept-Language': 'en' } });
                 const data = await res.json();
-                setResults(Array.isArray(data) ? data : []);
+                setResults(Array.isArray(data) ? data.slice(0, 8) : []);
             } catch (e) {
                 if (e.name !== 'AbortError') setResults([]);
             } finally {
                 setLoading(false);
             }
-        }, 380);
+        }, 300);
         return () => clearTimeout(debounceRef.current);
     }, [query]);
 
@@ -44,7 +45,15 @@ export default function MapSearchBar({ onSelect }) {
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
         setQuery(r.display_name.split(',').slice(0, 2).join(', '));
         setOpen(false);
+        setResults([]);
         onSelect({ lat, lng, name: r.display_name, bbox: r.boundingbox });
+    };
+
+    const handleClear = () => {
+        setQuery('');
+        setResults([]);
+        setOpen(false);
+        inputRef.current?.focus();
     };
 
     return (
@@ -55,29 +64,54 @@ export default function MapSearchBar({ onSelect }) {
                     <path d="m20 20-3.5-3.5" />
                 </svg>
                 <input
+                    ref={inputRef}
                     type="text"
                     placeholder="Search address, city, ZIP..."
                     value={query}
-                    onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
-                    onFocus={() => setOpen(true)}
-                    onBlur={() => setTimeout(() => setOpen(false), 180)}
-                    aria-label="Search map"
+                    onChange={(e) => { setQuery(e.target.value); if (!open) setOpen(true); }}
+                    onFocus={() => query.length > 0 && setOpen(true)}
+                    onBlur={() => setTimeout(() => setOpen(false), 150)}
+                    aria-label="Search map locations"
+                    aria-expanded={open && results.length > 0}
+                    aria-controls="map-search-results"
                 />
-                {loading && <span className="map-search-spinner" aria-hidden="true" />}
+                {loading && <span className="map-search-spinner" aria-label="Loading..." />}
                 {query && !loading && (
-                    <button type="button" className="map-search-clear" onClick={() => { setQuery(''); setResults([]); }} aria-label="Clear">×</button>
+                    <button 
+                        type="button" 
+                        className="map-search-clear" 
+                        onClick={handleClear}
+                        title="Clear search"
+                        aria-label="Clear search"
+                    >
+                        ×
+                    </button>
                 )}
             </div>
             {open && results.length > 0 && (
-                <ul className="map-search-results" role="listbox">
-                    {results.map((r) => (
-                        <li key={r.place_id}>
-                            <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => handleSelect(r)}>
-                                <span className="mss-primary">{r.display_name.split(',').slice(0, 2).join(', ')}</span>
-                                <span className="mss-secondary">{r.display_name.split(',').slice(2).join(',').trim()}</span>
-                            </button>
-                        </li>
-                    ))}
+                <ul 
+                    id="map-search-results"
+                    className="map-search-results" 
+                    role="listbox"
+                    aria-label="Search results"
+                >
+                    {results.map((r, idx) => {
+                        const displayName = r.display_name.split(',').slice(0, 2).join(', ');
+                        const secondary = r.display_name.split(',').slice(2).join(',').trim();
+                        return (
+                            <li key={`${r.place_id}-${idx}`} role="option">
+                                <button 
+                                    type="button" 
+                                    onMouseDown={(e) => e.preventDefault()} 
+                                    onClick={() => handleSelect(r)}
+                                    className="map-search-result-item"
+                                >
+                                    <span className="mss-primary">{displayName}</span>
+                                    {secondary && <span className="mss-secondary">{secondary}</span>}
+                                </button>
+                            </li>
+                        );
+                    })}
                 </ul>
             )}
         </div>
