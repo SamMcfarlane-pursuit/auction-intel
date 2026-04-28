@@ -8,8 +8,8 @@
     --color-panel-2: #EEF3F8;
     --color-border: #E0E6EE;
     --color-border-strong: #C9D2DF;
-    --color-ink: #0B1723; /* slightly deeper for stronger heading contrast */
-    --color-ink-soft: #13232E; /* softer body text but still high contrast */
+    --color-ink: #0B1723; /* slightly lighter heading contrast */
+    --color-ink-soft: #13232E; /* slightly lighter body text */
     --color-muted: #334155; /* darker muted text for readability */
     --color-subtle: #64748B;
 
@@ -69,8 +69,9 @@
 
     body {
         background-color: var(--color-canvas);
-        color: var(--color-muted);
+        color: var(--color-ink-soft);
         @apply font-sans antialiased selection:bg-indigo-600 selection:text-white overflow-x-hidden;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     }
 

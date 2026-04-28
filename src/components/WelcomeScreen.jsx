@@ -57,31 +57,31 @@ export default function WelcomeScreen({ user, onDismiss }) {
 
                     {/* Feature cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="bg-canvas border border-slate-200 rounded-sm p-6 text-center hover:bg-slate-100 transition-all group">
-                            <div className="w-12 h-12 mx-auto mb-4 bg-indigo-50 text-indigo-500 rounded-sm flex items-center justify-center border border-blue-900/30 group-hover:border-indigo-500/50 transition-colors">
-                                <span className="text-xl font-mono">D_01</span>
+                        <div className="bg-canvas border border-slate-200 rounded-lg p-6 text-center hover:bg-slate-50 hover:border-indigo-300 transition-all group shadow-sm hover:shadow-md">
+                            <div className="w-16 h-16 mx-auto mb-5 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-lg flex items-center justify-center border border-indigo-400 group-hover:border-indigo-300 group-hover:shadow-lg group-hover:shadow-indigo-500/20 transition-all">
+                                <span className="text-2xl font-mono font-bold">D</span>
                             </div>
-                            <div className="text-[9px] uppercase tracking-[0.2em] text-indigo-500 font-bold mb-1">STATEDATA_DISCOVERY</div>
-                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-2 uppercase tracking-tighter">DISCOVER</h3>
-                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Cross-jurisdictional tax lien inventory scanning</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-indigo-600 font-bold mb-2">Discover</div>
+                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-3 uppercase tracking-tighter">State Data</h3>
+                            <p className="text-[10px] text-slate-600 leading-relaxed">Cross-jurisdictional tax lien inventory scanning</p>
                         </div>
 
-                        <div className="bg-canvas border border-slate-200 rounded-sm p-6 text-center hover:bg-slate-100 transition-all group">
-                            <div className="w-12 h-12 mx-auto mb-4 bg-emerald-900/20 text-emerald-600 rounded-sm flex items-center justify-center border border-emerald-200 group-hover:border-emerald-500/50 transition-colors">
-                                <span className="text-xl font-mono">A_02</span>
+                        <div className="bg-canvas border border-slate-200 rounded-lg p-6 text-center hover:bg-slate-50 hover:border-emerald-300 transition-all group shadow-sm hover:shadow-md">
+                            <div className="w-16 h-16 mx-auto mb-5 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-lg flex items-center justify-center border border-emerald-400 group-hover:border-emerald-300 group-hover:shadow-lg group-hover:shadow-emerald-500/20 transition-all">
+                                <span className="text-2xl font-mono font-bold">A</span>
                             </div>
-                            <div className="text-[9px] uppercase tracking-[0.2em] text-emerald-500 font-bold mb-1">ALPHA_GENERATION</div>
-                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-2 uppercase tracking-tighter">ANALYZE</h3>
-                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Yield modeling, redemption tracking & asset ROI</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-emerald-600 font-bold mb-2">Analyze</div>
+                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-3 uppercase tracking-tighter">AI Alpha</h3>
+                            <p className="text-[10px] text-slate-600 leading-relaxed">Yield modeling, redemption tracking & ROI analytics</p>
                         </div>
 
-                        <div className="bg-canvas border border-slate-200 rounded-sm p-6 text-center hover:bg-slate-100 transition-all group">
-                            <div className="w-12 h-12 mx-auto mb-4 bg-amber-900/20 text-amber-500 rounded-sm flex items-center justify-center border border-amber-900/30 group-hover:border-amber-500/50 transition-colors">
-                                <span className="text-xl font-mono">T_03</span>
+                        <div className="bg-canvas border border-slate-200 rounded-lg p-6 text-center hover:bg-slate-50 hover:border-amber-300 transition-all group shadow-sm hover:shadow-md">
+                            <div className="w-16 h-16 mx-auto mb-5 bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-lg flex items-center justify-center border border-amber-400 group-hover:border-amber-300 group-hover:shadow-lg group-hover:shadow-amber-500/20 transition-all">
+                                <span className="text-2xl font-mono font-bold">T</span>
                             </div>
-                            <div className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-bold mb-1">TERMINAL_EXECUTION</div>
-                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-2 uppercase tracking-tighter">ACTION</h3>
-                            <p className="text-[10px] text-slate-500 uppercase tracking-widest leading-relaxed">Monitor watchlists & execute auction strategies</p>
+                            <div className="text-[9px] uppercase tracking-[0.2em] text-amber-600 font-bold mb-2">Execute</div>
+                            <h3 className="font-mono font-bold text-slate-900 text-sm mb-3 uppercase tracking-tighter">Action</h3>
+                            <p className="text-[10px] text-slate-600 leading-relaxed">Monitor watchlists & execute auction strategies</p>
                         </div>
                     </div>
 

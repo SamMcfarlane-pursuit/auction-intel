@@ -1605,9 +1605,9 @@ export default function AuctionPlatform() {
                                         <div className="bg-white backdrop-blur-2xl border border-white/20 rounded-sm p-5 shadow-none">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <div className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-none shadow-[0_0_8px_#34d399]" />
-                                                <h2 className="text-[9px] font-semibold text-slate-600 uppercase tracking-[0.3em]">State Liquidity :: Neural Projection</h2>
+                                                <h2 className="text-[9px] font-semibold text-slate-600 uppercase tracking-[0.3em]">Live Market Analysis</h2>
                                             </div>
-                                            <h1 className="text-lg font-mono font-semibold text-white/90 tracking-tighter">Market Intelligence Hub</h1>
+                                            <h1 className="text-lg font-mono font-semibold text-white/90 tracking-tighter">US Tax Lien Map</h1>
                                         </div>
 
                                         {/* Top Right Fullscreen Toggle */}
