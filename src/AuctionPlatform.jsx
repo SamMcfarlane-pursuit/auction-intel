@@ -1621,53 +1621,6 @@ export default function AuctionPlatform() {
                                             </button>
                                         </div>
                                     </div>
-
-                                    {/* Glass Overlay Layer: Bottom Status HUD */}
-                                    <div className="absolute bottom-6 left-6 right-6 flex flex-col-reverse md:flex-row items-center md:items-end justify-between pointer-events-none gap-4" style={{ zIndex: 10 }}>
-                                        {/* Left Spacer (Desktop Only) */}
-                                        <div className="hidden md:block w-[140px] invisible"></div>
-
-                                        {/* Bottom Center Intelligence Bar */}
-                                        <div className="bg-white backdrop-blur-2xl border border-white/20 rounded-sm px-6 py-3 flex items-center justify-center flex-wrap md:flex-nowrap gap-6 md:gap-12 shadow-none pointer-events-auto filter drop-shadow-none max-w-full">
-                                            <div>
-                                                <div className="text-[8px] text-slate-600 font-semibold uppercase tracking-[0.2em] mb-1">Global Coverage</div>
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-xl md:text-lg font-mono font-semibold text-white/90">50</span>
-                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">States</span>
-                                                </div>
-                                            </div>
-                                            <div className="w-px h-6 bg-slate-100/60 hidden md:block" />
-                                            <div>
-                                                <div className="text-[8px] text-slate-600 font-semibold uppercase tracking-[0.2em] mb-1">Active Pipeline</div>
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-xl md:text-lg font-mono font-semibold text-white/90">14.2K</span>
-                                                    <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wider">Deals</span>
-                                                </div>
-                                            </div>
-                                            <div className="w-px h-6 bg-slate-100/60 hidden md:block" />
-                                            <div className="flex items-center gap-3">
-                                                <div className="text-right">
-                                                    <div className="text-[8px] text-slate-600 font-semibold uppercase tracking-[0.2em] mb-0.5">Network Status</div>
-                                                    <div className="text-[9px] font-mono text-emerald-600 font-bold">TERMINUS_SYNC_OK</div>
-                                                </div>
-                                                <div className="w-6 h-6 md:w-8 md:h-8 rounded-sm bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                    <div className="w-1.5 h-1.5 bg-emerald-400 rounded-sm animate-none shadow-[0_0_8px_#34d399]" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Bottom Right Legend */}
-                                        <div className="bg-surface/90 backdrop-blur-md shadow-none border border-slate-300/60 rounded-sm p-3 flex flex-row items-center gap-4 min-w-[140px] pointer-events-auto md:w-[140px] md:flex-col md:items-start md:gap-3 justify-center md:justify-self-end text-left w-auto z-50">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2.5 h-2.5 rounded border border-indigo-500 bg-indigo-600 shadow-[0_0_8px_rgba(37,99,235,0.4)]" />
-                                                <span className="text-[9px] text-slate-700 font-bold uppercase tracking-wider">Lien States</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2.5 h-2.5 rounded border border-slate-500 bg-slate-300 shadow-[0_0_8px_rgba(71,85,105,0.4)]" />
-                                                <span className="text-[9px] text-slate-700 font-bold uppercase tracking-wider">Deed States</span>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 {selectedPropertyForModal && (
                                     <PropertyModal
