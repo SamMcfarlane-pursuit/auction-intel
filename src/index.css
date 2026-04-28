@@ -309,6 +309,32 @@ path:hover {
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
+/* Map HUD: compact, responsive, subtle glass + gradient to avoid large white bars */
+.map-hud {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 88%, transparent), color-mix(in srgb, var(--color-panel) 88%, transparent));
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.9rem;
+    max-width: min(520px, calc(100% - 48px));
+    color: var(--color-ink);
+    box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+    backdrop-filter: blur(8px) saturate(1.05);
+    -webkit-backdrop-filter: blur(8px) saturate(1.05);
+}
+
+/* make inner content interactive while container stays non-interactive */
+.map-hud * { pointer-events: auto; }
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .map-hud {
+        max-width: calc(100% - 32px);
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+    }
+}
+
+
 /* PWA & Mobile Specific Styles */
 @supports (padding: env(safe-area-inset-bottom)) {
     .pb-safe {

@@ -1601,13 +1601,13 @@ export default function AuctionPlatform() {
                                     
                                     {/* Glass Overlay Layer: Top HUD */}
                                     <div className="absolute top-6 left-6 right-6 flex justify-between items-start pointer-events-none" style={{ zIndex: 10 }}>
-                                        {/* Top Left Title Glass */}
-                                        <div className="bg-white backdrop-blur-2xl border border-white/20 rounded-sm p-5 shadow-none">
+                                        {/* Top Left Title HUD */}
+                                        <div className="map-hud">
                                             <div className="flex items-center gap-2 mb-1">
-                                                <div className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-none shadow-[0_0_8px_#34d399]" />
-                                                <h2 className="text-[9px] font-semibold text-slate-600 uppercase tracking-[0.3em]">Live Market Analysis</h2>
+                                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                                                <h2 className="text-[10px] font-semibold text-ink-soft uppercase tracking-[0.25em]">Live Market Analysis</h2>
                                             </div>
-                                            <h1 className="text-lg font-mono font-semibold text-white/90 tracking-tighter">US Tax Lien Map</h1>
+                                            <h1 className="text-lg font-mono font-semibold text-ink tracking-tight">US Tax Lien Map</h1>
                                         </div>
 
                                         {/* Top Right Fullscreen Toggle */}
