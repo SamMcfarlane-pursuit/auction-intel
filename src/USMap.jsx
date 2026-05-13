@@ -5,7 +5,6 @@ import Supercluster from 'supercluster';
 import { resolvePropertyCoords } from './mapData';
 import { getStyleConfig } from './mapStyles';
 import MapStyleSwitcher from './map/MapStyleSwitcher';
-import MapSearchBar from './map/MapSearchBar';
 import StreetViewModal from './map/StreetViewModal';
 import './map/USMap.css';
 
@@ -335,17 +334,6 @@ export default function USMap({
         map.setStyle(cfg.url || cfg.style);
     }, []);
 
-    const handleSearchSelect = useCallback(({ lat, lng, bbox }) => {
-        const map = mapRef.current;
-        if (!map) return;
-        if (bbox && bbox.length === 4) {
-            const [s, n, w, e] = bbox.map(parseFloat);
-            map.fitBounds([[w, s], [e, n]], { padding: 80, duration: 900, maxZoom: 15, essential: true });
-        } else {
-            map.flyTo({ center: [lng, lat], zoom: 14, duration: 900, essential: true });
-        }
-    }, []);
-
     const dismissHint = () => { setShowHint(false); localStorage.setItem('aim.mapHintSeen', '1'); };
     const dismissMobileHint = () => { setShowMobileHint(false); localStorage.setItem('aim.mapMobileHintSeen', '1'); };
 
@@ -357,10 +345,6 @@ export default function USMap({
     return (
         <div className={`usmap-root ${styleDark ? 'is-dark' : 'is-light'}`}>
             <div ref={containerRef} className="usmap-canvas" />
-
-            <div className="usmap-overlay top-left">
-                <MapSearchBar onSelect={handleSearchSelect} />
-            </div>
 
             <div className="usmap-overlay top-right">
                 <MapStyleSwitcher value={styleId} onChange={changeStyle} />
