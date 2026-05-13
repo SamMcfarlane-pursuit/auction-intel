@@ -87,7 +87,7 @@ export function PropertyCard({ property, onViewDetails, onAddToWatchlist }) {
                 </div>
 
                 {/* Days Until */}
-                <div className={`absolute bottom-2 right-2 ${daysUntil <= 7 ? 'bg-rose-500' : 'bg-white/90'} text-white text-[10px] font-bold px-2 py-0.5 rounded`}>
+                <div className={`absolute bottom-2 right-2 ${daysUntil <= 7 ? 'bg-rose-500 text-white' : 'bg-white/90 text-slate-700'} text-[10px] font-bold px-2 py-0.5 rounded`}>
                     {daysUntil > 0 ? `${daysUntil} days` : 'Today!'}
                 </div>
 
@@ -213,15 +213,15 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
     return (
         <div className="space-y-4">
             {/* Header */}
-            <div className="bg-surface rounded-md p-5 text-white">
+            <div className="bg-surface rounded-md p-5 border border-slate-200">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-lg font-mono font-semibold mb-1">🏠 Live Property Feed</h1>
-                        <p className="text-indigo-200 text-sm font-medium">PropWire-powered tax sale and foreclosure listings</p>
+                        <h1 className="text-lg font-mono font-semibold mb-1 text-slate-900">🏠 Live Property Feed</h1>
+                        <p className="text-slate-500 text-sm font-medium">PropWire-powered tax sale and foreclosure listings</p>
                     </div>
                     <div className="text-right">
-                        <div className="text-xl font-mono font-semibold">{properties.length}</div>
-                        <div className="text-xs text-indigo-200 font-semibold">Total Properties</div>
+                        <div className="text-xl font-mono font-semibold text-slate-900">{properties.length}</div>
+                        <div className="text-xs text-slate-500 font-semibold">Total Properties</div>
                     </div>
                 </div>
             </div>
@@ -232,7 +232,7 @@ export function PropertyFeed({ properties = [], onViewDetails, onAddToWatchlist,
                     <button
                         onClick={() => setActiveCategory('all')}
                         className={`px-4 py-2 rounded-sm font-bold text-sm transition-all ${activeCategory === 'all'
- ? 'bg-surface text-white'
+ ? 'bg-indigo-600 text-white'
  : 'bg-surface text-slate-600 hover:bg-slate-200'
  }`}
                     >

@@ -280,6 +280,14 @@ export default function USMap({
                 el.innerHTML = `<span class="aim-marker-dot"></span><span class="aim-marker-label">$${Math.round((p.openingBid || 0) / 1000)}k</span>`;
                 el.addEventListener('click', (ev) => {
                     ev.stopPropagation();
+                    // If the marker was nudged, fly to the original coordinates for context before opening details
+                    const orig = el.getAttribute('data-original-coords');
+                    if (orig) {
+                        try {
+                            const [olng, olat] = JSON.parse(orig);
+                            map.flyTo({ center: [olng, olat], zoom: Math.max(map.getZoom(), 14), duration: 600, essential: true });
+                        } catch (e) { /* ignore */ }
+                    }
                     if (onPropertyClick) onPropertyClick(p);
                 });
                 el.addEventListener('contextmenu', (ev) => {
@@ -287,7 +295,29 @@ export default function USMap({
                     setStreetView({ lat, lng, label: `${p.address || ''}, ${p.city || ''}`.replace(/^,\s*/, '') });
                 });
             }
-            const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([lng, lat]).addTo(map);
+            // compute a safe pixel margin so markers don't render flush to the edge or under controls
+            let markerLngLat = [lng, lat];
+            try {
+                const canvas = map.getCanvas();
+                const w = canvas.width || map.getContainer().clientWidth;
+                const h = canvas.height || map.getContainer().clientHeight;
+                const pt = map.project([lng, lat]);
+                const safeMargin = 64; // px — keeps markers away from edges and controls
+                const clampedX = Math.min(Math.max(pt.x, safeMargin), Math.max(w - safeMargin, safeMargin));
+                const clampedY = Math.min(Math.max(pt.y, safeMargin), Math.max(h - safeMargin, safeMargin));
+                if (clampedX !== pt.x || clampedY !== pt.y) {
+                    const nudged = map.unproject([clampedX, clampedY]);
+                    markerLngLat = [nudged.lng, nudged.lat];
+                    // record original coordinates for later reference (e.g., popups)
+                    el.setAttribute('data-original-coords', JSON.stringify([lng, lat]));
+                    el.classList.add('aim-marker-nudged');
+                }
+            } catch (err) {
+                // if projection fails, fall back to original coords
+                // console.warn('Marker projection adjustment failed', err);
+            }
+
+            const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(markerLngLat).addTo(map);
             propertyMarkersRef.current.push(marker);
         });
     }, [onPropertyClick]);

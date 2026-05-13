@@ -81,18 +81,18 @@ export default function MarketForecaster({ county, onBack }) {
     return (
         <div className="bg-canvas rounded-sm shadow-none border border-slate-300 overflow-hidden">
             {/* Header */}
-            <div className="p-8 bg-surface text-white flex justify-between items-center border-b border-slate-200">
+            <div className="p-8 bg-surface flex justify-between items-center border-b border-slate-200">
                 <div>
                     <div className="flex items-center gap-3 mb-1">
                         <span className="text-lg font-mono">🔮</span>
-                        <h2 className="text-xl font-mono font-semibold tracking-tighter">AI Alpha Forecaster</h2>
+                        <h2 className="text-xl font-mono font-semibold tracking-tighter text-slate-900">AI Alpha Forecaster</h2>
                     </div>
                     <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">
                         Predictive Analysis for {county?.name || "Target Market"}
                     </p>
                 </div>
                 {onBack && (
-                    <button onClick={onBack} className="bg-slate-100 hover:bg-slate-50/20 px-4 py-2 rounded-sm text-xs font-bold transition-all border border-white/20">
+                    <button onClick={onBack} className="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-sm text-xs font-bold text-slate-700 transition-all border border-slate-300">
                         ← Back to Market
                     </button>
                 )}
@@ -145,7 +145,7 @@ export default function MarketForecaster({ county, onBack }) {
                         </div>
                     </div>
 
-                    <div className="bg-surface rounded-sm p-6 text-white shadow-none border border-slate-200">
+                    <div className="bg-surface rounded-sm p-6 shadow-none border border-slate-200">
                         <div className="text-[9px] font-semibold text-slate-600 uppercase mb-1">Projected 12M Yield</div>
                         <div className="text-xl font-mono font-semibold text-emerald-600">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
                         <div className="text-[10px] text-slate-600 mt-2">

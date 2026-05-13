@@ -143,29 +143,29 @@ export default function ROICalculator({ onClose }) {
                 </div>
 
                 {/* Results Section */}
-                <div className="bg-surface rounded-md p-6 text-white">
-                    <div className="text-xs font-semibold text-indigo-400 uppercase mb-4">Projected Returns</div>
+                <div className="bg-surface rounded-md p-6 border border-slate-200">
+                    <div className="text-xs font-semibold text-indigo-600 uppercase mb-4">Projected Returns</div>
 
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="bg-slate-100 rounded-sm p-4">
-                            <div className="text-xs text-indigo-400 uppercase font-bold">Interest Earned</div>
-                            <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.interest).toLocaleString()}</div>
+                            <div className="text-xs text-indigo-600 uppercase font-bold">Interest Earned</div>
+                            <div className="font-mono font-semibold text-lg text-slate-900">${Number(calculations.interest).toLocaleString()}</div>
                         </div>
                         <div className="bg-slate-100 rounded-sm p-4">
-                            <div className="text-xs text-indigo-400 uppercase font-bold">Total Return</div>
-                            <div className="font-mono font-semibold text-lg font-mono">${Number(calculations.totalReturn).toLocaleString()}</div>
+                            <div className="text-xs text-indigo-600 uppercase font-bold">Total Return</div>
+                            <div className="font-mono font-semibold text-lg text-slate-900">${Number(calculations.totalReturn).toLocaleString()}</div>
                         </div>
                         <div className="bg-slate-100 rounded-sm p-4">
-                            <div className="text-xs text-indigo-400 uppercase font-bold">ROI ({holdMonths}mo)</div>
-                            <div className="font-mono font-semibold text-lg font-mono">{calculations.roi}%</div>
+                            <div className="text-xs text-indigo-600 uppercase font-bold">ROI ({holdMonths}mo)</div>
+                            <div className="font-mono font-semibold text-lg text-slate-900">{calculations.roi}%</div>
                         </div>
                         <div className="bg-slate-100 rounded-sm p-4">
-                            <div className="text-xs text-indigo-400 uppercase font-bold">Annualized ROI</div>
-                            <div className="font-mono font-semibold text-lg font-mono text-emerald-300">{calculations.annualizedROI}%</div>
+                            <div className="text-xs text-indigo-600 uppercase font-bold">Annualized ROI</div>
+                            <div className="font-mono font-semibold text-lg text-emerald-600">{calculations.annualizedROI}%</div>
                         </div>
                     </div>
 
-                    <div className={`px-3 py-2 rounded-lg text-xs font-bold ${stateInfo.type === 'Lien' ? 'bg-purple-500/30 text-purple-200' : 'bg-indigo-500/30 text-indigo-200'}`}>
+                    <div className={`px-3 py-2 rounded-lg text-xs font-bold ${stateInfo.type === 'Lien' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}`}>
                         {stateInfo.type === 'Lien' ? '📜 Tax Lien Certificate' : '📋 Tax Deed Sale'} - {stateInfo.rate}% rate
                     </div>
                 </div>

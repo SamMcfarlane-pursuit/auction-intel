@@ -1,5 +1,6 @@
 /* === USMap (MapLibre GL) styling =========================================== */
 .usmap-root {
+    --map-edge-gap: 28px; /* safe inset so controls don't get clipped by rounded corners */
     position: relative;
     width: 100%;
     height: 100%;
@@ -147,21 +148,29 @@
 .mss-btn.is-active { background: #5750D1; color: #FFFFFF; }
 .mss-btn.is-active:hover { background: #4C47BD; }
 
-/* --- HUD (bottom-left) ------------------------------------------------- */
+/* --- HUD (center-bottom) ------------------------------------------------- */
 .usmap-hud {
-    position: absolute; bottom: 16px; left: 16px; z-index: 20;
-    display: flex; align-items: center; gap: 6px;
-    padding: 7px 12px;
+    /* center bottom hud to avoid stretching full width and avoid map controls */
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 120; /* above attribution but below controls */
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
     background: color-mix(in srgb, #FFFFFF 96%, transparent);
     border: 1px solid #CBD5E1;
-    border-radius: 8px;
-    font-size: 11px; font-weight: 500; color: #475569;
+    border-radius: 12px;
+    font-size: 12px; font-weight: 500; color: #475569;
     font-variant-numeric: tabular-nums;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+    box-shadow: 0 6px 18px rgba(15,23,42,0.08);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     white-space: nowrap;
-    max-width: calc(100% - 32px);
+    max-width: min(860px, calc(100% - 160px));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: auto; /* allow interactions */
 }
 .usmap-hud .hud-dot { width: 5px; height: 5px; border-radius: 50%; background: #5750D1; flex: 0 0 auto; }
 .usmap-hud .hud-sep { color: #CBD5E1; margin: 0 2px; }
@@ -173,8 +182,19 @@
         font-size: 10px; 
         gap: 4px;
         border-radius: 7px;
+        left: 16px;
+        right: 16px;
+        bottom: 88px; /* raise above map controls */
+        max-width: calc(100% - 32px);
     }
     .usmap-hud .hud-hint { display: none; }
+
+    .usmap-kbd-hint {
+        left: 16px;
+        right: 16px;
+        bottom: 144px;
+        max-width: calc(100% - 32px);
+    }
 }
 
 
@@ -267,27 +287,213 @@
 .aim-cluster span { line-height: 1; }
 
 /* --- MapLibre control restyling --------------------------------------- */
+/* Clean up control positioning — eliminate duplicates and overlaps */
+
+/* Position control containers properly away from edges and HUD */
+.usmap-root .maplibregl-ctrl-bottom-right {
+    right: var(--map-edge-gap) !important;
+    bottom: calc(var(--map-edge-gap) + 68px) !important;
+    z-index: 220 !important;
+}
+.usmap-root .maplibregl-ctrl-top-right {
+    right: var(--map-edge-gap) !important;
+    top: var(--map-edge-gap) !important;
+    z-index: 220 !important;
+}
+.usmap-root .maplibregl-ctrl-bottom-left {
+    left: calc(var(--map-edge-gap) / 1.4) !important;
+    bottom: calc(var(--map-edge-gap) / 1.4) !important;
+    z-index: 100 !important;
+}
+.usmap-root .maplibregl-ctrl-top-left {
+    left: calc(var(--map-edge-gap) / 1.4) !important;
+    top: calc(var(--map-edge-gap) / 1.4) !important;
+    z-index: 100 !important;
+}
+
+/* Control group styling — transparent wrapper with flex layout */
 .usmap-root .maplibregl-ctrl-group {
-    background: #FFFFFF;
-    border: 1px solid #E5E1D8;
-    box-shadow: 0 2px 10px rgba(15,23,42,0.08);
-    border-radius: 12px;
-    overflow: hidden;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important; /* increased gap to avoid visual overlap */
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: center !important;
+    z-index: 230 !important; /* ensure control group sits above transient elements */
 }
+
+/* Ensure each control item in a group gets its own vertical spacing and cannot overlap */
+.usmap-root .maplibregl-ctrl-group > * {
+    margin: 8px 0 !important;
+    transform: none !important;
+    position: relative !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+}
+
+/* Normalize nested control groups to avoid double-stacking - flatten nested groups */
+.usmap-root .maplibregl-ctrl-group .maplibregl-ctrl-group {
+    display: contents !important; /* flatten structure so children follow parent spacing */
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Style individual control buttons as clean pill cards */
 .usmap-root .maplibregl-ctrl-group button {
-    background: #FFFFFF; color: #0F172A;
-    border-bottom: 1px solid #E5E1D8;
-    width: 32px; height: 32px;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1px solid #E5E1D8 !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 36px rgba(15,23,42,0.12) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: box-shadow 160ms ease, background 120ms ease !important; /* avoid translate animations that shift layout */
+    outline: none !important;
+    cursor: pointer !important;
 }
-.usmap-root .maplibregl-ctrl-group button:last-child { border-bottom: none; }
-.usmap-root .maplibregl-ctrl-group button:hover { background: #F5F1E8; }
+.usmap-root .maplibregl-ctrl-group button:focus {
+    box-shadow: 0 20px 56px rgba(79,70,229,0.12) !important;
+}
+.usmap-root .maplibregl-ctrl-group button:hover {
+    background: #FAFAFF !important;
+}
+
+/* Specific zoom button selectors to enforce spacing and prevent overlap */
+.usmap-root .maplibregl-ctrl-zoom-in,
+.usmap-root .maplibregl-ctrl-zoom-out,
+.usmap-root .maplibregl-ctrl-geolocate,
+.usmap-root .maplibregl-ctrl-compass {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 8px 0 !important;
+    pointer-events: auto !important;
+}
+
+/* Remove any default separators between buttons */
+.usmap-root .maplibregl-ctrl-group button + button {
+    border-top: none !important;
+    margin-top: 0 !important;
+}
+
+/* Hide default separator elements that cause visual clutter */
+.usmap-root .maplibregl-ctrl-group.maplibregl-ctrl {
+    background: transparent !important;
+}
+
+/* Attribution box — constrained at bottom-left to avoid HUD collision */
 .usmap-root .maplibregl-ctrl-attrib {
-    background: rgba(255,255,255,0.88); color: #78716C; font-size: 10px;
-    border-radius: 6px 0 0 0;
+    background: rgba(255,255,255,0.92) !important;
+    color: #78716C !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+    padding: 6px 10px !important;
+    margin: 8px !important;
+    position: absolute !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    z-index: 70 !important;
+    max-width: 220px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
 }
-.usmap-root .maplibregl-ctrl-attrib a { color: #4F46E5; }
-.usmap-root.is-dark .maplibregl-ctrl-attrib { background: rgba(15,23,42,0.78); color: #CBD5E1; }
-.usmap-root.is-dark .maplibregl-ctrl-attrib a { color: #A5B4FC; }
+.usmap-root .maplibregl-ctrl-attrib a {
+    color: #4F46E5 !important;
+    text-decoration: none !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+    .usmap-root .maplibregl-ctrl-bottom-right {
+        right: var(--map-edge-gap) !important;
+        bottom: calc(var(--map-edge-gap) + 96px) !important;
+    }
+    .usmap-root .maplibregl-ctrl-group {
+        gap: 10px !important;
+    }
+    .usmap-root .maplibregl-ctrl-group button {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 10px !important;
+    }
+}
+
+/* Dark mode adjustments */
+.usmap-root.is-dark .maplibregl-ctrl-attrib {
+    background: rgba(15,23,42,0.78) !important;
+    color: #CBD5E1 !important;
+}
+.usmap-root.is-dark .maplibregl-ctrl-attrib a {
+    color: #A5B4FC !important;
+}
+
+/* --- Marker and cluster adjustments to avoid visual clutter ---------- */
+.aim-marker { z-index: 20; display: flex; align-items: center; gap: 6px; }
+.aim-marker .aim-marker-label {
+    max-width: 76px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 8px;
+    font-size: 11px; font-weight: 700; color: #0F172A;
+    box-shadow: 0 6px 14px rgba(15,23,42,0.08);
+}
+.aim-marker .aim-marker-dot { flex: 0 0 auto; }
+
+/* Make clusters slightly smaller at low zoom and keep them above markers */
+.aim-cluster { z-index: 30; min-width: 20px; min-height: 20px; font-size: 12px; pointer-events: auto; }
+
+/* Nudged markers (pushed inward to avoid edges) */
+.aim-marker-nudged { position: relative; opacity: 0.98; transform: translateY(-2px); }
+.aim-marker-nudged .aim-marker-label { background: linear-gradient(180deg,#ffffff,#fbfdff); box-shadow: 0 10px 30px rgba(15,23,42,0.12); }
+.aim-marker-nudged::after {
+    content: '';
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    bottom: -8px; width: 2px; height: 10px; background: rgba(15,23,42,0.06);
+    border-radius: 2px;
+}
+
+/* larger label allowance on wide screens, but still limited */
+@media (min-width: 1280px) {
+    .aim-marker .aim-marker-label { max-width: 110px; }
+}
+
+@media (max-width: 900px) {
+    .aim-marker .aim-marker-label { max-width: 86px; }
+}
+
+
+/* Hide marker labels on small screens to reduce overlap */
+@media (max-width: 520px) {
+    .aim-marker .aim-marker-label { display: none; }
+    .usmap-root .maplibregl-ctrl-bottom-right { right: calc(var(--map-edge-gap) / 2) !important; bottom: calc(var(--map-edge-gap) + 96px) !important; }
+}
+
+/* Add a subtle safe-area overlay so markers don't render right at the extreme edges visually */
+.usmap-canvas::after {
+    content: '';
+    position: absolute; inset: 6px; pointer-events: none;
+    border-radius: inherit; box-shadow: inset 0 0 0 8px rgba(0,0,0,0); /* placeholder for visual padding */
+}
 
 /* --- Street View modal ------------------------------------------------ */
 .sv-backdrop {
@@ -326,9 +532,10 @@
 .sv-close {
     border: 1px solid #E5E1D8; background: #FFFFFF; color: #475569;
     width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
-    font-size: 20px; line-height: 1;
+    font-size: 20px; line-height: 1; outline: none;
 }
 .sv-close:hover { background: #FEE2E2; border-color: #FCA5A5; color: #B91C1C; }
+.sv-close:focus { box-shadow: 0 0 0 6px rgba(79,70,229,0.14); border-color: #4F46E5; }
 .sv-body { flex: 1; position: relative; background: #0F172A; }
 .sv-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .sv-footnote {

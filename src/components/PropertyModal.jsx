@@ -66,10 +66,10 @@ export function ValuationSources({ property }) {
             </div>
 
             {/* Average Value */}
-            <div className="bg-canvas border border-emerald-900/50 rounded-sm p-4 mb-4">
-                <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-1">Average Estimate</div>
+            <div className="bg-canvas border border-emerald-200 rounded-sm p-4 mb-4">
+                <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mb-1">Average Estimate</div>
                 <div className="flex items-baseline gap-2">
-                    <div className="text-2xl font-mono font-semibold text-white/90">${avgValue.toLocaleString()}</div>
+                    <div className="text-2xl font-mono font-semibold text-slate-900">${avgValue.toLocaleString()}</div>
                     <div className="text-[10px] text-emerald-600 font-bold uppercase">Weighted AVM</div>
                 </div>
                 <div className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">
@@ -227,7 +227,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black backdrop-blur-sm">
             <div className="bg-canvas rounded-md shadow-none max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-surface p-6 text-white">
+                <div className="bg-surface p-6 border-b border-slate-200">
                     <div className="flex items-start justify-between">
                         <div>
                             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -237,16 +237,16 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                 <span className="bg-indigo-600 text-[9px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider text-white">
                                     TERM_TIER_{tier}
                                 </span>
-                                <span className="bg-panel text-[9px] font-bold border border-slate-300 px-2 py-1 rounded-sm uppercase tracking-wider text-white">
+                                <span className="bg-panel text-[9px] font-bold border border-slate-300 px-2 py-1 rounded-sm uppercase tracking-wider text-slate-700">
                                     {discount}% DELTA_PRICE
                                 </span>
                             </div>
-                            <h2 className="text-2xl font-mono font-semibold text-white tracking-tighter mb-1 uppercase">{address}</h2>
+                            <h2 className="text-2xl font-mono font-semibold text-slate-900 tracking-tighter mb-1 uppercase">{address}</h2>
                             <p className="text-slate-600 font-mono text-[11px] uppercase tracking-widest">{city}, {state} {zip} • {county} County</p>
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-white hover:text-slate-200 text-lg font-mono w-10 h-10 flex items-center justify-center rounded-sm hover:bg-slate-50/10"
+                            className="text-slate-500 hover:text-slate-900 text-lg font-mono w-10 h-10 flex items-center justify-center rounded-sm hover:bg-slate-100"
                         >
                             ×
                         </button>
@@ -303,7 +303,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center bg-white p-3 border-l-2 border-emerald-500">
                                         <span className="text-[10px] uppercase font-bold text-slate-600">Opening Bid</span>
-                                        <span className="text-xl font-mono font-semibold text-white/90">${openingBid.toLocaleString()}</span>
+                                        <span className="text-xl font-mono font-semibold text-slate-900">${openingBid.toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center px-3">
                                         <span className="text-[10px] uppercase font-bold text-slate-500">Est. AVM Value</span>
@@ -315,7 +315,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                     </div>
                                     <div className="border-t border-slate-200 pt-6 mt-6">
                                         <div className="text-[9px] uppercase font-bold text-slate-500 tracking-[0.2em] mb-2">Event Timestamp</div>
-                                        <div className="text-base font-mono font-semibold text-white/90">
+                                        <div className="text-base font-mono font-semibold text-slate-900">
                                             {new Date(auctionDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase()}
                                         </div>
                                     </div>
@@ -329,7 +329,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                         <div className="bg-white p-4 border-l-2 border-red-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Mortgage Balance</div>
-                                            <div className="text-xl font-mono font-semibold text-white/90">${mortgageBalance?.toLocaleString()}</div>
+                                            <div className="text-xl font-mono font-semibold text-rose-600">${mortgageBalance?.toLocaleString()}</div>
                                         </div>
                                         <div className="bg-white p-4 border-l-2 border-emerald-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Asset Equity</div>
@@ -337,7 +337,7 @@ export function PropertyModal({ property, onClose, onAddToWatchlist, onOpenDueDi
                                         </div>
                                         <div className="bg-white p-4 border-l-2 border-slate-500">
                                             <div className="text-[9px] uppercase font-bold text-slate-500 mb-1">Lead Lender</div>
-                                            <div className="text-base font-mono font-semibold text-white/90 truncate">{lender}</div>
+                                            <div className="text-base font-mono font-semibold text-slate-900 truncate">{lender}</div>
                                         </div>
                                     </div>
                                 </div>
