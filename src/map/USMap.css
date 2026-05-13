@@ -287,12 +287,11 @@
 .aim-cluster span { line-height: 1; }
 
 /* --- MapLibre control restyling --------------------------------------- */
-/* Clean up control positioning — eliminate duplicates and overlaps */
 
-/* Position control containers properly away from edges and HUD */
+/* Position control containers with proper spacing */
 .usmap-root .maplibregl-ctrl-bottom-right {
     right: var(--map-edge-gap) !important;
-    bottom: calc(var(--map-edge-gap) + 68px) !important;
+    bottom: calc(var(--map-edge-gap) + 52px) !important;
     z-index: 220 !important;
 }
 .usmap-root .maplibregl-ctrl-top-right {
@@ -301,17 +300,17 @@
     z-index: 220 !important;
 }
 .usmap-root .maplibregl-ctrl-bottom-left {
-    left: calc(var(--map-edge-gap) / 1.4) !important;
-    bottom: calc(var(--map-edge-gap) / 1.4) !important;
+    left: 20px !important;
+    bottom: 12px !important;
     z-index: 100 !important;
 }
 .usmap-root .maplibregl-ctrl-top-left {
-    left: calc(var(--map-edge-gap) / 1.4) !important;
-    top: calc(var(--map-edge-gap) / 1.4) !important;
+    left: 20px !important;
+    top: 20px !important;
     z-index: 100 !important;
 }
 
-/* Control group styling — transparent wrapper with flex layout */
+/* Control group — clean vertical stack */
 .usmap-root .maplibregl-ctrl-group {
     background: transparent !important;
     border: none !important;
@@ -320,116 +319,84 @@
     overflow: visible !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 18px !important; /* increased gap to avoid visual overlap */
+    gap: 6px !important;
     padding: 0 !important;
     margin: 0 !important;
     align-items: center !important;
-    z-index: 230 !important; /* ensure control group sits above transient elements */
 }
 
-/* Ensure each control item in a group gets its own vertical spacing and cannot overlap */
+/* Reset child margins to prevent double spacing */
 .usmap-root .maplibregl-ctrl-group > * {
-    margin: 8px 0 !important;
-    transform: none !important;
+    margin: 0 !important;
     position: relative !important;
     pointer-events: auto !important;
-    touch-action: manipulation !important;
 }
 
-/* Normalize nested control groups to avoid double-stacking - flatten nested groups */
+/* Flatten nested control groups */
 .usmap-root .maplibregl-ctrl-group .maplibregl-ctrl-group {
-    display: contents !important; /* flatten structure so children follow parent spacing */
-    gap: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    display: contents !important;
 }
 
-/* Style individual control buttons as clean pill cards */
+/* Individual control buttons — compact, clean pills */
 .usmap-root .maplibregl-ctrl-group button {
     background: #FFFFFF !important;
     color: #0F172A !important;
-    border: 1px solid #E5E1D8 !important;
-    width: 56px !important;
-    height: 56px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 12px 36px rgba(15,23,42,0.12) !important;
+    border: 1px solid #CBD5E1 !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.10) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     margin: 0 !important;
-    transition: box-shadow 160ms ease, background 120ms ease !important; /* avoid translate animations that shift layout */
+    transition: box-shadow 160ms ease, background 120ms ease !important;
     outline: none !important;
     cursor: pointer !important;
 }
-.usmap-root .maplibregl-ctrl-group button:focus {
-    box-shadow: 0 20px 56px rgba(79,70,229,0.12) !important;
-}
 .usmap-root .maplibregl-ctrl-group button:hover {
-    background: #FAFAFF !important;
+    background: #F8FAFC !important;
+    box-shadow: 0 4px 12px rgba(15,23,42,0.14) !important;
+}
+.usmap-root .maplibregl-ctrl-group button:focus {
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.25) !important;
 }
 
-/* Specific zoom button selectors to enforce spacing and prevent overlap */
-.usmap-root .maplibregl-ctrl-zoom-in,
-.usmap-root .maplibregl-ctrl-zoom-out,
-.usmap-root .maplibregl-ctrl-geolocate,
-.usmap-root .maplibregl-ctrl-compass {
-    width: 56px !important;
-    height: 56px !important;
-    border-radius: 12px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 8px 0 !important;
-    pointer-events: auto !important;
-}
-
-/* Remove any default separators between buttons */
+/* Remove default separator borders */
 .usmap-root .maplibregl-ctrl-group button + button {
     border-top: none !important;
-    margin-top: 0 !important;
 }
 
-/* Hide default separator elements that cause visual clutter */
-.usmap-root .maplibregl-ctrl-group.maplibregl-ctrl {
-    background: transparent !important;
-}
-
-/* Attribution box — constrained at bottom-left to avoid HUD collision */
+/* Attribution — bottom-left, small and unobtrusive */
 .usmap-root .maplibregl-ctrl-attrib {
-    background: rgba(255,255,255,0.92) !important;
-    color: #78716C !important;
-    font-size: 10px !important;
-    border-radius: 8px !important;
-    padding: 6px 10px !important;
-    margin: 8px !important;
-    position: absolute !important;
-    bottom: 16px !important;
-    left: 16px !important;
-    z-index: 70 !important;
-    max-width: 220px !important;
+    background: rgba(255,255,255,0.88) !important;
+    color: #94A3B8 !important;
+    font-size: 9px !important;
+    border-radius: 6px !important;
+    padding: 3px 8px !important;
+    margin: 0 !important;
+    max-width: 200px !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     text-overflow: ellipsis !important;
 }
 .usmap-root .maplibregl-ctrl-attrib a {
-    color: #4F46E5 !important;
+    color: #6366F1 !important;
     text-decoration: none !important;
 }
 
-/* Mobile responsive adjustments */
+/* Mobile responsive */
 @media (max-width: 640px) {
     .usmap-root .maplibregl-ctrl-bottom-right {
-        right: var(--map-edge-gap) !important;
-        bottom: calc(var(--map-edge-gap) + 96px) !important;
+        right: 16px !important;
+        bottom: 80px !important;
     }
-    .usmap-root .maplibregl-ctrl-group {
-        gap: 10px !important;
-    }
+    .usmap-root .maplibregl-ctrl-group { gap: 4px !important; }
     .usmap-root .maplibregl-ctrl-group button {
-        width: 48px !important;
-        height: 48px !important;
-        border-radius: 10px !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
     }
 }
 
