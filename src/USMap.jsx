@@ -104,6 +104,12 @@ export default function USMap({
         mapRef.current = map;
 
         map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showCompass: true }), 'bottom-right');
+        map.addControl(new maplibregl.GeolocateControl({
+            positionOptions: { enableHighAccuracy: true },
+            trackUserLocation: false,
+            showUserLocation: true,
+            fitBoundsOptions: { maxZoom: 14 }
+        }), 'bottom-right');
         map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: 'imperial' }), 'bottom-left');
 
         const onMove = () => {
