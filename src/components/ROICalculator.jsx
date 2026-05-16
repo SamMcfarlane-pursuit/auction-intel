@@ -35,9 +35,9 @@ const STATE_RATES = {
     'NY': { rate: 0, type: 'Deed', notes: 'No interest - deed only' },
 };
 
-export default function ROICalculator({ onClose }) {
+export default function ROICalculator({ onClose, initialState }) {
     const [purchasePrice, setPurchasePrice] = useState(5000);
-    const [selectedState, setSelectedState] = useState('FL');
+    const [selectedState, setSelectedState] = useState(initialState || 'FL');
     const [holdMonths, setHoldMonths] = useState(12);
     const [showComparison, setShowComparison] = useState(false);
 

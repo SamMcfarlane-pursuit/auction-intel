@@ -1281,7 +1281,7 @@ export default function AuctionPlatform() {
                                         const t = TIERS[tier];
                                         const isAlpha = tier <= 2 && growth > 5;
                                         return (
-                                            <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('list'); setIsSidebarOpen(false); }}
+                                            <div key={i} onClick={() => { setSelectedState(r.abbr); setSelectedCounty(r.county); setSearch(''); setView('county'); setIsSidebarOpen(false); }}
                                                 className="flex items-center justify-between px-4 py-2.5 hover:bg-panel cursor-pointer transition-colors border-b border-slate-200 last:border-0 group">
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
@@ -1303,12 +1303,12 @@ export default function AuctionPlatform() {
                 {/* Dynamic Content */}
                 <div className="flex-1 overflow-auto p-4 md:p-8 relative">
                     <div className="max-w-[1600px] mx-auto h-full">
-                        {selectedCounty ? (
+                        {view === 'county' && selectedCounty ? (
                             /* County Detail View */
                             <div className="space-y-8 animate-in fade-in slide-in- duration-500">
                                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                                     <div className="min-w-0">
-                                        <button onClick={() => setSelectedCounty(null)} className="group text-slate-600 font-bold hover:text-indigo-600 flex items-center gap-2 mb-3 transition-colors">
+                                        <button onClick={() => { setSelectedCounty(null); setView('list'); }} className="group text-slate-600 font-bold hover:text-indigo-600 flex items-center gap-2 mb-3 transition-colors">
                                             <span className="group-hover:-translate-x-1 transition-transform">←</span>
                                             <span className="uppercase tracking-[0.15em] text-[9px] font-semibold">Return to {STATE_NAMES[selectedState]}</span>
                                         </button>
@@ -1357,6 +1357,12 @@ export default function AuctionPlatform() {
                                         </button>
                                         <button onClick={handlePrintCountyReport} className="bg-canvas text-slate-900 border-2 border-slate-300 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm hover:bg-slate-100 transition-all flex items-center gap-1 md:gap-2">
                                             <span>📄</span> REPORT
+                                        </button>
+                                        <button onClick={() => setView('forecaster')} className="bg-canvas text-indigo-700 border-2 border-indigo-300 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm hover:bg-indigo-50 transition-all flex items-center gap-1 md:gap-2">
+                                            <span>🧠</span> <span className="hidden sm:inline">AI</span> FORECAST
+                                        </button>
+                                        <button onClick={() => setView('roi')} className="bg-canvas text-emerald-700 border-2 border-emerald-300 px-3 md:px-6 py-2 md:py-3 rounded-lg md:rounded-sm font-mono font-semibold text-xs md:text-sm hover:bg-emerald-50 transition-all flex items-center gap-1 md:gap-2">
+                                            <span>📈</span> ROI
                                         </button>
                                     </div>
                                 </div>
@@ -1644,8 +1650,8 @@ export default function AuctionPlatform() {
                                 onSelectState={(abbr) => { setSelectedState(abbr); setView('list'); }}
                                 onSelectCounty={(c) => {
                                     const found = (COUNTIES[selectedState] || []).find(co => co[0] === c);
-                                    if (found) setSelectedCounty(found);
-                                    setView('list');
+                                    if (found) { setSelectedCounty(found); setView('county'); }
+                                    else setView('list');
                                 }}
                             />
                         ) : view === 'calendar' ? (
@@ -1660,7 +1666,7 @@ export default function AuctionPlatform() {
                         ) : view === 'roi' ? (
                             /* ROI Calculator View */
                             <div className="p-6">
-                                <ROICalculator />
+                                <ROICalculator initialState={selectedState} />
                             </div>
                         ) : view === 'heatmap' ? (
                             /* Investment Heat Map View */
@@ -1708,7 +1714,7 @@ export default function AuctionPlatform() {
                             <div className="p-4 md:p-8 overflow-auto h-full">
                                 <MarketForecaster 
                                     county={selectedCounty ? { name: selectedCounty[0], zhvi: selectedCounty[3], fips: selectedCounty[7]?.split(' ')[1] } : null} 
-                                    onBack={() => setView('map')}
+                                    onBack={() => setView(selectedCounty ? 'county' : 'map')}
                                 />
                             </div>
                         ) : view === 'alerts' ? (
@@ -1760,7 +1766,7 @@ export default function AuctionPlatform() {
                                     const county = (COUNTIES[item.stateAbbr] || []).find(c => c[0] === item.county);
                                     if (county) {
                                         setSelectedCounty(county);
-                                        setView('list');
+                                        setView('county');
                                     }
                                 }}
                                 TIERS={TIERS}
@@ -1902,7 +1908,7 @@ export default function AuctionPlatform() {
                                                     const [name, pop, income, zhvi, growth, dom, tier] = c;
                                                     const t = TIERS[tier];
                                                     return (
-                                                        <tr key={i} onClick={() => setSelectedCounty(c)} className="group hover:bg-indigo-50/50 cursor-pointer transition-all">
+                                                        <tr key={i} onClick={() => { setSelectedCounty(c); setView('county'); }} className="group hover:bg-indigo-50/50 cursor-pointer transition-all">
                                                             <td className="px-6 py-5 font-mono font-semibold text-slate-800">{name}</td>
                                                             <td className="px-6 py-5">
                                                                 <span className="px-2 py-1 rounded-lg text-[9px] font-semibold text-white" style={{ background: t.color }}>{t.label}</span>
@@ -1919,7 +1925,7 @@ export default function AuctionPlatform() {
                                                                 <span className="px-2 py-1 bg-surface rounded text-[10px] font-semibold text-slate-500">{dom}d</span>
                                                             </td>
                                                             <td className="px-6 py-5 text-right">
-                                                                <button className="bg-surface text-white px-4 py-2 rounded-lg text-[9px] font-semibold uppercase opacity-0 group-hover:opacity-100 transition-all">Analyze</button>
+                                                                <button onClick={(e) => { e.stopPropagation(); setSelectedCounty(c); setView('forecaster'); }} className="bg-surface text-white px-4 py-2 rounded-lg text-[9px] font-semibold uppercase opacity-0 group-hover:opacity-100 transition-all">Analyze</button>
                                                             </td>
                                                         </tr>
                                                     );
