@@ -47,7 +47,7 @@ export default function MarketForecaster({ county, onBack }) {
         
         return months.map((m, i) => {
             const step = (forecast.projected_zhvi_24m - currentZhvi) / 8;
-            const factor = scenario === 'aggressive' ? 1.05 : scenario === 'conservative' ? 0.95 : 1.0;
+            const factor = scenario === 'aggressive' ? 1.15 : scenario === 'conservative' ? 0.85 : 1.0;
             
             return {
                 name: m,
@@ -55,6 +55,43 @@ export default function MarketForecaster({ county, onBack }) {
                 baseline: Math.round(currentZhvi + (step * i)),
             };
         });
+    }, [forecast, county, scenario]);
+
+    const dynamicMetrics = useMemo(() => {
+        if (!forecast || !county) return {
+            sentiment: 'Stable',
+            confidence: 82,
+            yieldPct: 10.25,
+            zhvi12m: 350000,
+            zhvi24m: 350000
+        };
+
+        const currentZhvi = county.zhvi || 350000;
+        const step = (forecast.projected_zhvi_24m - currentZhvi) / 8;
+        const factor = scenario === 'aggressive' ? 1.15 : scenario === 'conservative' ? 0.85 : 1.0;
+
+        const zhvi12m = Math.round(currentZhvi + (step * 4 * factor));
+        const zhvi24m = Math.round(currentZhvi + (step * 8 * factor));
+        const yieldPct = ((zhvi12m - currentZhvi) / currentZhvi) * 100;
+
+        let sentiment = forecast.market_sentiment || 'Stable';
+        let confidence = Math.round((forecast.confidence_score || 0.82) * 100);
+
+        if (scenario === 'aggressive') {
+            sentiment = 'Bullish Expansion';
+            confidence = Math.min(confidence + 8, 98);
+        } else if (scenario === 'conservative') {
+            sentiment = 'Cooling / Stable';
+            confidence = Math.max(confidence - 12, 65);
+        }
+
+        return {
+            sentiment,
+            confidence,
+            yieldPct,
+            zhvi12m,
+            zhvi24m
+        };
     }, [forecast, county, scenario]);
 
     const historicalClearingData = useMemo(() => {
@@ -115,17 +152,17 @@ export default function MarketForecaster({ county, onBack }) {
                     <div className="bg-surface rounded-md p-6 border border-slate-200">
                         <div className="text-[10px] font-semibold text-slate-600 uppercase mb-4 tracking-widest">Market Sentiment</div>
                         <div className={`text-lg font-mono font-semibold mb-2 ${
- forecast?.market_sentiment === 'Bullish' ? 'text-emerald-600' : 
- forecast?.market_sentiment === 'Stable' ? 'text-indigo-600' : 'text-amber-600'
- }`}>
-                            {forecast?.market_sentiment || "Analyzing..."}
+                            dynamicMetrics.sentiment.includes('Bullish') ? 'text-emerald-600' : 
+                            dynamicMetrics.sentiment.includes('Cooling') ? 'text-amber-600' : 'text-indigo-600'
+                        }`}>
+                            {dynamicMetrics.sentiment}
                         </div>
                         <div className="h-1.5 w-full bg-slate-200 rounded-sm overflow-hidden">
-                            <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${(forecast?.confidence_score || 0.8) * 100}%` }}></div>
+                            <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${dynamicMetrics.confidence}%` }}></div>
                         </div>
                         <div className="flex justify-between mt-2 text-[9px] font-semibold text-slate-600 uppercase">
                             <span>Confidence</span>
-                            <span>{Math.round((forecast?.confidence_score || 0.8) * 100)}%</span>
+                            <span>{dynamicMetrics.confidence}%</span>
                         </div>
                     </div>
 
@@ -158,7 +195,7 @@ export default function MarketForecaster({ county, onBack }) {
 
                     <div className="bg-surface rounded-sm p-6 shadow-none border border-slate-200">
                         <div className="text-[9px] font-semibold text-slate-600 uppercase mb-1">Projected 12M Yield</div>
-                        <div className="text-xl font-mono font-semibold text-emerald-600">+{forecast?.yield_forecast_pct?.toFixed(1)}%</div>
+                        <div className="text-xl font-mono font-semibold text-emerald-600">+{dynamicMetrics.yieldPct.toFixed(2)}%</div>
                         <div className="text-[10px] text-slate-600 mt-2">
                            Forecasted equity gain based on {county?.name} momentum and current economic cooling factors.
                         </div>
@@ -219,14 +256,14 @@ export default function MarketForecaster({ county, onBack }) {
                             <div className="w-10 h-10 bg-emerald-100 rounded-sm flex items-center justify-center text-emerald-600 text-lg">📈</div>
                             <div>
                                 <div className="text-[9px] font-semibold text-slate-600 uppercase">12M Projection</div>
-                                <div className="text-sm font-semibold text-slate-900">${Math.round(forecast?.projected_zhvi_12m || 0).toLocaleString()}</div>
+                                <div className="text-sm font-semibold text-slate-900">${dynamicMetrics.zhvi12m.toLocaleString()}</div>
                             </div>
                         </div>
                         <div className="border border-slate-300 rounded-sm p-4 flex items-center gap-4 bg-canvas">
                             <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 text-lg">🚀</div>
                             <div>
                                 <div className="text-[9px] font-semibold text-slate-600 uppercase">24M Target</div>
-                                <div className="text-sm font-semibold text-slate-900">${Math.round(forecast?.projected_zhvi_24m || 0).toLocaleString()}</div>
+                                <div className="text-sm font-semibold text-slate-900">${dynamicMetrics.zhvi24m.toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
