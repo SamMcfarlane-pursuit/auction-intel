@@ -58,7 +58,7 @@ const AnimatedCounter = ({ end, suffix = '', prefix = '' }) => {
     return <span>{prefix}{count.toLocaleString()}{suffix}</span>;
 };
 
-export default function SignIn() {
+export default function SignIn({ onNavigateToSignUp, onNavigateToForgot }) {
     const { signIn } = useAuth();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
@@ -87,16 +87,6 @@ export default function SignIn() {
         setLoading(false);
     };
 
-    const demoLogin = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            await signIn('demo@auctionintel.com', 'demo123');
-        } catch (err) {
-            setError('Demo login failed');
-        }
-        setLoading(false);
-    };
 
     return (
         <div className="min-h-screen flex relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #F7F5F0 0%, #EEF2FF 50%, #F7F5F0 100%)' }}>
@@ -252,9 +242,9 @@ export default function SignIn() {
                                     <input type="checkbox" className="rounded border-slate-400" />
                                     <span className="text-xs">Remember me</span>
                                 </label>
-                                <a href="#" className="text-indigo-500 hover:text-indigo-400 text-xs font-medium transition-colors">
+                                <button type="button" onClick={onNavigateToForgot} className="text-indigo-500 hover:text-indigo-400 text-xs font-medium transition-colors">
                                     Forgot password?
-                                </a>
+                                </button>
                             </div>
 
                             <button
@@ -274,24 +264,9 @@ export default function SignIn() {
                             </button>
                         </form>
 
-                        <div className="mt-4 flex items-center gap-3">
-                            <div className="flex-1 h-px bg-slate-100/60"></div>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">or</span>
-                            <div className="flex-1 h-px bg-slate-100/60"></div>
-                        </div>
-
-                        <button
-                            onClick={demoLogin}
-                            disabled={loading}
-                            className="mt-4 w-full py-3 rounded-sm font-bold text-sm text-slate-700 transition-all hover:bg-slate-100 disabled:brightness-75"
-                            style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.08)' }}
-                        >
-                            🎯 Try Demo Account
-                        </button>
-
                         <p className="text-center text-slate-500 text-xs mt-6">
                             Don't have an account?{' '}
-                            <a href="/signup" className="text-indigo-500 hover:text-indigo-400 font-bold transition-colors">Create one free</a>
+                            <button type="button" onClick={onNavigateToSignUp} className="text-indigo-500 hover:text-indigo-400 font-bold transition-colors">Create one free</button>
                         </p>
                     </div>
 

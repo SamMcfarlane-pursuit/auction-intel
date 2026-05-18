@@ -1119,6 +1119,15 @@ export default function AuctionPlatform() {
                             </div>
                         </div>
                     )}
+                    
+                    {/* Clear and Concise Sign Out */}
+                    <button
+                        onClick={signOut}
+                        className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-sm bg-rose-50 border border-red-100 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors"
+                    >
+                        <span className="text-sm">🚪</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Sign Out</span>
+                    </button>
                 </div>
             </aside>
 
@@ -1233,15 +1242,11 @@ export default function AuctionPlatform() {
                                             </button>
                                         </div>
 
-                                        {/* Sign Out */}
+                                        {/* User Menu Footer */}
                                         <div className="p-2 border-t border-slate-200">
-                                            <button
-                                                onClick={() => { setIsUserMenuOpen(false); signOut(); }}
-                                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-left text-rose-600 hover:bg-red-50 transition-colors"
-                                            >
-                                                <span>🚪</span>
-                                                <span className="text-sm font-medium">Sign Out</span>
-                                            </button>
+                                            <div className="px-3 py-2 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                                                Version 1.0.4
+                                            </div>
                                         </div>
                                     </div>
                                 </>
